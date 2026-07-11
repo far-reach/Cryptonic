@@ -8,6 +8,7 @@
     "packages/contracts",
     "packages/sdk",
     "packages/services",
+    "packages/app",
     "packages/solana"
   ],
   "scripts": {
@@ -16,7 +17,9 @@
     "test:sdk": "npm run test --workspace @veil/sdk",
     "build:sdk": "npm run build --workspace @veil/sdk",
     "build:services": "npm run build --workspace @veil/services",
+    "build:app": "npm run build --workspace @veil/app",
     "typecheck:services": "npm run typecheck --workspace @veil/services",
+    "typecheck:app": "npm run typecheck --workspace @veil/app",
     "typecheck:solana": "npm run typecheck --workspace @veil/solana"
   }
 }

@@ -151,14 +151,22 @@ No pre-mine to a VC tranche; emissions (if any) flow only to actual fee-paying u
   `BuybackBurner` that swaps accumulated protocol fees into VEIL and burns them (tested being fed
   by a real pool withdrawal's fee), and `VeilStaking` (slashable bonds for relayers/provers/ASPs
   with an unstake cooldown). This closes the revenue → buyback-and-burn loop in code.
+- **Cross-chain shielded payments** (`crosschain/VeilCrossChain.sol`): an ERC-7683-style
+  open → fill → claim flow where a solver shields destination-chain funds for the recipient and
+  is repaid from the origin escrow after a settlement-oracle attestation (refundable after the
+  deadline).
+- **Staking-gated relayer**: `VeilPool` can require any fee-earning relayer to be an active,
+  slashable operator (`VeilStaking.isActive`).
+- **Business payments app** (`@veil/app`): a `PaymentsClient` (`shield` / `pay` / `audit`) and a
+  `veil` CLI, validated end-to-end with a real proof.
 
-**Next**
+**Next (pre-production)**
 1. Run a public multi-party Powers-of-Tau + phase-2 ceremony (the in-repo setup generates the
    toxic waste locally, which is fine only for a prototype).
-2. Business payments app / SDK surface over the relayer; an ASP HTTP service with real screening.
-3. ERC-7683 cross-chain shielded-payment implementation.
-4. Wire staking to live enforcement (relayer/ASP eligibility gated on `isActive`) and a
-   decentralized slashing/dispute process.
+2. Replace the mock settlement oracle with a canonical cross-chain messaging attestation
+   (LayerZero / CCIP / Wormhole / Hyperlane).
+3. Hardened key storage for the wallet; an ASP HTTP service with real AML/sanctions screening.
+4. Independent security audit.
 4. Buyback-and-burn module and staking/slashing for relayers/provers/ASPs.
 5. Independent security audit + public trusted-setup ceremony.
 

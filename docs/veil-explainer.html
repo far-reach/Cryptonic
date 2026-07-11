@@ -228,7 +228,7 @@
     <div class="statusline">
       <span class="chip done"><span class="dot"></span>Prototype live</span>
       <span class="chip done"><span class="dot"></span>Real ZK proof verified on-chain</span>
-      <span class="chip done"><span class="dot"></span>9 / 9 tests passing</span>
+      <span class="chip done"><span class="dot"></span>Phases 1–4 shipped · 26 / 26 tests passing</span>
       <span class="chip"><span class="dot"></span>Not audited · research build</span>
     </div>
   </section>
@@ -364,28 +364,32 @@
       </div>
       <div class="phase">
         <div class="when">Phase 2</div>
-        <div class="body"><span class="pill now">Building next</span>
+        <div class="body"><span class="pill done">Shipped</span>
           <h3>Services that make it usable</h3>
           <p>A relayer (gasless withdrawals, generates the proof for you) and an Association-Set Provider
-            (screens deposits, publishes the "clean set") — plus the business payments app.</p></div>
+            (screens deposits, publishes the "clean set"), plus a business payments app (shield / pay /
+            audit) — all validated in one end-to-end test with a real proof.</p></div>
       </div>
       <div class="phase">
         <div class="when">Phase 3</div>
-        <div class="body"><span class="pill next">Planned</span>
+        <div class="body"><span class="pill done">Shipped</span>
           <h3>Multi-chain &amp; cross-chain</h3>
-          <p>Solana confidential transfers live; cross-chain private payments via an intents standard (ERC-7683).</p></div>
+          <p>Cross-chain private payments via an ERC-7683-style open → fill → claim flow (a solver shields
+            the funds for the recipient on the far chain); Solana confidential-transfer prototype in place.</p></div>
       </div>
       <div class="phase">
         <div class="when">Phase 4</div>
-        <div class="body"><span class="pill next">Planned</span>
+        <div class="body"><span class="pill done">Shipped</span>
           <h3>Token &amp; value capture</h3>
-          <p>Protocol fee → automatic buyback-and-burn; staking &amp; slashing for the operators who keep the rail neutral.</p></div>
+          <p>Protocol fee → automatic buyback-and-burn (tested from a real pool fee); staking &amp; slashing
+            for the operators who keep the rail neutral, with the relayer set gated on active stake.</p></div>
       </div>
       <div class="phase">
         <div class="when">Phase 5</div>
-        <div class="body"><span class="pill next">Planned</span>
+        <div class="body"><span class="pill now">Before mainnet</span>
           <h3>Audit, ceremony &amp; mainnet</h3>
-          <p>Independent security audit, a public trusted-setup ceremony, then production launch.</p></div>
+          <p>A public trusted-setup ceremony, a real cross-chain messaging oracle, hardened key storage,
+            an independent security audit, then production launch.</p></div>
       </div>
     </div>
   </section>
