@@ -143,13 +143,15 @@ No pre-mine to a VC tranche; emissions (if any) flow only to actual fee-paying u
   the SDK builds the witness → circom → proof → the generated verifier accepts it inside
   `VeilPool.withdraw`, funds settle, replay is blocked, and tampered signals are rejected.
 - Solana confidential-transfer scaffolding + CLI runbook.
+- **Relayer service** (reconstructs the pool tree, generates the proof, submits gasless
+  withdrawals) and **Association Set Provider service** (screens deposits, builds and publishes
+  the approved-set root) — validated by a full end-to-end test with a real proof: user deposits →
+  ASP screens & publishes → relayer proves & settles gaslessly → auditor decrypts the note.
 
 **Next**
 1. Run a public multi-party Powers-of-Tau + phase-2 ceremony (the in-repo setup generates the
-   toxic waste locally, which is fine only for a prototype), and add proof-generation to the
-   relayer.
-2. Relayer service (gasless withdrawals) and an ASP reference service (screening + root
-   publication).
+   toxic waste locally, which is fine only for a prototype).
+2. Business payments app / SDK surface over the relayer; an ASP HTTP service with real screening.
 3. ERC-7683 cross-chain shielded-payment implementation.
 4. Buyback-and-burn module and staking/slashing for relayers/provers/ASPs.
 5. Independent security audit + public trusted-setup ceremony.

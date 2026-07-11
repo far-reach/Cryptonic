@@ -20,6 +20,7 @@ alternatives.
 | [`docs/token-ideas.md`](docs/token-ideas.md) | The three candidate concepts and the audit that chose VEIL. |
 | [`packages/contracts`](packages/contracts) | EVM shielded pool (Solidity + Hardhat), circom withdrawal circuit, tests. |
 | [`packages/sdk`](packages/sdk) | Client SDK: notes, Merkle proofs, association sets, view-key encryption. |
+| [`packages/services`](packages/services) | Off-chain services: relayer (gasless proving) + Association Set Provider (screening). |
 | [`packages/solana`](packages/solana) | Solana Token-2022 confidential-transfer prototype + CLI runbook. |
 
 ## How it works (one paragraph)
@@ -52,11 +53,12 @@ npm run typecheck:solana
 ## Status
 
 Prototype. Implemented: EVM shielded pool + tests (on-chain Merkle root cross-checked against
-an independent computation); client SDK + tests (SDK/chain root consistency verified);
-**withdrawal circuit compiled with a Groth16 trusted setup into a real verifier, with an
-end-to-end test that verifies a real proof on-chain inside `VeilPool.withdraw` (9/9 passing)**;
-Solana scaffolding + runbook. Next: a public trusted-setup ceremony, relayer + ASP services,
-ERC-7683 cross-chain settlement, buyback-and-burn + staking, and an independent audit. See the
-whitepaper roadmap.
+an independent computation); client SDK + tests; withdrawal circuit compiled with a Groth16
+trusted setup into a real verifier; **relayer + Association Set Provider services, tied together
+in a full end-to-end test — user deposits, ASP screens & publishes, relayer generates a real
+proof and settles a gasless withdrawal, auditor decrypts the note (11/11 contract tests
+passing)**; Solana scaffolding + runbook. Next: cross-chain settlement (ERC-7683), the
+buyback-and-burn + staking module, a public trusted-setup ceremony, and an independent audit.
+See the whitepaper roadmap.
 
 > Not audited. Not for production use. Research prototype.
