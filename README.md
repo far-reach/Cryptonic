@@ -18,7 +18,7 @@ alternatives.
 | [`docs/whitepaper.md`](docs/whitepaper.md) | VEIL design, token/value-accrual, threat model, roadmap. |
 | [`docs/market-research-2026.md`](docs/market-research-2026.md) | State-of-the-art crypto/Ethereum/Solana research the design is grounded in. |
 | [`docs/token-ideas.md`](docs/token-ideas.md) | The three candidate concepts and the audit that chose VEIL. |
-| [`packages/contracts`](packages/contracts) | EVM shielded pool (Solidity + Hardhat), circom withdrawal circuit, tests. |
+| [`packages/contracts`](packages/contracts) | EVM shielded pool, token/buyback-burn/staking module (Solidity + Hardhat), circom withdrawal circuit, tests. |
 | [`packages/sdk`](packages/sdk) | Client SDK: notes, Merkle proofs, association sets, view-key encryption. |
 | [`packages/services`](packages/services) | Off-chain services: relayer (gasless proving) + Association Set Provider (screening). |
 | [`packages/solana`](packages/solana) | Solana Token-2022 confidential-transfer prototype + CLI runbook. |
@@ -54,11 +54,12 @@ npm run typecheck:solana
 
 Prototype. Implemented: EVM shielded pool + tests (on-chain Merkle root cross-checked against
 an independent computation); client SDK + tests; withdrawal circuit compiled with a Groth16
-trusted setup into a real verifier; **relayer + Association Set Provider services, tied together
-in a full end-to-end test — user deposits, ASP screens & publishes, relayer generates a real
-proof and settles a gasless withdrawal, auditor decrypts the note (11/11 contract tests
-passing)**; Solana scaffolding + runbook. Next: cross-chain settlement (ERC-7683), the
-buyback-and-burn + staking module, a public trusted-setup ceremony, and an independent audit.
-See the whitepaper roadmap.
+trusted setup into a real verifier; relayer + Association Set Provider services tied together in
+a full end-to-end test (user deposits → ASP screens & publishes → relayer proves & settles a
+gasless withdrawal → auditor decrypts the note); **token + buyback-and-burn + staking/slashing
+module, with the value-accrual loop tested end-to-end from a real pool fee (19/19 contract tests
+passing)**; Solana scaffolding + runbook. Next: cross-chain settlement (ERC-7683), a public
+trusted-setup ceremony, live staking enforcement, and an independent audit. See the whitepaper
+roadmap.
 
 > Not audited. Not for production use. Research prototype.

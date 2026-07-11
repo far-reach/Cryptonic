@@ -147,12 +147,18 @@ No pre-mine to a VC tranche; emissions (if any) flow only to actual fee-paying u
   withdrawals) and **Association Set Provider service** (screens deposits, builds and publishes
   the approved-set root) — validated by a full end-to-end test with a real proof: user deposits →
   ASP screens & publishes → relayer proves & settles gaslessly → auditor decrypts the note.
+- **Token & value-accrual module**: the `VeilToken` (fixed 1B supply, burnable), a permissionless
+  `BuybackBurner` that swaps accumulated protocol fees into VEIL and burns them (tested being fed
+  by a real pool withdrawal's fee), and `VeilStaking` (slashable bonds for relayers/provers/ASPs
+  with an unstake cooldown). This closes the revenue → buyback-and-burn loop in code.
 
 **Next**
 1. Run a public multi-party Powers-of-Tau + phase-2 ceremony (the in-repo setup generates the
    toxic waste locally, which is fine only for a prototype).
 2. Business payments app / SDK surface over the relayer; an ASP HTTP service with real screening.
 3. ERC-7683 cross-chain shielded-payment implementation.
+4. Wire staking to live enforcement (relayer/ASP eligibility gated on `isActive`) and a
+   decentralized slashing/dispute process.
 4. Buyback-and-burn module and staking/slashing for relayers/provers/ASPs.
 5. Independent security audit + public trusted-setup ceremony.
 
