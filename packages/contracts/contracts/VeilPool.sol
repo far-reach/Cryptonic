@@ -11,6 +11,12 @@ interface IERC20 {
     function transferFrom(address from, address to, uint256 amount) external returns (bool);
 }
 
+/// @notice Optional gate: when set, a fee-earning relayer must be an active,
+///         staked (slashable) operator. Satisfied by VeilStaking.
+interface IStakingGate {
+    function isActive(address operator) external view returns (bool);
+}
+
 /// @title VeilPool
 /// @notice A confidential-payments shielded pool for a single stablecoin.
 ///         Deposits are public (amount visible); withdrawals are private and
@@ -40,6 +46,11 @@ contract VeilPool is MerkleTreeWithHistory {
     address public feeCollector;
     address public governance;
 
+    /// @notice When non-zero, a fee-earning relayer must be active in this staking
+    ///         contract. Keeps the relayer set economically accountable (slashable)
+    ///         without forcing gasless flows to exist. Off by default.
+    IStakingGate public stakingGate;
+
     mapping(uint256 => bool) public nullifierHashUsed;
     mapping(uint256 => bool) public commitments; // dedupe deposits
 
@@ -59,8 +70,10 @@ contract VeilPool is MerkleTreeWithHistory {
         uint256 protocolFee
     );
     event FeeCollectorUpdated(address indexed collector);
+    event StakingGateUpdated(address indexed gate);
 
     error CommitmentExists();
+    error RelayerNotStaked();
     error ValueZero();
     error UnknownRoot();
     error UnknownAspRoot();
@@ -141,6 +154,11 @@ contract VeilPool is MerkleTreeWithHistory {
         uint256 protocolFee = (value * protocolFeeBps) / BPS_DENOMINATOR;
         if (fee + protocolFee > value) revert FeeTooHigh();
 
+        // A relayer earning a fee must be an active, slashable operator (when gated).
+        if (fee > 0 && address(stakingGate) != address(0) && !stakingGate.isActive(relayer)) {
+            revert RelayerNotStaked();
+        }
+
         if (!verifier.verifyProof(a, b, c, publicSignals)) revert InvalidProof();
 
         nullifierHashUsed[nullifierHash] = true;
@@ -157,5 +175,11 @@ contract VeilPool is MerkleTreeWithHistory {
         require(collector != address(0), "zero addr");
         feeCollector = collector;
         emit FeeCollectorUpdated(collector);
+    }
+
+    /// @notice Set (or clear, with address(0)) the staking gate for fee-earning relayers.
+    function setStakingGate(IStakingGate gate) external onlyGovernance {
+        stakingGate = gate;
+        emit StakingGateUpdated(address(gate));
     }
 }
