@@ -52,9 +52,11 @@ npm run typecheck:solana
 ## Status
 
 Prototype. Implemented: EVM shielded pool + tests (on-chain Merkle root cross-checked against
-an independent computation), client SDK + tests (SDK/chain root consistency verified),
-withdrawal circuit spec, Solana scaffolding + runbook. Next: compile the circuit + trusted
-setup to replace the mock verifier, relayer + ASP services, ERC-7683 cross-chain settlement,
-buyback-and-burn + staking, and an independent audit. See the whitepaper roadmap.
+an independent computation); client SDK + tests (SDK/chain root consistency verified);
+**withdrawal circuit compiled with a Groth16 trusted setup into a real verifier, with an
+end-to-end test that verifies a real proof on-chain inside `VeilPool.withdraw` (9/9 passing)**;
+Solana scaffolding + runbook. Next: a public trusted-setup ceremony, relayer + ASP services,
+ERC-7683 cross-chain settlement, buyback-and-burn + staking, and an independent audit. See the
+whitepaper roadmap.
 
 > Not audited. Not for production use. Research prototype.

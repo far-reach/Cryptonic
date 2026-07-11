@@ -138,12 +138,16 @@ No pre-mine to a VC tranche; emissions (if any) flow only to actual fee-paying u
   independent computation.
 - Client SDK: note management, Merkle proofs, association-set membership proofs, view-key
   encryption — with tests and a cross-check that SDK and on-chain roots agree.
-- Withdrawal circuit (`withdraw.circom`) as the production-verifier specification.
+- Withdrawal circuit (`withdraw.circom`, 22,486 constraints), compiled with a Groth16 trusted
+  setup into a real `Verifier.sol`. **An end-to-end test verifies a real proof on-chain**:
+  the SDK builds the witness → circom → proof → the generated verifier accepts it inside
+  `VeilPool.withdraw`, funds settle, replay is blocked, and tampered signals are rejected.
 - Solana confidential-transfer scaffolding + CLI runbook.
 
 **Next**
-1. Compile the circom circuit, run a Groth16 ceremony, generate the real `Verifier.sol`, and
-   replace `MockVerifier` in an end-to-end proving test.
+1. Run a public multi-party Powers-of-Tau + phase-2 ceremony (the in-repo setup generates the
+   toxic waste locally, which is fine only for a prototype), and add proof-generation to the
+   relayer.
 2. Relayer service (gasless withdrawals) and an ASP reference service (screening + root
    publication).
 3. ERC-7683 cross-chain shielded-payment implementation.
