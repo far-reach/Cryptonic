@@ -1,0 +1,16 @@
+node_modules/
+dist/
+artifacts/
+cache/
+coverage/
+typechain-types/
+*.log
+.DS_Store
+.env
+.env.*
+# Solana / circuit build artifacts and local keypairs
+*.zkey
+*.r1cs
+*.wasm
+*-elgamal.json
+auditor-elgamal.json

@@ -1,17 +1,60 @@
-# Cryptonic
+# VEIL
 
-Research and design workspace for a novel cryptocurrency project.
+**A neutral, multi-chain confidential-payments network for stablecoins.**
+Send USDC/USDT without broadcasting every amount to the world — with compliance built in as
+zero-knowledge proofs, not a backdoor. *Confidentiality, not anonymity.*
 
-## Contents
+VEIL targets crypto's one proven market (stablecoins: ~$290B supply, ~$28T quarterly volume)
+and its best-performing narrative (privacy), assembling primitives both major ecosystems
+shipped in 2025–26 into a product that regulated businesses can actually use. See the
+[whitepaper](docs/whitepaper.md) for the full rationale, and
+[`docs/token-ideas.md`](docs/token-ideas.md) for the logic audit that selected VEIL over two
+alternatives.
 
-- [`docs/market-research-2026.md`](docs/market-research-2026.md) — multi-source synthesis
-  of the state of the art (July 2026): macro market, Ethereum, Solana, stablecoins, RWA,
-  AI×crypto, privacy, ZK, MEV, DePIN, interoperability — plus confirmed dead zones and
-  identified whitespace.
-- [`docs/token-ideas.md`](docs/token-ideas.md) — three grounded token concepts (VEIL,
-  MERIDIAN, JOULE), a logic audit against 2026 litmus tests and Vitalik Buterin's recent
-  essays, and a recommendation of which to build.
+## Repository layout
+
+| Path | What |
+|---|---|
+| [`docs/whitepaper.md`](docs/whitepaper.md) | VEIL design, token/value-accrual, threat model, roadmap. |
+| [`docs/market-research-2026.md`](docs/market-research-2026.md) | State-of-the-art crypto/Ethereum/Solana research the design is grounded in. |
+| [`docs/token-ideas.md`](docs/token-ideas.md) | The three candidate concepts and the audit that chose VEIL. |
+| [`packages/contracts`](packages/contracts) | EVM shielded pool (Solidity + Hardhat), circom withdrawal circuit, tests. |
+| [`packages/sdk`](packages/sdk) | Client SDK: notes, Merkle proofs, association sets, view-key encryption. |
+| [`packages/solana`](packages/solana) | Solana Token-2022 confidential-transfer prototype + CLI runbook. |
+
+## How it works (one paragraph)
+
+Deposits are public: you shield `value` tokens under a commitment
+`Poseidon(value, Poseidon(nullifier, secret))` inserted into a Merkle tree, and the note is
+encrypted to a **view key** so you (or an auditor you choose) can later decrypt it. Withdrawals
+are private: a zero-knowledge proof shows your commitment is in the pool tree **and** in an
+approved **association set** (proof of innocence) without revealing which deposit is yours,
+revealing only a nullifier to stop double-spends. A protocol fee on each withdrawal funds an
+on-chain buyback-and-burn; the VEIL token is the slashable bond that keeps the rail
+un-censorable.
+
+## Quick start
+
+```bash
+# from the repo root
+npm install --workspaces
+
+# EVM shielded pool — compiles (offline solc) and runs the full suite
+npm run test:contracts     # 7 passing
+
+# Client SDK — notes, merkle proofs, association sets, view keys
+npm run test:sdk           # 8 passing
+
+# Solana prototype — type-check
+npm run typecheck:solana
+```
 
 ## Status
 
-Awaiting selection of one of the three concepts to begin whitepaper + prototype work.
+Prototype. Implemented: EVM shielded pool + tests (on-chain Merkle root cross-checked against
+an independent computation), client SDK + tests (SDK/chain root consistency verified),
+withdrawal circuit spec, Solana scaffolding + runbook. Next: compile the circuit + trusted
+setup to replace the mock verifier, relayer + ASP services, ERC-7683 cross-chain settlement,
+buyback-and-burn + staking, and an independent audit. See the whitepaper roadmap.
+
+> Not audited. Not for production use. Research prototype.
