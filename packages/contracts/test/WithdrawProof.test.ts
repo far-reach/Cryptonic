@@ -26,7 +26,11 @@ describe("VeilPool withdraw with a real Groth16 proof", function () {
   });
 
   it("verifies a real proof on-chain and settles the withdrawal", async () => {
-    const [deployer, depositor, feeCollector, aspOperator] = await ethers.getSigners();
+    const signers = await ethers.getSigners();
+    // accounts #2/#3 are the proof's recipient/relayer — use high indices for roles
+    const [deployer, depositor] = signers;
+    const feeCollector = signers[8];
+    const aspOperator = signers[9];
 
     const abi = poseidonContract.generateABI(2);
     const bytecode = poseidonContract.createCode(2);
@@ -84,7 +88,11 @@ describe("VeilPool withdraw with a real Groth16 proof", function () {
   });
 
   it("rejects a proof whose public signals were tampered", async () => {
-    const [deployer, depositor, feeCollector, aspOperator] = await ethers.getSigners();
+    const signers = await ethers.getSigners();
+    // accounts #2/#3 are the proof's recipient/relayer — use high indices for roles
+    const [deployer, depositor] = signers;
+    const feeCollector = signers[8];
+    const aspOperator = signers[9];
     const abi = poseidonContract.generateABI(2);
     const bytecode = poseidonContract.createCode(2);
     const hasher = await new ethers.ContractFactory(abi, bytecode, deployer).deploy();
