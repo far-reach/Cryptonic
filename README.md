@@ -51,6 +51,29 @@ npm run test:sdk           # 8 passing
 npm run typecheck:solana
 ```
 
+## Deploy & run the live demo
+
+```bash
+cd packages/contracts
+npx hardhat node &                                       # local devnet
+npx hardhat run scripts/deploy.ts  --network localhost   # deploy the full stack
+npx hardhat run scripts/demo.ts    --network localhost   # run a real confidential payment
+```
+
+The demo prints the whole flow end-to-end (verified live against a local node with the real
+Groth16 verifier):
+
+```
+1. business shielded 1000.0 USDC (balance now private)
+2. ASP published approved-set root (proof of innocence available)
+3. relayer paid supplier 996.0 USDC privately (business paid no gas)
+   relayer fee: 3.0 USDC · protocol fee -> buyback&burn: 1.0 USDC
+4. auditor decrypted the shielded note with the view key: 1000.0 USDC
+```
+
+Point the same scripts at a testnet with `--network sepolia` (set `SEPOLIA_RPC_URL` and
+`DEPLOYER_PRIVATE_KEY`). See [`deployments/`](deployments).
+
 ## Status
 
 Prototype. Implemented: EVM shielded pool + tests (on-chain Merkle root cross-checked against

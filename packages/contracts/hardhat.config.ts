@@ -17,11 +17,24 @@ subtask(TASK_COMPILE_SOLIDITY_GET_SOLC_BUILD, async (args: any, _hre, runSuper) 
   return runSuper();
 });
 
+const SEPOLIA_RPC = process.env.SEPOLIA_RPC_URL ?? "";
+const DEPLOYER_KEY = process.env.DEPLOYER_PRIVATE_KEY ?? "";
+
 const config: HardhatUserConfig = {
   solidity: {
     version: "0.8.24",
     settings: {
       optimizer: { enabled: true, runs: 200 },
+    },
+  },
+  networks: {
+    // `hardhat node` then `--network localhost` for a live local devnet.
+    localhost: { url: "http://127.0.0.1:8545" },
+    // Ready for `hardhat run scripts/deploy.ts --network sepolia` once
+    // SEPOLIA_RPC_URL + DEPLOYER_PRIVATE_KEY are set (needs a funded key).
+    sepolia: {
+      url: SEPOLIA_RPC,
+      accounts: DEPLOYER_KEY ? [DEPLOYER_KEY] : [],
     },
   },
 };

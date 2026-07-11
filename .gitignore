@@ -16,3 +16,6 @@ build/
 *.wasm
 *-elgamal.json
 auditor-elgamal.json
+# local/ephemeral deployment outputs (testnet/mainnet deployments may be committed)
+deployments/localhost.json
+deployments/hardhat.json
