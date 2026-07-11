@@ -4,6 +4,8 @@ artifacts/
 cache/
 coverage/
 typechain-types/
+# circuit + snarkjs build outputs (ptau, zkey, wasm, r1cs, sym, witness calc)
+build/
 *.log
 .DS_Store
 .env

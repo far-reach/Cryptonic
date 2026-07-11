@@ -19,9 +19,9 @@ pragma circom 2.1.6;
 //         snarkjs groth16 setup ... && snarkjs zkey export solidityverifier
 // The exported Verifier.sol replaces MockVerifier in production.
 
-include "../../node_modules/circomlib/circuits/poseidon.circom";
-include "../../node_modules/circomlib/circuits/comparators.circom";
-include "../../node_modules/circomlib/circuits/mux1.circom";
+include "circomlib/circuits/poseidon.circom";
+include "circomlib/circuits/comparators.circom";
+include "circomlib/circuits/mux1.circom";
 
 // Verifies a Merkle path of depth `levels` using Poseidon(2).
 template MerkleProof(levels) {
