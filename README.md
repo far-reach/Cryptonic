@@ -24,6 +24,7 @@ alternatives.
 | [`packages/app`](packages/app) | Business payments client + `veil` CLI (shield / pay / audit). |
 | [`packages/web`](packages/web) | Local dashboard at `localhost:3000` that runs & visualizes a real confidential payment. |
 | [`packages/solana`](packages/solana) | Solana Token-2022 confidential-transfer prototype + CLI runbook. |
+| [`polymarket-bot`](polymarket-bot) | Standalone Polymarket trading bot (Python): fee-aware arbitrage + value scanner with a risk-managed $100 bankroll. |
 
 ## How it works (one paragraph)
 

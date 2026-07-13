@@ -1,0 +1,5 @@
+requests>=2.31
+PyYAML>=6.0
+
+# Live trading only (optional — paper mode and scanning work without it):
+# py-clob-client-v2

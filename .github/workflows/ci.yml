@@ -40,3 +40,20 @@ jobs:
       # (build/*.wasm, *.zkey are gitignored); all other contract tests run.
       - name: Contract tests
         run: npm run test:contracts
+
+  polymarket-bot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install bot dependencies
+        working-directory: polymarket-bot
+        run: pip install -r requirements.txt pytest
+
+      - name: Bot tests
+        working-directory: polymarket-bot
+        run: python -m pytest tests/ -q

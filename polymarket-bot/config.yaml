@@ -1,0 +1,48 @@
+# polybot configuration — tuned for a $100 bankroll.
+# Secrets NEVER go here; they are read from the environment (see .env.example).
+
+risk:
+  bankroll_usdc: 100.0        # total budget the bot is allowed to touch
+  max_trade_usdc: 10.0        # cap per opportunity (10% of bankroll)
+  max_market_usdc: 15.0       # cap per market across strategies
+  max_deployed_frac: 0.80     # always keep >=20% cash
+  kelly_fraction: 0.25        # quarter-Kelly for probabilistic bets
+  max_value_positions: 8      # diversification for the value strategy
+  halt_drawdown_frac: 0.25    # stop everything below $75 equity
+  daily_loss_stop_usdc: 10.0  # stop for the day after -$10 realized
+
+strategies:
+  # Risk-free: buy YES+NO in one market for < $1
+  complement_enabled: true
+  complement_min_edge: 0.005          # require >=0.5% after fees
+
+  # Risk-free: buy full YES or NO baskets in multi-outcome events
+  negrisk_enabled: true
+  negrisk_min_edge: 0.008             # more legs -> demand more edge
+  negrisk_max_legs: 12
+
+  # Probabilistic: near-resolution favorites (favorite-longshot bias)
+  value_enabled: true
+  value_min_price: 0.90
+  value_max_price: 0.985
+  value_max_days_to_end: 14
+  value_min_annualized_return: 0.35   # after fees
+  value_min_volume_24h: 5000
+  value_min_liquidity: 2000
+
+scanner:
+  market_pages: 4             # 4 x 100 most-active markets per cycle
+  min_volume_24h: 500
+  poll_seconds: 30
+  book_top_n: 120
+  request_timeout: 15
+  max_retries: 3
+
+# Taker-fee base rates by category (fee = shares * rate * p * (1-p)).
+# Defaults follow the March 2026 schedule; override here if Polymarket
+# changes rates. Unknown categories use 0.05.
+fee_overrides: {}
+#  crypto: 0.07
+#  politics: 0.04
+
+state_file: state/portfolio.json
