@@ -1,0 +1,25 @@
+{
+  "symbol": "BTCUSDT",
+  "baseAsset": "BTC",
+  "quoteAsset": "USDT",
+  "grid": {
+    "lower": 0,
+    "upper": 0,
+    "levels": 11
+  },
+  "risk": {
+    "budgetQuote": 250,
+    "reserveFraction": 0.1,
+    "stopBelowFloor": 0.1,
+    "maxDailyLossFraction": 0.05,
+    "feeRate": 0.001
+  },
+  "pollSeconds": 30,
+  "stateFile": "trader-state.json",
+  "binance": {
+    "baseUrl": "https://testnet.binance.vision",
+    "apiKeyEnv": "BINANCE_API_KEY",
+    "apiSecretEnv": "BINANCE_API_SECRET",
+    "recvWindowMs": 10000
+  }
+}

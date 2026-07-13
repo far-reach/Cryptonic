@@ -33,6 +33,12 @@ jobs:
           npm run typecheck:app
           npm run typecheck:solana
 
+      - name: Build trader
+        run: npm run build:trader
+
+      - name: Trader tests
+        run: npm run test:trader
+
       - name: SDK tests
         run: npm run test:sdk
 

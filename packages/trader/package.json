@@ -1,0 +1,24 @@
+{
+  "name": "@veil/trader",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Cryptonic autotrader: conservative spot grid-trading bot for Binance (paper-first, hard risk limits)",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "cryptonic-trader": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "cli": "npm run build && node dist/cli.js"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.8",
+    "@types/node": "^22.10.2"
+  }
+}

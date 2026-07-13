@@ -10,10 +10,13 @@
     "packages/services",
     "packages/app",
     "packages/web",
-    "packages/solana"
+    "packages/solana",
+    "packages/trader"
   ],
   "scripts": {
-    "test": "npm run test --workspace @veil/contracts && npm run test --workspace @veil/sdk",
+    "test": "npm run test --workspace @veil/contracts && npm run test --workspace @veil/sdk && npm run test --workspace @veil/trader",
+    "test:trader": "npm run test --workspace @veil/trader",
+    "build:trader": "npm run build --workspace @veil/trader",
     "test:contracts": "npm run test --workspace @veil/contracts",
     "test:sdk": "npm run test --workspace @veil/sdk",
     "build:sdk": "npm run build --workspace @veil/sdk",
