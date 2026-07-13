@@ -52,6 +52,16 @@ gap, and change regime.
   ignores your manual orders on the same pair.
 - **Crash-safe state.** Atomic state-file writes; on restart it re-attaches to its open
   orders and continues (Ctrl-C leaves orders resting by design).
+- **Kill switch, heartbeat, alerts, reconciliation.** `AUTOTRADER_ENABLED=false` (or a
+  `trader.kill` file) exits at the next tick — the only sanctioned way to intervene, ever;
+  no per-trade manual overrides exist by design. `TRADER_HEARTBEAT_URL` gets pinged every
+  healthy tick (point it at a free healthchecks.io check for a dead-man's switch);
+  `TRADER_ALERT_URL` receives a plain-text POST on halt transitions. In live mode the bot
+  periodically reconciles its books against actual exchange balances and alerts loudly on
+  mismatch — an independent truth-check that catches silent accounting bugs.
+- **Pre-registered success/kill criteria.** [`PREREG.md`](PREREG.md) locks, *before*
+  deployment, what counts as success, what triggers shutdown, and which knobs may never be
+  tuned in reaction to a losing week. Read it before going live; obey it after.
 
 ## Quick start
 
@@ -83,11 +93,14 @@ node dist/cli.js status        # inspect state anytime
 
 ### Going live on mainnet (checklist)
 
-1. Run the backtests on real downloaded data for your pair; run paper mode for at least two
-   weeks; run testnet live mode until you've seen fills, a restart-resume, and (ideally) a
-   daily-loss pause behave correctly.
-2. Create a **dedicated API key**: enable *Reading* + *Spot & Margin Trading* only.
-   **Never enable withdrawals.** Restrict the key to your server's IP.
+1. Follow the promotion gates in [`PREREG.md`](PREREG.md): backtest on real data → ≥ 14
+   days paper → ≥ 7 days testnet (fills, a restart-resume, clean reconciliation) → mainnet.
+   The success and kill criteria there are locked — don't renegotiate them after seeing
+   results.
+2. Use a **dedicated Binance sub-account** holding only the budget, with its own API key:
+   enable *Reading* + *Spot & Margin Trading* only. **Never enable withdrawals.** Restrict
+   the key to your server's IP. The sub-account boundary also keeps your manual trading —
+   statistically the bigger loss source — physically separate from the bot's capital.
 3. Fund the account with exactly the budget (250 USDT) — the cap is belt; this is braces.
 4. Copy `config.example.json`, set `"baseUrl": "https://api.binance.com"`, and pick the grid
    range: `lower`/`upper` = 0 auto-ranges from the last 30 days, or set them manually around

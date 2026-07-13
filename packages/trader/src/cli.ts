@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { existsSync } from "node:fs";
 import { parseArgs } from "node:util";
 import { loadConfig, type TraderConfig } from "./config.js";
 import { runBacktest, formatBacktest, DEFAULT_RULES } from "./backtest.js";
@@ -34,7 +35,16 @@ SAFETY
   live mode refuses to start against mainnet unless BOTH
     TRADER_LIVE_ACK=I_ACCEPT_FULL_RISK_OF_LOSS   is set, and
     the config explicitly sets binance.baseUrl to the mainnet URL.
-  Never give the API key withdrawal permission.`;
+  Never give the API key withdrawal permission.
+
+OPERATIONS (env vars, all optional)
+  AUTOTRADER_ENABLED=false   kill switch: loop exits at the next tick
+  (or create a file named "trader.kill" next to the state file)
+  TRADER_HEARTBEAT_URL       GET-pinged after every healthy tick
+                             (e.g. a healthchecks.io check URL)
+  TRADER_ALERT_URL           POSTed a plain-text body on halts and on
+                             balance-reconciliation mismatches (works with
+                             healthchecks.io /fail, Discord/Slack webhooks)`;
 
 async function main(): Promise<void> {
   const { positionals, values } = parseArgs({
@@ -182,7 +192,13 @@ async function run(cfg: TraderConfig, mode: "paper" | "live"): Promise<void> {
     console.log("\nshutting down (state saved; open orders left in place)...");
   });
 
+  let lastAction = "TRADE";
+  let ticks = 0;
   while (running) {
+    if (killSwitchActive()) {
+      console.log("kill switch active (AUTOTRADER_ENABLED=false or trader.kill file) — exiting; open orders left in place");
+      break;
+    }
     try {
       const ts = Date.now();
       if (paper) {
@@ -195,6 +211,15 @@ async function run(cfg: TraderConfig, mode: "paper" | "live"): Promise<void> {
         `${new Date(ts).toISOString()} px=${r.price.toFixed(2)} ${r.action}` +
           ` placed=${r.placed} fills=${r.fills} realized=${r.realizedQuote.toFixed(4)} equity=${r.equityQuote.toFixed(2)}`,
       );
+      if (r.action !== lastAction) {
+        // Loud on state transitions only, so a persistent pause doesn't spam.
+        await alert(`[trader ${cfg.symbol}] ${lastAction} -> ${r.action} @ ${r.price.toFixed(2)}, equity ${r.equityQuote.toFixed(2)} ${cfg.quoteAsset}`);
+        lastAction = r.action;
+      }
+      // Independent balance-truth check: the bot's book vs the exchange.
+      // Catches silent-failure bug classes that per-order accounting misses.
+      if (mode === "live" && ++ticks % 20 === 0) await reconcile(bot, cfg);
+      await heartbeat();
       if (r.action === "EMERGENCY_STOP") {
         console.log("bot halted by emergency stop — inspect state, then delete the state file to restart");
         break;
@@ -205,6 +230,47 @@ async function run(cfg: TraderConfig, mode: "paper" | "live"): Promise<void> {
     await sleep(cfg.pollSeconds * 1000);
   }
   saveState(cfg.stateFile, bot.snapshot());
+}
+
+function killSwitchActive(): boolean {
+  return process.env.AUTOTRADER_ENABLED === "false" || existsSync("trader.kill");
+}
+
+/** Dead-man's-switch ping (healthchecks.io-style). Fail-silent by design. */
+async function heartbeat(): Promise<void> {
+  const url = process.env.TRADER_HEARTBEAT_URL;
+  if (!url) return;
+  await fetch(url).catch(() => {});
+}
+
+/** Loud out-of-band alert (webhook). Fail-silent: alerting must never break trading. */
+async function alert(message: string): Promise<void> {
+  console.log(`[alert] ${message}`);
+  const url = process.env.TRADER_ALERT_URL;
+  if (!url) return;
+  await fetch(url, {
+    method: "POST",
+    headers: { "content-type": "text/plain" },
+    body: message,
+  }).catch(() => {});
+}
+
+/**
+ * Compare the bot's recorded inventory against what the exchange actually
+ * holds. The account may legitimately hold MORE base than the bot bought
+ * (user's own funds); holding LESS means the books are wrong — halt-worthy.
+ */
+async function reconcile(bot: GridBot, cfg: TraderConfig): Promise<void> {
+  const bal = await bot.exchange.balances();
+  const inv = bot.strategy.inventory(bot.slots).qty;
+  const accountBase = bal.base + bal.lockedBase;
+  const tolerance = bot.exchange.rules.stepSize * 3;
+  if (accountBase < inv - tolerance) {
+    await alert(
+      `[trader ${cfg.symbol}] RECONCILE MISMATCH: bot books ${inv} ${cfg.baseAsset} ` +
+        `but account holds ${accountBase} — investigate before trusting PnL`,
+    );
+  }
 }
 
 async function publicPrice(cfg: TraderConfig): Promise<number> {
