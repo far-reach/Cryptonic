@@ -113,26 +113,38 @@ export class GridStrategy {
     const slot = this.slotOf(slots, order.clientId);
     if (!slot) return { realizedQuote: 0 };
 
-    if (order.status === "CANCELED") {
-      // Return the slot to the state that re-creates the order next tick.
+    if (order.status === "CANCELED" && order.executedQty === 0) {
+      // Clean cancel: return the slot to the state that re-creates the order.
       slot.state = order.side === "BUY" ? "EMPTY" : "HOLDING";
       slot.orderId = undefined;
       return { realizedQuote: 0 };
     }
 
     if (order.side === "BUY") {
+      // FILLED, or CANCELED with a partial execution: absorb what we got.
+      // Net of any base-asset fee — selling more than we received bounces.
       slot.state = "HOLDING";
-      slot.qty = order.executedQty;
+      slot.qty = order.executedQty - (order.feeBase ?? 0);
       slot.costQuote = order.executedQuote + order.feeQuote;
       slot.orderId = undefined;
       return { realizedQuote: 0 };
     }
 
-    // SELL filled: round-trip complete, slot becomes free again.
-    const realized = order.executedQuote - order.feeQuote - slot.costQuote;
-    slot.state = "EMPTY";
-    slot.qty = 0;
-    slot.costQuote = 0;
+    // SELL: full fill frees the slot; a partial-then-canceled sell realizes
+    // the executed part pro-rata and keeps holding the rest.
+    const preQty = slot.qty;
+    const soldQty = order.executedQty;
+    const costOfSold = preQty > 0 ? slot.costQuote * (soldQty / preQty) : slot.costQuote;
+    const realized = order.executedQuote - order.feeQuote - costOfSold;
+    if (order.status === "FILLED" || soldQty >= preQty) {
+      slot.state = "EMPTY";
+      slot.qty = 0;
+      slot.costQuote = 0;
+    } else {
+      slot.state = "HOLDING";
+      slot.qty = preQty - soldQty;
+      slot.costQuote -= costOfSold;
+    }
     slot.orderId = undefined;
     return { realizedQuote: realized };
   }

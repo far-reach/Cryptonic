@@ -111,9 +111,19 @@ describe("Bitget adapter", () => {
       executedQty: 0.0003,
       executedQuote: 18,
     });
-    expect(fills[0].feeQuote).toBeCloseTo(0.018, 6);
+    // buys pay fees in BASE (no feeDetail in mock -> configured-rate fallback)
+    expect(fills[0].feeQuote).toBe(0);
+    expect(fills[0].feeBase).toBeCloseTo(0.0003 * 0.001, 12);
     // second drain is empty — the order is no longer tracked
     expect(await ex.drainFills()).toHaveLength(0);
+  });
+
+  it("parses real fees from feeDetail when present", async () => {
+    const { parseFeeDetail } = await import("../src/bitget.js");
+    expect(parseFeeDetail('{"BTC":{"totalFee":"-0.0000003"}}', "BTC")).toBeCloseTo(0.0000003, 12);
+    expect(parseFeeDetail('{"newFees":{"t":-0.018}}', "USDT")).toBeCloseTo(0.018, 9);
+    expect(parseFeeDetail("not-json", "BTC")).toBeUndefined();
+    expect(parseFeeDetail(undefined, "BTC")).toBeUndefined();
   });
 
   it("surfaces Bitget error codes instead of silently succeeding", async () => {

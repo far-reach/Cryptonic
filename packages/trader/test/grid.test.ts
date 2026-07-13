@@ -106,12 +106,63 @@ describe("GridStrategy", () => {
     expect(realizedQuote).toBeLessThan(1);
   });
 
+  it("sells only what was received when the buy fee is charged in base", () => {
+    const s = mkStrategy();
+    const slots = s.newSlots();
+    const buy = s.desiredOrders(slots, 65_000).find((o) => o.clientId === "grid-buy-4")!;
+    const feeBase = buy.qty * 0.001;
+    s.onFill(slots, { ...filled(buy), feeQuote: 0, feeBase });
+    expect(slots[4].qty).toBeCloseTo(buy.qty - feeBase, 12);
+    const sell = s.desiredOrders(slots, 65_000).find((o) => o.side === "SELL")!;
+    // never tries to sell more than the slot actually holds
+    expect(sell.qty).toBeLessThanOrEqual(slots[4].qty);
+  });
+
+  it("absorbs a partially-filled-then-canceled buy instead of losing the coins", () => {
+    const s = mkStrategy();
+    const slots = s.newSlots();
+    const buy = s.desiredOrders(slots, 65_000).find((o) => o.clientId === "grid-buy-3")!;
+    const half = buy.qty / 2;
+    s.onFill(slots, {
+      ...filled(buy),
+      status: "CANCELED",
+      executedQty: half,
+      executedQuote: buy.price * half,
+      feeQuote: 0,
+      feeBase: half * 0.001,
+    });
+    expect(slots[3].state).toBe("HOLDING");
+    expect(slots[3].qty).toBeCloseTo(half * 0.999, 12);
+    expect(slots[3].costQuote).toBeCloseTo(buy.price * half, 9);
+  });
+
+  it("realizes a partial sell pro-rata and keeps holding the rest", () => {
+    const s = mkStrategy();
+    const slots = s.newSlots();
+    const buy = s.desiredOrders(slots, 65_000).find((o) => o.clientId === "grid-buy-4")!;
+    s.onFill(slots, filled(buy));
+    const sell = s.desiredOrders(slots, 65_000).find((o) => o.side === "SELL")!;
+    const half = sell.qty / 2;
+    const { realizedQuote } = s.onFill(slots, {
+      ...filled(sell),
+      status: "CANCELED",
+      executedQty: half,
+      executedQuote: sell.price * half,
+      feeQuote: sell.price * half * 0.001,
+    });
+    expect(slots[4].state).toBe("HOLDING");
+    expect(slots[4].qty).toBeCloseTo(sell.qty - half, 12);
+    // half the step profit, minus fees, on half the lot
+    expect(realizedQuote).toBeGreaterThan(0);
+    expect(realizedQuote).toBeLessThan(0.5);
+  });
+
   it("cancel returns the slot to a re-placeable state", () => {
     const s = mkStrategy();
     const slots = s.newSlots();
     const buy = s.desiredOrders(slots, 65_000)[0];
     s.onPlaced(slots, { ...filled(buy), status: "NEW" });
-    s.onFill(slots, { ...filled(buy), status: "CANCELED" });
+    s.onFill(slots, { ...filled(buy), status: "CANCELED", executedQty: 0, executedQuote: 0, feeQuote: 0 });
     const slot = slots[Number(buy.clientId.split("-")[2])];
     expect(slot.state).toBe("EMPTY");
   });

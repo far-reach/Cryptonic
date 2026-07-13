@@ -32,8 +32,14 @@ export interface Order extends OrderRequest {
   executedQty: number;
   /** Quote spent/received for the executed part, fees not included. */
   executedQuote: number;
-  /** Fee charged in quote currency (paper/backtest models fees in quote). */
+  /** Fee charged in quote currency (sells; paper/backtest models all fees here). */
   feeQuote: number;
+  /**
+   * Fee charged in BASE currency (spot buys usually pay fees in the asset
+   * bought). The strategy must sell executedQty - feeBase, or sells bounce
+   * with "insufficient balance".
+   */
+  feeBase?: number;
   createdAt: number;
   updatedAt: number;
 }

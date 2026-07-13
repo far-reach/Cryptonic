@@ -19,6 +19,7 @@ export class BinanceExchange implements Exchange {
   private readonly symbol: string;
   private readonly baseAsset: string;
   private readonly quoteAsset: string;
+  private readonly feeRate: number;
   /** clientId -> orderId of orders we placed and still consider open. */
   private tracked = new Map<string, string>();
 
@@ -27,6 +28,7 @@ export class BinanceExchange implements Exchange {
     this.symbol = cfg.symbol;
     this.baseAsset = cfg.baseAsset;
     this.quoteAsset = cfg.quoteAsset;
+    this.feeRate = cfg.risk.feeRate;
     this.recvWindow = cfg.binance.recvWindowMs;
     const key = process.env[cfg.binance.apiKeyEnv];
     const secret = process.env[cfg.binance.apiSecretEnv];
@@ -180,9 +182,11 @@ export class BinanceExchange implements Exchange {
       status,
       executedQty,
       executedQuote,
-      // REST order responses don't carry fees; approximate with the standard
-      // spot fee so PnL accounting stays conservative.
-      feeQuote: executedQuote * 0.001,
+      // REST order responses don't carry fees; approximate with the configured
+      // spot fee, charged on the side the exchange actually takes it from:
+      // buys pay in base (we receive less of the asset), sells pay in quote.
+      feeQuote: o.side === "SELL" ? executedQuote * this.feeRate : 0,
+      feeBase: o.side === "BUY" ? executedQty * this.feeRate : 0,
       createdAt: Number(o.time ?? o.transactTime ?? 0),
       updatedAt: Number(o.updateTime ?? o.transactTime ?? 0),
     };

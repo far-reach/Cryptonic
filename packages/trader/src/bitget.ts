@@ -35,6 +35,8 @@ interface RawBitgetOrder {
 export class BitgetExchange implements Exchange {
   /** clientOid -> orderId for orders we placed and still consider open. */
   private tracked = new Map<string, string>();
+  /** serverTime - localTime, so signatures survive local clock drift. */
+  private timeOffset = 0;
 
   private constructor(
     private readonly cfg: TraderConfig,
@@ -53,7 +55,19 @@ export class BitgetExchange implements Exchange {
         `missing Bitget credentials: set ${cfg.bitget.apiKeyEnv}, ${cfg.bitget.apiSecretEnv} and ${cfg.bitget.passphraseEnv}`,
       );
     const rules = await fetchBitgetRules(cfg.bitget.baseUrl, cfg.symbol);
-    return new BitgetExchange(cfg, rules, key, secret, pass);
+    const ex = new BitgetExchange(cfg, rules, key, secret, pass);
+    await ex.syncTime();
+    return ex;
+  }
+
+  /** Bitget rejects signatures with stale timestamps; anchor to server time. */
+  private async syncTime(): Promise<void> {
+    try {
+      const data = await publicGet<{ serverTime: string }>(this.cfg.bitget.baseUrl, "/api/v2/public/time");
+      this.timeOffset = Number(data.serverTime) - Date.now();
+    } catch {
+      this.timeOffset = 0; // sync is best-effort; a healthy clock needs none
+    }
   }
 
   // ---- Exchange interface -------------------------------------------------
@@ -221,12 +235,18 @@ export class BitgetExchange implements Exchange {
   }
 
   private toOrder(raw: RawBitgetOrder, status: Order["status"]): Order {
+    const executedQty = Number(raw.baseVolume ?? 0);
     const executedQuote = Number(raw.quoteVolume ?? 0);
     const side: Order["side"] = raw.side
       ? (raw.side.toUpperCase() as Order["side"])
       : (raw.clientOid ?? "").includes("sell") || (raw.clientOid ?? "").includes("stop")
         ? "SELL"
         : "BUY";
+    // Prefer the real fee from feeDetail; fall back to the configured rate on
+    // the side the venue actually charges (buys pay in base, sells in quote).
+    const realFee = parseFeeDetail(raw.feeDetail, side === "BUY" ? this.cfg.baseAsset : this.cfg.quoteAsset);
+    const feeBase = side === "BUY" ? (realFee ?? executedQty * this.cfg.risk.feeRate) : 0;
+    const feeQuote = side === "SELL" ? (realFee ?? executedQuote * this.cfg.risk.feeRate) : 0;
     return {
       symbol: this.cfg.symbol,
       side,
@@ -235,11 +255,10 @@ export class BitgetExchange implements Exchange {
       clientId: raw.clientOid ?? "",
       orderId: String(raw.orderId),
       status,
-      executedQty: Number(raw.baseVolume ?? 0),
+      executedQty,
       executedQuote,
-      // feeDetail parsing is venue-noise; assume the standard spot fee so PnL
-      // accounting stays conservative (Bitget spot base fee is 0.1%).
-      feeQuote: executedQuote * this.cfg.risk.feeRate,
+      feeQuote,
+      feeBase,
       createdAt: Number(raw.cTime ?? 0),
       updatedAt: Number(raw.uTime ?? raw.cTime ?? 0),
     };
@@ -252,7 +271,7 @@ export class BitgetExchange implements Exchange {
   ): Promise<T> {
     const query = opts.query ? "?" + new URLSearchParams(opts.query).toString() : "";
     const bodyStr = opts.body ? JSON.stringify(opts.body) : "";
-    const ts = String(Date.now());
+    const ts = String(Date.now() + this.timeOffset);
     const prehash = ts + method + path + query + bodyStr;
     const sign = createHmac("sha256", this.apiSecret).update(prehash).digest("base64");
     const res = await fetch(`${this.cfg.bitget.baseUrl.replace(/\/$/, "")}${path}${query}`, {
@@ -275,6 +294,32 @@ export class BitgetExchange implements Exchange {
       throw new Error(`Bitget ${method} ${path} -> HTTP ${res.status} code ${json.code}: ${json.msg}`);
     return json.data;
   }
+}
+
+/**
+ * Extract the fee charged in `coin` from Bitget's feeDetail JSON string.
+ * Shapes vary across API revisions ({"BTC":{"totalFee":"-0.0000003"}} or
+ * {"newFees":{"t":-0.0000003}}); returns undefined when unrecognizable so
+ * callers fall back to the configured rate.
+ */
+export function parseFeeDetail(feeDetail: string | undefined, coin: string): number | undefined {
+  if (!feeDetail) return undefined;
+  try {
+    const parsed = JSON.parse(feeDetail) as Record<string, unknown>;
+    const entry = parsed[coin];
+    if (entry && typeof entry === "object") {
+      const total = (entry as { totalFee?: string | number }).totalFee;
+      if (total !== undefined) return Math.abs(Number(total));
+    }
+    const newFees = parsed["newFees"];
+    if (newFees && typeof newFees === "object") {
+      const t = (newFees as { t?: string | number }).t;
+      if (t !== undefined) return Math.abs(Number(t));
+    }
+  } catch {
+    /* unrecognized shape */
+  }
+  return undefined;
 }
 
 // ---- public (unsigned) market data ---------------------------------------
