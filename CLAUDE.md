@@ -47,5 +47,13 @@ Update 2026-07-13 (late): operator directed immediate mainnet launch (PREREG Ame
 breach = cancel, liquidate, permanent halt). "Small caps" = small capital, NOT
 small-cap coins — tiny coins stay excluded.
 
+Update 2026-07-13 (later): venue switched to **Bitget sub-account** (PREREG Amendment
+5) — operator has one funded. `src/bitget.ts` adapter (v2 spot API, HMAC-base64 +
+passphrase) behind the same Exchange interface; venue dispatch in `src/venue.ts`;
+`"exchange": "bitget"` in config. Bitget has NO spot testnet → mandatory canary:
+`configs/bitget-BTCUSDT-canary.json` (30 USDT, −15 stop) for 24–48h with drills, then
+`configs/bitget-BTCUSDT.json` (100 USDT, −50 stop). TRADER_LIVE_ACK required for ANY
+bitget live run. Binance path still works and remains the default.
+
 When resuming work here: read `packages/trader/PREREG.md` first, check which pipeline
 stage we're in (ROADMAP.md phases), and advance it.

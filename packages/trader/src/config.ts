@@ -37,6 +37,8 @@ export interface RiskConfig {
 
 export interface TraderConfig {
   symbol: string;
+  /** Order venue: "binance" (default; has a free testnet) or "bitget" (no spot testnet — canary-size first). */
+  exchange: "binance" | "bitget";
   /** e.g. "BTC" — parsed from symbol if omitted. */
   baseAsset: string;
   /** e.g. "USDT" */
@@ -61,11 +63,20 @@ export interface TraderConfig {
     apiSecretEnv: string;
     recvWindowMs: number;
   };
+  bitget: {
+    /** Bitget has one production environment: https://api.bitget.com */
+    baseUrl: string;
+    apiKeyEnv: string;
+    apiSecretEnv: string;
+    /** Bitget API keys additionally require a passphrase, set at key creation. */
+    passphraseEnv: string;
+  };
 }
 
 /** Conservative defaults sized for a 250 USDT starting budget. */
 export const DEFAULT_CONFIG: TraderConfig = {
   symbol: "BTCUSDT",
+  exchange: "binance",
   baseAsset: "BTC",
   quoteAsset: "USDT",
   grid: {
@@ -90,6 +101,12 @@ export const DEFAULT_CONFIG: TraderConfig = {
     apiSecretEnv: "BINANCE_API_SECRET",
     recvWindowMs: 10_000,
   },
+  bitget: {
+    baseUrl: "https://api.bitget.com",
+    apiKeyEnv: "BITGET_API_KEY",
+    apiSecretEnv: "BITGET_API_SECRET",
+    passphraseEnv: "BITGET_API_PASSPHRASE",
+  },
 };
 
 /** Deep-merge a partial user config over the defaults and validate it. */
@@ -102,6 +119,7 @@ export function loadConfig(path?: string): TraderConfig {
     grid: { ...DEFAULT_CONFIG.grid, ...user.grid },
     risk: { ...DEFAULT_CONFIG.risk, ...user.risk },
     binance: { ...DEFAULT_CONFIG.binance, ...user.binance },
+    bitget: { ...DEFAULT_CONFIG.bitget, ...user.bitget },
   };
   validateConfig(cfg);
   return cfg;
@@ -110,6 +128,8 @@ export function loadConfig(path?: string): TraderConfig {
 export function validateConfig(cfg: TraderConfig): void {
   const { grid, risk } = cfg;
   if (!/^[A-Z0-9]{5,}$/.test(cfg.symbol)) throw new Error(`bad symbol: ${cfg.symbol}`);
+  if (cfg.exchange !== "binance" && cfg.exchange !== "bitget")
+    throw new Error(`exchange must be "binance" or "bitget", got: ${cfg.exchange}`);
   if (grid.levels < 2) throw new Error("grid.levels must be >= 2");
   if (grid.lower < 0 || grid.upper < 0) throw new Error("grid bounds must be >= 0");
   if (grid.lower > 0 && grid.upper > 0 && grid.upper <= grid.lower)

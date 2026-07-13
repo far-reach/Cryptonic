@@ -1,0 +1,23 @@
+{
+  "symbol": "BTCUSDT",
+  "exchange": "bitget",
+  "baseAsset": "BTC",
+  "quoteAsset": "USDT",
+  "grid": { "lower": 0, "upper": 0, "levels": 5 },
+  "risk": {
+    "budgetQuote": 30,
+    "reserveFraction": 0.1,
+    "stopBelowFloor": 0.1,
+    "maxDailyLossFraction": 0.1,
+    "maxTotalLossQuote": 15,
+    "feeRate": 0.001
+  },
+  "pollSeconds": 30,
+  "stateFile": "trader-state-bitget-BTCUSDT-canary.json",
+  "bitget": {
+    "baseUrl": "https://api.bitget.com",
+    "apiKeyEnv": "BITGET_API_KEY",
+    "apiSecretEnv": "BITGET_API_SECRET",
+    "passphraseEnv": "BITGET_API_PASSPHRASE"
+  }
+}

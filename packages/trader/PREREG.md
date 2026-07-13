@@ -91,6 +91,22 @@ liquidates, and halts permanently until a human restarts. Launch remains BTC-onl
 total −100, BTC tranche −50 as directed). Kill criterion 1 (−15% equity floor) is
 superseded by this tighter absolute cap at launch size; all other criteria unchanged.
 
+## Amendment 5 (2026-07-13, operator decision): venue = Bitget sub-account
+
+Operator directed the launch venue change from Binance to a **Bitget sub-account**
+(operator has one funded and ready). Same strategy, same risk engine; only the exchange
+adapter differs (`"exchange": "bitget"` + `BITGET_API_*` env vars incl. passphrase).
+
+**Bitget has no spot testnet**, so the testnet mechanics gate is replaced by a
+**mandatory canary phase** on mainnet: `configs/bitget-BTCUSDT-canary.json` —
+**30 USDT budget, 5 levels, −15 USDT hard stop — for 24–48 hours**, until it has shown
+≥ 1 filled buy, ≥ 1 completed round-trip, 1 restart-resume, 1 kill-switch drill, and
+clean reconciliation. Rationale: the sibling Bitget project hit 5 payload/precision
+bugs in its first 3 live days; the canary makes that bug class cost pocket change.
+Only then scale to `configs/bitget-BTCUSDT.json` (100 USDT, −50 hard stop, Amendment 4).
+The bot must run in its **own** sub-account — never share one with another bot or
+manual trading. All other criteria unchanged.
+
 ## Promotion gates (per Amendment 1: gate 2 and 3 concurrent; per Amendment 2: compressed by operator direction)
 
 1. **Backtest** — on ≥ 30 days of real downloaded 1h candles: positive realized PnL,

@@ -3,9 +3,9 @@ import { existsSync } from "node:fs";
 import { parseArgs } from "node:util";
 import { loadConfig, type TraderConfig } from "./config.js";
 import { runBacktest, formatBacktest, DEFAULT_RULES } from "./backtest.js";
-import { autoRange, fetchKlines, loadKlinesCsv, saveKlinesCsv, syntheticKlines } from "./data.js";
+import { autoRange, loadKlinesCsv, saveKlinesCsv, syntheticKlines } from "./data.js";
 import { PaperExchange } from "./paper.js";
-import { BinanceExchange, fetchSymbolRules } from "./binance.js";
+import { connectLive, isRealMoney, marketKlines, marketPrice, marketRules } from "./venue.js";
 import { GridBot } from "./bot.js";
 import { loadState, saveState } from "./state.js";
 
@@ -158,10 +158,10 @@ async function sweep(cfg: TraderConfig, v: Values): Promise<void> {
 
 async function fetchData(cfg: TraderConfig, v: Values): Promise<void> {
   const out = String(v.out ?? `${cfg.symbol}-${v.interval}.csv`);
-  // Always real market data — never the testnet's thin-book price history.
-  const klines = await fetchKlines(cfg.binance.dataUrl, cfg.symbol, String(v.interval), Number(v.candles));
+  // Always real market data — never a testnet's thin-book price history.
+  const klines = await marketKlines(cfg, String(v.interval), Number(v.candles));
   saveKlinesCsv(out, klines);
-  console.log(`saved ${klines.length} ${v.interval} candles for ${cfg.symbol} from ${cfg.binance.dataUrl} -> ${out}`);
+  console.log(`saved ${klines.length} ${v.interval} candles for ${cfg.symbol} (${cfg.exchange}) -> ${out}`);
 }
 
 async function status(cfg: TraderConfig): Promise<void> {
@@ -219,26 +219,24 @@ async function gates(cfg: TraderConfig): Promise<void> {
   );
 }
 
-const MAINNET = "https://api.binance.com";
-
 async function run(cfg: TraderConfig, mode: "paper" | "live"): Promise<void> {
-  if (mode === "live" && cfg.binance.baseUrl === MAINNET) {
+  if (mode === "live" && isRealMoney(cfg)) {
     if (process.env.TRADER_LIVE_ACK !== "I_ACCEPT_FULL_RISK_OF_LOSS") {
       throw new Error(
-        "refusing mainnet live trading: set TRADER_LIVE_ACK=I_ACCEPT_FULL_RISK_OF_LOSS " +
+        `refusing real-money live trading (${cfg.exchange}): set TRADER_LIVE_ACK=I_ACCEPT_FULL_RISK_OF_LOSS ` +
           "after reading the README risk section",
       );
     }
   }
 
-  // Resolve auto-range from the last 30 days of REAL daily candles (dataUrl,
-  // not the order venue — testnet price history would produce absurd ranges).
+  // Resolve auto-range from the last 30 days of REAL daily candles (public
+  // market data — a testnet's price history would produce absurd ranges).
   if (cfg.grid.lower <= 0 || cfg.grid.upper <= 0) {
-    const daily = await fetchKlines(cfg.binance.dataUrl, cfg.symbol, "1d", 30);
+    const daily = await marketKlines(cfg, "1d", 30);
     const { lower, upper } = autoRange(daily);
     cfg.grid.lower = lower;
     cfg.grid.upper = upper;
-    console.log(`auto-range from 30d real klines (${cfg.binance.dataUrl}): ${lower.toFixed(2)} – ${upper.toFixed(2)}`);
+    console.log(`auto-range from 30d real klines (${cfg.exchange}): ${lower.toFixed(2)} – ${upper.toFixed(2)}`);
   }
 
   const resume = loadState(cfg.stateFile);
@@ -254,7 +252,7 @@ async function run(cfg: TraderConfig, mode: "paper" | "live"): Promise<void> {
   let exchange;
   let paper: PaperExchange | undefined;
   if (mode === "live") {
-    const live = await BinanceExchange.connect(cfg);
+    const live = await connectLive(cfg);
     // Re-arm fill tracking for orders that were open before the restart.
     for (const slot of resume?.slots ?? []) {
       if (slot.orderId && (slot.state === "PENDING_BUY" || slot.state === "PENDING_SELL")) {
@@ -264,14 +262,15 @@ async function run(cfg: TraderConfig, mode: "paper" | "live"): Promise<void> {
     exchange = live;
   } else {
     // Paper mode is a pure market-data consumer: real rules, real prices.
-    const rules = await fetchSymbolRules(cfg.binance.dataUrl, cfg.symbol).catch(() => DEFAULT_RULES);
+    const rules = await marketRules(cfg).catch(() => DEFAULT_RULES);
     paper = new PaperExchange(rules, cfg.risk.feeRate, cfg.risk.budgetQuote);
     exchange = paper;
   }
 
+  const venueUrl = cfg.exchange === "bitget" ? cfg.bitget.baseUrl : cfg.binance.baseUrl;
   const bot = new GridBot(cfg, exchange, (m) => console.log(`[bot] ${m}`), resume);
   console.log(
-    `${mode.toUpperCase()} mode on ${cfg.symbol} @ ${cfg.binance.baseUrl} — budget ${cfg.risk.budgetQuote} ${cfg.quoteAsset}, ` +
+    `${mode.toUpperCase()} mode on ${cfg.symbol} @ ${venueUrl} (${cfg.exchange}) — budget ${cfg.risk.budgetQuote} ${cfg.quoteAsset}, ` +
       `${cfg.grid.levels} levels, ~${bot.strategy.perSlotQuote.toFixed(2)} ${cfg.quoteAsset}/slot. Ctrl-C to stop (orders persist).`,
   );
 
@@ -291,7 +290,7 @@ async function run(cfg: TraderConfig, mode: "paper" | "live"): Promise<void> {
     try {
       const ts = Date.now();
       if (paper) {
-        const price = await publicPrice(cfg);
+        const price = await marketPrice(cfg);
         paper.setPrice(price, ts);
       }
       const r = await bot.tick(ts);
@@ -360,14 +359,6 @@ async function reconcile(bot: GridBot, cfg: TraderConfig): Promise<void> {
         `but account holds ${accountBase} — investigate before trusting PnL`,
     );
   }
-}
-
-async function publicPrice(cfg: TraderConfig): Promise<number> {
-  const res = await fetch(
-    `${cfg.binance.dataUrl.replace(/\/$/, "")}/api/v3/ticker/price?symbol=${cfg.symbol}`,
-  );
-  if (!res.ok) throw new Error(`ticker failed: ${res.status}`);
-  return Number(((await res.json()) as { price: string }).price);
 }
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));

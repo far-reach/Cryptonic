@@ -9,3 +9,5 @@ export * from "./state.js";
 export * from "./backtest.js";
 export * from "./data.js";
 export { BinanceExchange, fetchSymbolRules } from "./binance.js";
+export { BitgetExchange, fetchBitgetKlines, fetchBitgetPrice, fetchBitgetRules } from "./bitget.js";
+export * from "./venue.js";

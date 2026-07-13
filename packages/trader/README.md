@@ -167,6 +167,17 @@ Market data (backtests, auto-ranging, paper prices) always comes from
 orders go to the testnet. Testnet price *history* is thin-book garbage and must never
 size a grid; only its order-matching engine is used, in gate 3.
 
+## Bitget venue
+
+Set `"exchange": "bitget"` in the config (see `configs/bitget-BTCUSDT*.json`) and
+provide `BITGET_API_KEY`, `BITGET_API_SECRET`, `BITGET_API_PASSPHRASE`. Same strategy,
+risk engine, kill switch, and hard stop; only the adapter differs. **Bitget has no
+spot testnet**, so any `live` run there is real money (`TRADER_LIVE_ACK` always
+required) — which is why the launch sequence is canary-first:
+`bitget-BTCUSDT-canary.json` (30 USDT, −15 hard stop, 24–48h with restart and
+kill-switch drills) before `bitget-BTCUSDT.json` (100 USDT, −50 hard stop). Run the
+bot in its own sub-account with a Read + Spot-Trade-only key.
+
 ## How it works
 
 The range `[lower, upper]` is split into `levels − 1` geometric slots; each owns an equal
