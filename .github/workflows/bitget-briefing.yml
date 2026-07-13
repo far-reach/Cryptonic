@@ -4,6 +4,11 @@ on:
   schedule:
     - cron: "0 6 * * *" # every day at 06:00 UTC
   workflow_dispatch:
+  push:
+    # Live integration test: re-run the briefing whenever the bot itself changes.
+    paths:
+      - "packages/bitget-briefing/**"
+      - ".github/workflows/bitget-briefing.yml"
 
 permissions:
   contents: read
