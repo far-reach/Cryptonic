@@ -22,6 +22,17 @@ describe("RiskManager", () => {
     expect(rm.check(65_000, T0 + 1).action).toBe("EMERGENCY_STOP");
   });
 
+  it("hard-stops when total PnL (realized + marked inventory) hits -maxTotalLossQuote", () => {
+    const rm = new RiskManager(DEFAULT_CONFIG.risk, 60_000);
+    // default maxTotalLossQuote = 50
+    expect(rm.check(61_000, T0, -49.99).action).toBe("TRADE");
+    const v = rm.check(61_000, T0, -50);
+    expect(v.action).toBe("EMERGENCY_STOP");
+    expect(v.action === "EMERGENCY_STOP" && rm.stopped).toBe(true);
+    // permanent: stays stopped even if PnL recovers
+    expect(rm.check(61_000, T0 + 1, 0).action).toBe("EMERGENCY_STOP");
+  });
+
   it("pauses buys after the daily loss limit, resumes next UTC day", () => {
     const rm = new RiskManager(DEFAULT_CONFIG.risk, 60_000);
     // limit = 250 * 0.05 = 12.5
@@ -48,6 +59,7 @@ describe("config validation", () => {
   it("rejects budgets spread too thin for Binance minNotional", () => {
     const cfg = loadConfig();
     cfg.risk.budgetQuote = 30;
+    cfg.risk.maxTotalLossQuote = 20; // keep the hard-stop cap <= budget
     cfg.grid.levels = 11; // 27/10 = 2.7 USDT per slot < 6
     expect(() => validateConfig(cfg)).toThrow(/budget too thin/);
   });

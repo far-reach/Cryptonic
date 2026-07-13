@@ -59,8 +59,10 @@ export class GridBot {
     const fills = await this.exchange.drainFills();
     for (const order of fills) this.applyFill(order, ts);
 
-    // 2. Risk gate.
-    const verdict = this.risk.check(price, ts);
+    // 2. Risk gate (hard stop sees realized PnL + inventory marked to market).
+    const inv = this.strategy.inventory(this.slots);
+    const totalPnl = this.realizedQuote + (inv.qty * price - inv.costQuote);
+    const verdict = this.risk.check(price, ts, totalPnl);
     if (verdict.action === "EMERGENCY_STOP") {
       await this.emergencyStop(verdict.reason, ts);
       return this.report(ts, price, "EMERGENCY_STOP", 0, fills.length);

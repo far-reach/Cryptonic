@@ -202,6 +202,7 @@ are the 250 USDT profile described above. Secrets come only from environment var
 | `risk.reserveFraction` | `0.1` | Never-traded fee/slippage buffer. |
 | `risk.stopBelowFloor` | `0.1` | Emergency-stop distance under the grid floor. |
 | `risk.maxDailyLossFraction` | `0.05` | Daily realized-loss brake (12.5 USDT). |
+| `risk.maxTotalLossQuote` | `50` | Absolute hard stop: total PnL (realized + marked inventory) hits −50 USDT → cancel, liquidate, halt until human restart. |
 | `pollSeconds` | `30` | Main-loop cadence; grid orders rest on the book between polls. |
 
 ## Realistic expectations for 250 USDT

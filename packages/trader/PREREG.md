@@ -80,6 +80,17 @@ by 30-day quote volume, one grid per ~75–100 USDT of *new* capital or realized
 requires the 30-day success evaluation to pass first. Per-symbol grids follow the same
 locked parameters and risk profile; no new strategy classes.
 
+## Amendment 4 (2026-07-13, operator decision): immediate launch + absolute hard stop
+
+Operator directed immediate mainnet start (testnet window ends at whatever coverage it
+reached) at small capital, with an **absolute hard stop of −50 USDT total loss**. Now
+enforced *in code* (`risk.maxTotalLossQuote`): every tick compares realized PnL plus
+open inventory marked to market against the cap; breaching it cancels all orders,
+liquidates, and halts permanently until a human restarts. Launch remains BTC-only at
+100 USDT (Amendment 2 sizing); fleet configs carry 25 USDT caps each (worst-case fleet
+total −100, BTC tranche −50 as directed). Kill criterion 1 (−15% equity floor) is
+superseded by this tighter absolute cap at launch size; all other criteria unchanged.
+
 ## Promotion gates (per Amendment 1: gate 2 and 3 concurrent; per Amendment 2: compressed by operator direction)
 
 1. **Backtest** — on ≥ 30 days of real downloaded 1h candles: positive realized PnL,

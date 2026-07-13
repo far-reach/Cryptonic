@@ -41,5 +41,11 @@ endpoint (fixed: `binance.dataUrl` now always serves market data from
 data-api.binance.vision). Do not cite that number; Gate 1 re-run on real data is
 required before launch.** Kill criteria remain absolute, scaled to deployed capital.
 
+Update 2026-07-13 (late): operator directed immediate mainnet launch (PREREG Amendment
+4) at small capital with an absolute −50 USDT hard stop, now enforced in code
+(`risk.maxTotalLossQuote`, checked against realized + marked-to-market PnL every tick;
+breach = cancel, liquidate, permanent halt). "Small caps" = small capital, NOT
+small-cap coins — tiny coins stay excluded.
+
 When resuming work here: read `packages/trader/PREREG.md` first, check which pipeline
 stage we're in (ROADMAP.md phases), and advance it.

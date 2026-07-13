@@ -29,8 +29,17 @@ export class RiskManager {
     this.realizedToday += pnlQuote;
   }
 
-  check(price: number, ts: number): RiskVerdict {
+  check(price: number, ts: number, totalPnlQuote = 0): RiskVerdict {
     if (this.stopped) return { action: "EMERGENCY_STOP", reason: "already stopped" };
+
+    // Operator hard stop: absolute total-loss cap, realized + marked inventory.
+    if (totalPnlQuote <= -this.cfg.maxTotalLossQuote) {
+      this.stopped = true;
+      return {
+        action: "EMERGENCY_STOP",
+        reason: `hard stop: total PnL ${totalPnlQuote.toFixed(2)} breached -${this.cfg.maxTotalLossQuote.toFixed(2)}`,
+      };
+    }
 
     const floor = this.gridLower * (1 - this.cfg.stopBelowFloor);
     if (price <= floor) {

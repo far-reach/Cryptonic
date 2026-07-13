@@ -25,6 +25,12 @@ export interface RiskConfig {
   stopBelowFloor: number;
   /** Halt for the rest of the UTC day if realized daily loss exceeds this fraction of budget. */
   maxDailyLossFraction: number;
+  /**
+   * Absolute hard stop in quote currency: if total PnL (realized + open
+   * inventory marked to market) reaches this loss, cancel everything,
+   * liquidate, and halt permanently until a human restarts.
+   */
+  maxTotalLossQuote: number;
   /** Taker/maker fee per fill used by paper/backtest accounting (0.001 = 0.1%). */
   feeRate: number;
 }
@@ -72,6 +78,7 @@ export const DEFAULT_CONFIG: TraderConfig = {
     reserveFraction: 0.1, // 25 USDT kept back for fees/slippage
     stopBelowFloor: 0.1,
     maxDailyLossFraction: 0.05, // stop for the day after -12.5 USDT realized
+    maxTotalLossQuote: 50, // operator hard stop: halt for good at -50 USDT total
     feeRate: 0.001,
   },
   pollSeconds: 30,
@@ -114,6 +121,8 @@ export function validateConfig(cfg: TraderConfig): void {
     throw new Error("risk.stopBelowFloor must be in (0,0.5]");
   if (risk.maxDailyLossFraction <= 0 || risk.maxDailyLossFraction > 1)
     throw new Error("risk.maxDailyLossFraction must be in (0,1]");
+  if (risk.maxTotalLossQuote <= 0 || risk.maxTotalLossQuote > risk.budgetQuote)
+    throw new Error("risk.maxTotalLossQuote must be in (0, budgetQuote]");
   if (risk.feeRate < 0 || risk.feeRate > 0.01) throw new Error("risk.feeRate must be in [0,0.01]");
   const tradable = risk.budgetQuote * (1 - risk.reserveFraction);
   const perSlot = tradable / (grid.levels - 1);
