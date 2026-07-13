@@ -22,6 +22,7 @@ alternatives.
 | [`packages/sdk`](packages/sdk) | Client SDK: notes, Merkle proofs, association sets, view-key encryption. |
 | [`packages/services`](packages/services) | Off-chain services: relayer (gasless proving) + Association Set Provider (screening). |
 | [`packages/app`](packages/app) | Business payments client + `veil` CLI (shield / pay / audit). |
+| [`packages/web`](packages/web) | Local dashboard at `localhost:3000` that runs & visualizes a real confidential payment. |
 | [`packages/solana`](packages/solana) | Solana Token-2022 confidential-transfer prototype + CLI runbook. |
 
 ## How it works (one paragraph)
@@ -70,6 +71,15 @@ Groth16 verifier):
    relayer fee: 3.0 USDC · protocol fee -> buyback&burn: 1.0 USDC
 4. auditor decrypted the shielded note with the view key: 1000.0 USDC
 ```
+
+Prefer a visual? Run the dashboard instead of the CLI demo — with the node + deploy from above:
+
+```bash
+cd packages/web && npm install && npm start   # -> http://localhost:3000
+```
+
+Click **Run a confidential payment** to execute the real flow and see the public (encrypted)
+view beside the auditor's decrypted view. See [`packages/web`](packages/web).
 
 Point the same scripts at a testnet with `--network sepolia` (set `SEPOLIA_RPC_URL` and
 `DEPLOYER_PRIVATE_KEY`). See [`deployments/`](deployments).

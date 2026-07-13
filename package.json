@@ -9,6 +9,7 @@
     "packages/sdk",
     "packages/services",
     "packages/app",
+    "packages/web",
     "packages/solana"
   ],
   "scripts": {
