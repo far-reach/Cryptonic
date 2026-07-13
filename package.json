@@ -10,7 +10,8 @@
     "packages/services",
     "packages/app",
     "packages/web",
-    "packages/solana"
+    "packages/solana",
+    "packages/bitget-briefing"
   ],
   "scripts": {
     "test": "npm run test --workspace @veil/contracts && npm run test --workspace @veil/sdk",
@@ -21,6 +22,9 @@
     "build:app": "npm run build --workspace @veil/app",
     "typecheck:services": "npm run typecheck --workspace @veil/services",
     "typecheck:app": "npm run typecheck --workspace @veil/app",
-    "typecheck:solana": "npm run typecheck --workspace @veil/solana"
+    "typecheck:solana": "npm run typecheck --workspace @veil/solana",
+    "briefing": "npm run briefing --workspace @veil/bitget-briefing",
+    "test:briefing": "npm run test --workspace @veil/bitget-briefing",
+    "typecheck:briefing": "npm run typecheck --workspace @veil/bitget-briefing"
   }
 }
