@@ -1,0 +1,16 @@
+services:
+  trader:
+    build: .
+    image: cryptonic-trader
+    restart: unless-stopped
+    env_file: .env
+    # Gate 2/3 (paper / testnet live) run with these; for mainnet change the
+    # command AND set TRADER_LIVE_ACK in .env AND baseUrl in data/config.json.
+    command: ["paper", "--config", "config.json"]
+    volumes:
+      - ./data:/data
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"

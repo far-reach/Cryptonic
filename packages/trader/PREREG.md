@@ -35,7 +35,19 @@ Stretch (what "working well" looks like): ≥ +3%/month in choppy conditions.
    halt until root-caused (this class of bug produced silently-wrong PnL for the
    sibling project).
 
-## Promotion gates (in order, none skippable)
+## Amendment 1 (2026-07-13, before any gate data exists)
+
+Gates 2 (paper) and 3 (testnet) run **in parallel** instead of sequentially, to meet an
+operator-set go-live target of 2026-07-31. Rationale: the two gates validate independent
+layers — paper validates the *strategy* (round-trip frequency and PnL vs expectation, on
+simulated fills), testnet validates the *mechanics* (real order lifecycle, resume,
+reconciliation) — so overlapping them does not weaken either evidence base. Both windows'
+durations, criteria, and the mainnet entry conditions are unchanged. This amendment is
+made before any paper/testnet data exists and therefore cannot be results-driven. The
+go-live date remains conditional: **if either gate fails, the date moves; the criteria
+do not.**
+
+## Promotion gates (per Amendment 1: gate 2 and 3 concurrent, none skippable)
 
 1. **Backtest** — on ≥ 30 days of real downloaded 1h candles: positive realized PnL,
    no emergency stop. ✅ synthetic passed 2026-07-13; real-data run pending (needs

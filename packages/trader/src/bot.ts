@@ -30,6 +30,8 @@ export class GridBot {
   realizedQuote = 0;
   feesQuote = 0;
   trades = 0;
+  roundTrips = 0;
+  readonly startedAt: number;
 
   constructor(
     readonly cfg: TraderConfig,
@@ -40,10 +42,12 @@ export class GridBot {
     this.strategy = new GridStrategy(cfg.symbol, cfg.grid, cfg.risk, exchange.rules);
     this.risk = new RiskManager(cfg.risk, cfg.grid.lower);
     this.slots = resume?.slots ?? this.strategy.newSlots();
+    this.startedAt = resume?.startedAt ?? Date.now();
     if (resume) {
       this.realizedQuote = resume.realizedQuote;
       this.feesQuote = resume.feesQuote;
       this.trades = resume.trades;
+      this.roundTrips = resume.roundTrips ?? 0;
       this.risk.restore(resume.risk.day, resume.risk.realizedToday, resume.risk.stopped);
     }
   }
@@ -86,6 +90,7 @@ export class GridBot {
       this.trades++;
       this.feesQuote += order.feeQuote;
       if (realizedQuote !== 0) {
+        this.roundTrips++;
         this.realizedQuote += realizedQuote;
         this.risk.recordRealized(realizedQuote, ts);
         this.log(
@@ -145,7 +150,9 @@ export class GridBot {
       realizedQuote: this.realizedQuote,
       feesQuote: this.feesQuote,
       trades: this.trades,
+      roundTrips: this.roundTrips,
       risk: this.risk.snapshot(),
+      startedAt: this.startedAt,
       updatedAt: Date.now(),
     };
   }

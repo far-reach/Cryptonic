@@ -39,6 +39,11 @@ jobs:
       - name: Trader tests
         run: npm run test:trader
 
+      - name: Trader Docker image builds and runs
+        run: |
+          docker build -t cryptonic-trader packages/trader
+          docker run --rm cryptonic-trader backtest --synthetic 42 --candles 500
+
       - name: SDK tests
         run: npm run test:sdk
 

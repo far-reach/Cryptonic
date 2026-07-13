@@ -111,6 +111,35 @@ node dist/cli.js status        # inspect state anytime
    sits above the range; a halt + realized loss if the market crashes through the floor.
    Rebase the grid (delete the state file, restart) when price exits the range for good.
 
+## Portable deployment
+
+The bot is fully portable: everything it needs is one env file + one config file + the
+state file, on any Docker host or systemd Linux box. See [`ROADMAP.md`](ROADMAP.md) for
+the dated plan to go-live.
+
+**Docker** (any machine with Docker):
+
+```bash
+cd packages/trader
+mkdir -p data && cp config.example.json data/config.json && cp .env.example .env
+# edit .env (keys, heartbeat/alert URLs) and data/config.json, then:
+docker compose up -d --build      # paper mode by default; logs: docker compose logs -f
+docker compose run --rm trader gates --config config.json   # check gate progress
+```
+
+**Bare VPS** (fresh Ubuntu 24.04, ~€4/month tier is plenty):
+
+```bash
+sudo ./deploy/setup-vps.sh        # installs Node 22, builds, installs systemd unit
+sudo nano /opt/cryptonic/run/.env # keys + URLs
+sudo systemctl start trader && journalctl -u trader -f
+```
+
+Both paths default to **paper mode**; switching the command/unit to `live` is a manual,
+deliberate act tied to the PREREG gates. State lives in `data/` (Docker) or
+`/opt/cryptonic/run/` (systemd) and survives restarts and image rebuilds. The kill
+switch works in both: `touch trader.kill` in the state directory.
+
 ## How it works
 
 The range `[lower, upper]` is split into `levels − 1` geometric slots; each owns an equal

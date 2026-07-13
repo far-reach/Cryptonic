@@ -20,6 +20,7 @@ COMMANDS
   paper        Trade live prices with SIMULATED orders (no keys needed)
   live         Trade with REAL orders (testnet by default; guarded for mainnet)
   status       Print the persisted bot state
+  gates        Evaluate PREREG promotion-gate progress from the state file
 
 OPTIONS
   --config <file>     JSON config (see config.example.json); defaults are
@@ -78,6 +79,8 @@ async function main(): Promise<void> {
       return run(cfg, "live");
     case "status":
       return status(cfg);
+    case "gates":
+      return gates(cfg);
     default:
       throw new Error(`unknown command: ${cmd} (try --help)`);
   }
@@ -128,6 +131,42 @@ async function status(cfg: TraderConfig): Promise<void> {
       `holding slots     ${holding.length} (${holding.reduce((a, s) => a + s.qty, 0)} base)`,
       `risk              day=${state.risk.day} dayPnL=${state.risk.realizedToday.toFixed(4)} stopped=${state.risk.stopped}`,
       `updated           ${new Date(state.updatedAt).toISOString()}`,
+    ].join("\n"),
+  );
+}
+
+/**
+ * Mechanical readout of PREREG.md gate progress, so checkpoint reviews are
+ * arithmetic. Criteria mirror PREREG and must be changed there first.
+ */
+async function gates(cfg: TraderConfig): Promise<void> {
+  const state = loadState(cfg.stateFile);
+  if (!state) {
+    console.log(`no state at ${cfg.stateFile} — nothing running here yet`);
+    return;
+  }
+  const days = (Date.now() - (state.startedAt ?? state.updatedAt)) / 86_400_000;
+  const perTrip = state.roundTrips > 0 ? state.realizedQuote / state.roundTrips : 0;
+  const expectedPerTrip = 0.3; // backtest expectation, PREREG gate 2 allows within 2x
+  const mark = (ok: boolean) => (ok ? "PASS" : "not yet");
+
+  console.log(
+    [
+      `deployment window  ${days.toFixed(1)} days (since ${new Date(state.startedAt ?? state.updatedAt).toISOString()})`,
+      `round-trips        ${state.roundTrips}`,
+      `realized PnL       ${state.realizedQuote.toFixed(4)} ${cfg.quoteAsset} (${perTrip.toFixed(4)}/round-trip; expectation ~${expectedPerTrip})`,
+      `emergency stop     ${state.risk.stopped ? "FIRED — kill criterion 2 applies, see PREREG" : "no"}`,
+      ``,
+      `PREREG gate 2 (paper, needs ALL):`,
+      `  >= 14 days           ${mark(days >= 14)} (${days.toFixed(1)}/14)`,
+      `  >= 10 round-trips    ${mark(state.roundTrips >= 10)} (${state.roundTrips}/10)`,
+      `  per-trip within 2x   ${mark(state.roundTrips > 0 && perTrip >= expectedPerTrip / 2)}`,
+      `PREREG gate 3 (testnet, needs ALL):`,
+      `  >= 7 days            ${mark(days >= 7)} (${days.toFixed(1)}/7)`,
+      `  restart-resume test  verify manually (restart the process; state + orders must survive)`,
+      `  reconciliation       clean unless a RECONCILE MISMATCH alert fired`,
+      ``,
+      `Verdicts apply to the mode this state file belongs to (paper vs testnet).`,
     ].join("\n"),
   );
 }

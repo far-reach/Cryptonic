@@ -10,7 +10,11 @@ export interface BotState {
   realizedQuote: number;
   feesQuote: number;
   trades: number;
+  /** Completed buy→sell cycles (the unit PREREG gate criteria count). */
+  roundTrips: number;
   risk: { day: string; realizedToday: number; stopped: boolean };
+  /** When this deployment first started (survives restarts). */
+  startedAt: number;
   updatedAt: number;
 }
 

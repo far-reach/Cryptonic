@@ -25,5 +25,10 @@ Standing decisions (made 2026-07-13, don't re-litigate):
   alerts, hourly-ish balance reconciliation, pre-registration discipline. Rejected as
   N/A: futures mechanics, their symbols/tiers, Bitget-specific fixes.
 
+**Deadline: fully operational (mainnet live) by 2026-07-31** — dated plan in
+`packages/trader/ROADMAP.md`. PREREG Amendment 1 runs the paper and testnet windows in
+parallel to meet it. The deadline never overrides a gate: if a gate fails, the date
+slips, not the criteria.
+
 When resuming work here: read `packages/trader/PREREG.md` first, check which pipeline
-stage we're in, and advance it.
+stage we're in (ROADMAP.md phases), and advance it.

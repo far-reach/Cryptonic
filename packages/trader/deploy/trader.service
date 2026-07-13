@@ -1,0 +1,29 @@
+# systemd unit for the Cryptonic autotrader (non-Docker path).
+# Installed by deploy/setup-vps.sh to /etc/systemd/system/trader.service.
+#   systemctl start|stop|status trader ; journalctl -u trader -f
+[Unit]
+Description=Cryptonic Binance grid autotrader
+Documentation=https://github.com/far-reach/Cryptonic/tree/main/packages/trader
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=trader
+WorkingDirectory=/opt/cryptonic/run
+EnvironmentFile=/opt/cryptonic/run/.env
+# Mode lives here: paper for gate 2, live (testnet baseUrl) for gate 3,
+# live (mainnet baseUrl + TRADER_LIVE_ACK) only after PREREG go/no-go.
+ExecStart=/usr/bin/node /opt/cryptonic/repo/packages/trader/dist/cli.js paper --config /opt/cryptonic/run/config.json
+Restart=on-failure
+RestartSec=10
+
+# Hardening: the bot needs the network and its run directory, nothing else.
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/cryptonic/run
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
