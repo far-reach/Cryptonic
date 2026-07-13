@@ -1,21 +1,17 @@
 {
-  "symbol": "BTCUSDT",
-  "baseAsset": "BTC",
+  "symbol": "SOLUSDT",
+  "baseAsset": "SOL",
   "quoteAsset": "USDT",
-  "grid": {
-    "lower": 0,
-    "upper": 0,
-    "levels": 11
-  },
+  "grid": { "lower": 0, "upper": 0, "levels": 9 },
   "risk": {
-    "budgetQuote": 250,
+    "budgetQuote": 75,
     "reserveFraction": 0.1,
     "stopBelowFloor": 0.1,
     "maxDailyLossFraction": 0.05,
     "feeRate": 0.001
   },
   "pollSeconds": 30,
-  "stateFile": "trader-state.json",
+  "stateFile": "trader-state-SOLUSDT.json",
   "binance": {
     "baseUrl": "https://testnet.binance.vision",
     "dataUrl": "https://data-api.binance.vision",

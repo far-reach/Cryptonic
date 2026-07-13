@@ -30,5 +30,16 @@ Standing decisions (made 2026-07-13, don't re-litigate):
 parallel to meet it. The deadline never overrides a gate: if a gate fails, the date
 slips, not the criteria.
 
+Status update 2026-07-13 (evening): operator completed setup and testnet is live.
+Operator directed (PREREG Amendments 2 & 3): 24h testnet wrap → mainnet ~2026-07-15 at
+reduced size (BTC-only, 100 USDT), scaling to a BTC/ETH/SOL fleet (100/75/75, one
+process per symbol via configs/ + trader@.service) after 7 clean days + ≥5 profitable
+round-trips. Wider "top-100" expansion rejected at current capital: a grid costs
+~75–100 USDT (min-notional math), so 250 USDT funds ≤ 3 grids. **The operator's
+2026-07-13 backtest showing +73.96% was INVALIDATED — candles came from the testnet
+endpoint (fixed: `binance.dataUrl` now always serves market data from
+data-api.binance.vision). Do not cite that number; Gate 1 re-run on real data is
+required before launch.** Kill criteria remain absolute, scaled to deployed capital.
+
 When resuming work here: read `packages/trader/PREREG.md` first, check which pipeline
 stage we're in (ROADMAP.md phases), and advance it.

@@ -158,9 +158,10 @@ async function sweep(cfg: TraderConfig, v: Values): Promise<void> {
 
 async function fetchData(cfg: TraderConfig, v: Values): Promise<void> {
   const out = String(v.out ?? `${cfg.symbol}-${v.interval}.csv`);
-  const klines = await fetchKlines(cfg.binance.baseUrl, cfg.symbol, String(v.interval), Number(v.candles));
+  // Always real market data — never the testnet's thin-book price history.
+  const klines = await fetchKlines(cfg.binance.dataUrl, cfg.symbol, String(v.interval), Number(v.candles));
   saveKlinesCsv(out, klines);
-  console.log(`saved ${klines.length} ${v.interval} candles for ${cfg.symbol} -> ${out}`);
+  console.log(`saved ${klines.length} ${v.interval} candles for ${cfg.symbol} from ${cfg.binance.dataUrl} -> ${out}`);
 }
 
 async function status(cfg: TraderConfig): Promise<void> {
@@ -230,13 +231,14 @@ async function run(cfg: TraderConfig, mode: "paper" | "live"): Promise<void> {
     }
   }
 
-  // Resolve auto-range from the last 30 days of daily candles.
+  // Resolve auto-range from the last 30 days of REAL daily candles (dataUrl,
+  // not the order venue — testnet price history would produce absurd ranges).
   if (cfg.grid.lower <= 0 || cfg.grid.upper <= 0) {
-    const daily = await fetchKlines(cfg.binance.baseUrl, cfg.symbol, "1d", 30);
+    const daily = await fetchKlines(cfg.binance.dataUrl, cfg.symbol, "1d", 30);
     const { lower, upper } = autoRange(daily);
     cfg.grid.lower = lower;
     cfg.grid.upper = upper;
-    console.log(`auto-range from 30d klines: ${lower.toFixed(2)} – ${upper.toFixed(2)}`);
+    console.log(`auto-range from 30d real klines (${cfg.binance.dataUrl}): ${lower.toFixed(2)} – ${upper.toFixed(2)}`);
   }
 
   const resume = loadState(cfg.stateFile);
@@ -261,7 +263,8 @@ async function run(cfg: TraderConfig, mode: "paper" | "live"): Promise<void> {
     }
     exchange = live;
   } else {
-    const rules = await fetchSymbolRules(cfg.binance.baseUrl, cfg.symbol).catch(() => DEFAULT_RULES);
+    // Paper mode is a pure market-data consumer: real rules, real prices.
+    const rules = await fetchSymbolRules(cfg.binance.dataUrl, cfg.symbol).catch(() => DEFAULT_RULES);
     paper = new PaperExchange(rules, cfg.risk.feeRate, cfg.risk.budgetQuote);
     exchange = paper;
   }
@@ -361,7 +364,7 @@ async function reconcile(bot: GridBot, cfg: TraderConfig): Promise<void> {
 
 async function publicPrice(cfg: TraderConfig): Promise<number> {
   const res = await fetch(
-    `${cfg.binance.baseUrl.replace(/\/$/, "")}/api/v3/ticker/price?symbol=${cfg.symbol}`,
+    `${cfg.binance.dataUrl.replace(/\/$/, "")}/api/v3/ticker/price?symbol=${cfg.symbol}`,
   );
   if (!res.ok) throw new Error(`ticker failed: ${res.status}`);
   return Number(((await res.json()) as { price: string }).price);

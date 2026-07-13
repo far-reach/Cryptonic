@@ -1,5 +1,13 @@
 # R&D Roadmap — Binance autotrader, operational by 2026-07-31
 
+> **Revision 2026-07-13 (operator compression — PREREG Amendments 2 & 3):** operator
+> completed setup, testnet is live, and directed a 24-hour testnet wrap-up with mainnet
+> launch immediately after (~2026-07-15), at reduced size: BTC-only @ 100 USDT, scaling
+> to the BTC/ETH/SOL fleet (100/75/75) after 7 clean days + ≥ 5 profitable round-trips.
+> The original Phase 3 windows are superseded; kill criteria and the 30-day success
+> evaluation are NOT. The 07-13 real-data backtest was invalidated (testnet-sourced
+> candles; code fixed) and Gate 1 must be re-run on real data before launch.
+
 Written 2026-07-13. Working back from the deadline: mainnet go-live **Friday 2026-07-31**,
 conditional on the pre-registered gates in [`PREREG.md`](PREREG.md) (as amended) passing.
 **The deadline never overrides a gate or kill criterion — if a gate fails, the date slips

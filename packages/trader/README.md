@@ -140,6 +140,33 @@ deliberate act tied to the PREREG gates. State lives in `data/` (Docker) or
 `/opt/cryptonic/run/` (systemd) and survives restarts and image rebuilds. The kill
 switch works in both: `touch trader.kill` in the state directory.
 
+## Multiple assets (fleet mode)
+
+One bot instance trades one pair; a *fleet* is simply several instances with their own
+config, budget slice, and state file (see [`configs/`](configs)). The starter fleet for
+250 USDT is **BTC (100) + ETH (75) + SOL (75)** — deep-liquidity majors only.
+
+```bash
+# systemd (one service per symbol, via the template unit):
+sudo cp deploy/trader@.service /etc/systemd/system/
+sudo cp configs/*.json /opt/cryptonic/run/
+sudo systemctl enable --now trader@BTCUSDT trader@ETHUSDT trader@SOLUSDT
+node dist/cli.js status --config /opt/cryptonic/run/ETHUSDT.json   # per-symbol status
+```
+
+Why not "the top 100 coins": each grid needs ~8 slots comfortably above Binance's
+~5 USDT minimum order size, so **a grid costs ~75–100 USDT to run properly — 250 USDT
+funds at most 3**. Spreading thinner means orders get rejected or single-slot grids
+with no compounding. Also, outside the majors, thin books widen slippage and ranges
+break more violently. The expansion rule (PREREG Amendment 3): one new symbol, by
+30-day volume rank, per ~75–100 USDT of new capital or realized profit — after the
+30-day success evaluation passes.
+
+Market data (backtests, auto-ranging, paper prices) always comes from
+`binance.dataUrl` — the real-market mirror `data-api.binance.vision` — even when
+orders go to the testnet. Testnet price *history* is thin-book garbage and must never
+size a grid; only its order-matching engine is used, in gate 3.
+
 ## How it works
 
 The range `[lower, upper]` is split into `levels − 1` geometric slots; each owns an equal

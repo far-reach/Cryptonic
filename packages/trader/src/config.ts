@@ -42,8 +42,14 @@ export interface TraderConfig {
   /** Where bot state (inventory, PnL, order map) is persisted. */
   stateFile: string;
   binance: {
-    /** Live: https://api.binance.com — Testnet: https://testnet.binance.vision */
+    /** Order venue. Live: https://api.binance.com — Testnet: https://testnet.binance.vision */
     baseUrl: string;
+    /**
+     * Market-data venue for klines/auto-range/paper prices. Always the REAL
+     * market mirror (no key needed) — testnet price history is garbage from
+     * thin fake books and must never feed backtests or grid ranging.
+     */
+    dataUrl: string;
     /** Read from env, never from this file: BINANCE_API_KEY / BINANCE_API_SECRET. */
     apiKeyEnv: string;
     apiSecretEnv: string;
@@ -72,6 +78,7 @@ export const DEFAULT_CONFIG: TraderConfig = {
   stateFile: "trader-state.json",
   binance: {
     baseUrl: "https://testnet.binance.vision",
+    dataUrl: "https://data-api.binance.vision",
     apiKeyEnv: "BINANCE_API_KEY",
     apiSecretEnv: "BINANCE_API_SECRET",
     recvWindowMs: 10_000,

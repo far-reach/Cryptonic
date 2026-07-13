@@ -1,0 +1,28 @@
+# systemd TEMPLATE unit: one grid instance per symbol config.
+#   cp trader@.service /etc/systemd/system/ && systemctl daemon-reload
+#   systemctl enable --now trader@BTCUSDT     # uses /opt/cryptonic/run/BTCUSDT.json
+#   systemctl enable --now trader@ETHUSDT     # uses /opt/cryptonic/run/ETHUSDT.json
+# Each instance has its own state file (set inside the config); all share .env.
+[Unit]
+Description=Cryptonic autotrader (%i)
+Documentation=https://github.com/far-reach/Cryptonic/tree/main/packages/trader
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=trader
+WorkingDirectory=/opt/cryptonic/run
+EnvironmentFile=/opt/cryptonic/run/.env
+ExecStart=/usr/bin/node /opt/cryptonic/repo/packages/trader/dist/cli.js live --config /opt/cryptonic/run/%i.json
+Restart=on-failure
+RestartSec=10
+
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/cryptonic/run
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
