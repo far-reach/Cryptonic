@@ -16,6 +16,7 @@ USAGE
 
 COMMANDS
   backtest     Replay the strategy over historical or synthetic candles
+  sweep        Stress-test: backtest matrix across regimes x volatility x seeds
   fetch-data   Download klines from Binance to a CSV (public endpoint)
   paper        Trade live prices with SIMULATED orders (no keys needed)
   live         Trade with REAL orders (testnet by default; guarded for mainnet)
@@ -71,6 +72,8 @@ async function main(): Promise<void> {
   switch (cmd) {
     case "backtest":
       return backtest(cfg, values);
+    case "sweep":
+      return sweep(cfg, values);
     case "fetch-data":
       return fetchData(cfg, values);
     case "paper":
@@ -107,6 +110,50 @@ async function backtest(cfg: TraderConfig, v: Values): Promise<void> {
   }
   const result = await runBacktest(cfg, klines, DEFAULT_RULES, (m) => console.log(`  ${m}`));
   console.log("\n" + formatBacktest(result, cfg.quoteAsset));
+}
+
+/**
+ * Regime stress sweep: bounds strategy behavior across market types without
+ * real data. NOT a substitute for PREREG gate 1 (real-data backtest) — this
+ * answers "how bad can it get / where does it earn", not "does it earn on
+ * actual BTCUSDT paths".
+ */
+async function sweep(cfg: TraderConfig, v: Values): Promise<void> {
+  const candles = Number(v.candles ?? 1_440); // ~60 days of hourly
+  const regimes = [
+    { name: "crash    ", drift: -0.003, mr: 0 },
+    { name: "bear     ", drift: -0.001, mr: 0 },
+    { name: "soft-bear", drift: -0.0003, mr: 0.01 },
+    { name: "sideways ", drift: 0, mr: 0.02 },
+    { name: "soft-bull", drift: 0.0003, mr: 0.01 },
+    { name: "bull     ", drift: 0.001, mr: 0 },
+  ];
+  const vols = [0.002, 0.004, 0.008];
+  const seeds = [1, 2, 3, 4, 5];
+  const median = (xs: number[]) => [...xs].sort((a, b) => a - b)[Math.floor(xs.length / 2)];
+  const pct = (equity: number) => ((equity / cfg.risk.budgetQuote - 1) * 100);
+
+  console.log(`sweep: ${regimes.length} regimes x ${vols.length} vols x ${seeds.length} seeds, ${candles} hourly candles each, anchor 64000\n`);
+  console.log(`regime     vol    medianPnL%  worstPnL%  stops  medianRTs  vsHold(med)`);
+  let worstEquity = Infinity;
+  for (const r of regimes) {
+    for (const vol of vols) {
+      const runs = [];
+      for (const seed of seeds) {
+        const klines = syntheticKlines({ seed, candles, anchor: 64_000, vol, meanReversion: r.mr, drift: r.drift });
+        runs.push(await runBacktest(cfg, klines));
+      }
+      const eq = runs.map((x) => x.finalEquity);
+      const stops = runs.filter((x) => x.emergencyStopped).length;
+      const vsHold = median(runs.map((x) => x.finalEquity - x.buyAndHoldEquity));
+      worstEquity = Math.min(worstEquity, ...eq);
+      console.log(
+        `${r.name}  ${vol.toFixed(3)}  ${pct(median(eq)).toFixed(2).padStart(9)}%  ${pct(Math.min(...eq)).toFixed(2).padStart(8)}%  ${String(stops).padStart(3)}/5  ${String(median(runs.map((x) => x.roundTrips))).padStart(8)}  ${vsHold >= 0 ? "+" : ""}${vsHold.toFixed(2)} USDT`,
+      );
+    }
+  }
+  console.log(`\nworst single-run equity across all ${regimes.length * vols.length * seeds.length} runs: ${worstEquity.toFixed(2)} ${cfg.quoteAsset} (${pct(worstEquity).toFixed(2)}%)`);
+  console.log(`PREREG kill-criterion floor is ${(cfg.risk.budgetQuote * 0.85).toFixed(2)} — worst case ${worstEquity >= cfg.risk.budgetQuote * 0.85 ? "stays above" : "BREACHES"} it.`);
 }
 
 async function fetchData(cfg: TraderConfig, v: Values): Promise<void> {

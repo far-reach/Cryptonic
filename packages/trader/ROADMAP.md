@@ -26,6 +26,14 @@ switch, heartbeat, alerts, reconciliation), PREREG discipline. ✅
 - `gates` CLI command: evaluates PREREG gate progress mechanically from the state file,
   so checkpoint reviews are arithmetic, not judgment calls.
 - PREREG Amendment 1 (below): paper and testnet windows run in parallel.
+- **Regime stress sweep** (`sweep` command + [`reports/regime-sweep-2026-07-13.md`](reports/regime-sweep-2026-07-13.md)):
+  90 backtests across crash/bear/sideways/bull × 3 vol levels. No kill-criterion
+  breaches; downside bounded −1% to −2.2% in crashes (stop fired 30/30); earns +2% to
+  +18%/60d in ranging regimes; idles (opportunity cost only) in strong bulls.
+  Every free in-sandbox data source was probed and is network-blocked (Binance, its
+  data mirror, Kraken, Coinbase, Bitstamp, CoinGecko, CryptoCompare — all 403), so
+  gate 1 real-data backtest must run on an operator machine; it needs only ~10 minutes
+  on any internet-connected computer, not the VPS.
 
 ### Phase 2 — Operator setup + Gate 1 (you, target 2026-07-14 → 07-15)
 1. Rent a small VPS (e.g. Hetzner CX22 ~€4/mo, Ubuntu 24.04) — or any always-on Linux box.
