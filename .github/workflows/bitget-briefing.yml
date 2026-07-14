@@ -12,6 +12,7 @@ on:
 
 permissions:
   contents: write # commits the briefing history under briefings/
+  issues: write # files an issue when a run fails, with the captured log
 
 concurrency:
   group: bitget-briefing-${{ github.ref }}
@@ -49,6 +50,7 @@ jobs:
 
       - name: Commit briefing history
         run: |
+          exec > >(tee commit-step.log) 2>&1
           set -x
           mkdir -p briefings
           cp bitget-briefing.md "briefings/$(date -u +%F).md"
@@ -66,3 +68,24 @@ jobs:
             git pull --rebase --autostash origin "${GITHUB_REF_NAME}"
             git push origin "HEAD:${GITHUB_REF_NAME}"
           fi
+
+      - name: File failure issue with captured log
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 - <<'EOF'
+          import json, os, urllib.request
+          log = open("commit-step.log").read()[-6000:] if os.path.exists("commit-step.log") else "(no log captured)"
+          body = json.dumps({
+              "title": f"bitget-briefing run {os.environ['GITHUB_RUN_ID']} failed",
+              "body": "Captured log of the failing step:\n\n```\n" + log + "\n```",
+              "labels": ["bitget-briefing"],
+          }).encode()
+          req = urllib.request.Request(
+              f"https://api.github.com/repos/{os.environ['GITHUB_REPOSITORY']}/issues",
+              data=body, method="POST",
+              headers={"Authorization": "Bearer " + os.environ["GH_TOKEN"],
+                       "Accept": "application/vnd.github+json"})
+          print(urllib.request.urlopen(req).status)
+          EOF
