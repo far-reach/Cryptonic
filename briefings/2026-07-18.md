@@ -8,17 +8,17 @@ _Last 24h of the [Bitget announcement center](https://www.bitget.com/asia/suppor
 
 - **[Bitget announcement on suspending KLV - Klever deposit and withdrawal services](https://www.bitget.com/en/support/articles/12560603889565)**
   2026-07-18 12:03 UTC · _section: maintenance system updates, suspension, maintenance window, deposit/withdrawal change_
-  ℹ️ _Bitget announcement on suspending KLV - Klever deposit and withdrawal services | Bitget Support Center Bitget App Trade smarter Buy crypto Markets Trade Futures Earn Square More…_
+  ℹ️ _Due to wallet maintenance, Bitget will suspend the deposit and withdrawal functions of the KLV - Klever network starting from 2026-07-18 20:03 （UTC+8）, with the resumption time…_
 - **[Bitget announcement on resuming USDC - APTOS withdrawals](https://www.bitget.com/en/support/articles/12560603889564)**
   2026-07-18 09:14 UTC · _section: maintenance system updates, maintenance window_
 - **[Bitget announcement on suspending USDC - APTOS network withdrawal service](https://www.bitget.com/en/support/articles/12560603889562)**
   2026-07-18 02:18 UTC · _section: maintenance system updates, suspension, maintenance window_
-  ℹ️ _Bitget announcement on suspending USDC - APTOS network withdrawal service | Bitget Support Center Bitget App Trade smarter Buy crypto Markets Trade Futures Earn Square More Bitg…_
+  ℹ️ _Due to wallet maintenance, Bitget will suspend the withdrawal function of the USDC - APTOS network starting from 2026-07-18 10:18 (UTC+8), with the reopening date to be announce…_
 - **[Bitget announcement on resuming MANTRA - Mantra deposits and withdrawals](https://www.bitget.com/en/support/articles/12560603889558)**
   2026-07-17 14:44 UTC · _section: maintenance system updates, maintenance window, deposit/withdrawal change_
 - **[Bitget announcement on suspending HOME - BASE network withdrawal service](https://www.bitget.com/en/support/articles/12560603889557)**
   2026-07-17 14:06 UTC · _section: maintenance system updates, suspension, maintenance window_
-  ℹ️ _Bitget announcement on suspending HOME - BASE network withdrawal service | Bitget Support Center Bitget App Trade smarter Buy crypto Markets Trade Futures Earn Square More Bitge…_
+  ℹ️ _Due to wallet maintenance, Bitget will suspend the withdrawal function of the HOME - BASE network starting from 2026-07-17 22:06 (UTC+8), with the reopening date to be announced…_
 
 ## 🟡 Notable — worth a look
 
