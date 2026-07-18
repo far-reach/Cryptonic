@@ -66,7 +66,7 @@ export function extractArticleText(html: string): string {
   // Bitget article bodies open with a salutation or the action lead-in; cutting
   // there drops the page chrome (nav, footers) that precedes the content.
   const lead = full.search(
-    /dear bitget|to support\b|due to\b|because of\b|as part of\b|in order to\b|((bitget|we) )?(will|has|have) (temporarily |now |been )?(suspend(ed)?|paus(e|ed)|halt(ed)?|resum(e|ed))/i,
+    /dear (bitget )?users?|to support\b|due to\b|because of\b|as part of\b|in order to\b|((bitget|we) )?(will|has|have) (temporarily |now |been )?(suspend(ed)?|paus(e|ed)|halt(ed)?|resum(e|ed)|open(ed)?|reopen(ed)?)/i,
   );
   return lead >= 0 ? full.slice(lead) : full;
 }
@@ -92,11 +92,15 @@ export function findReason(text: string): ArticleReason | null {
   const explanatory =
     (causeRe && sentences.find((s) => causeRe.test(s))) ??
     sentences.find((s) => /due to|because|as (a result|part) of|to (support|ensure|complete)|in order to/i.test(s)) ??
-    // Resumption articles often state only the fact — quote that line.
-    sentences.find((s) => /resum(ed|ption)|(deposit|withdrawal)s?\b.*\b(reopened?|restored|open again)/i.test(s));
+    // Resumption articles often state only the fact — quote that line
+    // ("has now opened the withdrawal service", "services have resumed").
+    sentences.find((s) =>
+      /resum(ed|ption)|(open(ed)?|reopen(ed)?|restor(ed)?)\b[^.]*\b(deposit|withdrawal)|(deposit|withdrawal)[^.]*\b(open(ed)?|reopen(ed)?|resum(ed)?|restor(ed)?)/i.test(s),
+    );
   // Junk-free excerpt or nothing: a missing why-line beats quoting page chrome.
   if (!explanatory) return null;
-  let excerpt = explanatory.trim();
+  let excerpt = explanatory.trim().replace(/^dear (bitget )?users?[:,.]?\s*/i, "");
+  excerpt = excerpt.charAt(0).toUpperCase() + excerpt.slice(1);
   if (excerpt.length > 180) excerpt = excerpt.slice(0, 177).trimEnd() + "…";
   return { cause, excerpt };
 }

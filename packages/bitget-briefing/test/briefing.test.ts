@@ -316,6 +316,18 @@ describe("article reasons", () => {
     expect(resumed!.excerpt).toContain("have now resumed");
   });
 
+  it("extracts the real Bitget resume-article body (captured from production)", async () => {
+    const { findReason } = await import("../src/article.js");
+    // Verbatim shape of the live page's text (no __NEXT_DATA__, nav has no periods)
+    const real =
+      "Bitget announcement on resuming USDC - APTOS withdrawals | Bitget Support Center Bitget App Trade smarter Buy crypto Markets Trade Futures Earn Square More Bitget / Help Center / Maintenance or system updates / Asset maintenance / Bitget announcement on resuming USDC - APTOS withdrawals / Maintenance or system updates Latest news New listings Product updates Competitions and promotions Delisting information Security Institutional Services API trading Fiat Maintenance or system updates Asset maintenance System updates Spot maintenance Futures maintenance Bitget announcement on resuming USDC - APTOS withdrawals 2026-07-18 09:14 3 818 Dear users: Bitget has now opened the withdrawal service on the USDC - APTOS network. We sincerely apologize for any inconvenience caused during the suspension and thank you for your understanding. Thank you for your support of Bitget!";
+    const { extractArticleText } = await import("../src/article.js");
+    const reason = findReason(extractArticleText(`<html><body>${real}</body></html>`));
+    expect(reason!.excerpt).toBe(
+      "Bitget has now opened the withdrawal service on the USDC - APTOS network.",
+    );
+  });
+
   it("cuts 'has resumed' bodies out of the chrome blob", async () => {
     const { extractArticleText, findReason } = await import("../src/article.js");
     const html =
