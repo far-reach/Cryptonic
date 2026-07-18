@@ -11,11 +11,13 @@ _Last 24h of the [Bitget announcement center](https://www.bitget.com/asia/suppor
   ℹ️ _Due to wallet maintenance, Bitget will suspend the deposit and withdrawal functions of the KLV - Klever network starting from 2026-07-18 20:03 （UTC+8）, with the resumption time…_
 - **[Bitget announcement on resuming USDC - APTOS withdrawals](https://www.bitget.com/en/support/articles/12560603889564)**
   2026-07-18 09:14 UTC · _section: maintenance system updates, maintenance window_
+  ℹ️ _Bitget has now opened the withdrawal service on the USDC - APTOS network._
 - **[Bitget announcement on suspending USDC - APTOS network withdrawal service](https://www.bitget.com/en/support/articles/12560603889562)**
   2026-07-18 02:18 UTC · _section: maintenance system updates, suspension, maintenance window_
   ℹ️ _Due to wallet maintenance, Bitget will suspend the withdrawal function of the USDC - APTOS network starting from 2026-07-18 10:18 (UTC+8), with the reopening date to be announce…_
 - **[Bitget announcement on resuming MANTRA - Mantra deposits and withdrawals](https://www.bitget.com/en/support/articles/12560603889558)**
   2026-07-17 14:44 UTC · _section: maintenance system updates, maintenance window, deposit/withdrawal change_
+  ℹ️ _Bitget has now opened the MANTRA - Mantra deposit and withdrawal services._
 - **[Bitget announcement on suspending HOME - BASE network withdrawal service](https://www.bitget.com/en/support/articles/12560603889557)**
   2026-07-17 14:06 UTC · _section: maintenance system updates, suspension, maintenance window_
   ℹ️ _Due to wallet maintenance, Bitget will suspend the withdrawal function of the HOME - BASE network starting from 2026-07-17 22:06 (UTC+8), with the reopening date to be announced…_
@@ -33,7 +35,7 @@ _Nothing else._
 - 🔁 **KLV (Klever)** — With transfers frozen, the Bitget price can decouple from other venues; note the gap — it historically closes on resumption.
 - 🔁 **USDC (APTOS)** — Transfers reconnected: any Bitget premium/discount vs the global price tends to snap shut, and trapped holders can finally move coins — watch for a supply wave.
 - 🔁 **MANTRA (Mantra)** — Transfers reconnected: any Bitget premium/discount vs the global price tends to snap shut, and trapped holders can finally move coins — watch for a supply wave.
-  `Short @ 0.006219 · TP 0.005908 (−5%) · SL 0.006468 (+4%)`
+  `Short @ 0.006208 · TP 0.005898 (−5%) · SL 0.006456 (+4%)`
 - 🔁 **HOME (BASE)** — With transfers frozen, the Bitget price can decouple from other venues; note the gap — it historically closes on resumption.
 
 _Pattern heuristics from historical announcement studies — not financial advice._
