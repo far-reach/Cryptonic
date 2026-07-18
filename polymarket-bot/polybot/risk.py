@@ -38,10 +38,16 @@ class RiskManager:
         self.config = config
         self.portfolio = portfolio
         self.seen_keys: list[str] = list(portfolio.state.get("seen_keys", []))
+        self.marks: dict[str, float] = {}
+
+    def set_marks(self, marks: dict[str, float]) -> None:
+        """Fresh best-bid marks each cycle — the halt must see market value,
+        not cost basis, or it fires only after the money is already gone."""
+        self.marks = marks or {}
 
     def halted(self) -> str | None:
         risk = self.config.risk
-        equity = self.portfolio.equity()
+        equity = self.portfolio.equity(self.marks)
         floor = risk.bankroll_usdc * (1.0 - risk.halt_drawdown_frac)
         if equity < floor:
             return f"HALT: equity ${equity:.2f} below drawdown floor ${floor:.2f}"

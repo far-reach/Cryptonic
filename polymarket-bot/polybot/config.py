@@ -64,6 +64,7 @@ class StrategyConfig:
     maker_requote_ticks: int = 2        # cancel/replace if mid moved this far
     maker_max_inventory_usdc: float = 12.0  # unpaired inventory cap per market
     maker_inventory_stop: float = 0.08  # dump inventory if mid ran this far away
+    maker_stop_cooldown_cycles: int = 40  # no requote after a stop (~20 min)
 
 
 @dataclass
@@ -76,6 +77,7 @@ class ScannerConfig:
     request_timeout: float = 15.0
     max_retries: int = 3
     settle_every_cycles: int = 10      # check held markets for resolution every N cycles
+    hot_max_cycles: int = 5            # max consecutive fast cycles (no latch)
 
 
 @dataclass

@@ -64,9 +64,9 @@ class ComplementArb(Strategy):
                          f"| {m.question[:70]}"),
             legs=[
                 Leg(m.yes_token_id, "BUY", limit_prices[0], shares, m.question,
-                    "Yes", m.category, m.condition_id),
+                    "Yes", m.category, m.condition_id, avg_price=avg_prices[0]),
                 Leg(m.no_token_id, "BUY", limit_prices[1], shares, m.question,
-                    "No", m.category, m.condition_id),
+                    "No", m.category, m.condition_id, avg_price=avg_prices[1]),
             ],
             edge=edge,
             expected_profit=profit,

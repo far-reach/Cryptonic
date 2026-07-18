@@ -26,11 +26,12 @@ class Http:
         self.max_retries = max_retries
 
     def get(self, url: str, params: dict | None = None) -> Any:
-        last_err: Exception | None = None
+        last_err: Exception | str | None = None
         for attempt in range(self.max_retries):
             try:
                 resp = self.session.get(url, params=params, timeout=self.timeout)
                 if resp.status_code == 429:  # rate limited — back off harder
+                    last_err = "rate limited (HTTP 429)"
                     time.sleep(2.0 * (attempt + 1))
                     continue
                 resp.raise_for_status()
@@ -61,9 +62,11 @@ class GammaClient:
                 "limit": page_size,
                 "offset": page * page_size,
             })
-            if not batch:
+            if not batch or not isinstance(batch, list):
                 break
             for raw in batch:
+                if not isinstance(raw, dict):
+                    continue
                 m = Market.from_gamma(raw)
                 if m and m.active and not m.closed and m.volume_24h >= min_volume_24h:
                     out.append(m)
@@ -74,15 +77,18 @@ class GammaClient:
     def markets_by_condition(self, condition_ids: list[str]) -> list[dict]:
         """Raw market objects for specific condition ids (for settlement)."""
         out: list[dict] = []
-        CHUNK = 20  # gamma accepts repeated condition_ids params
+        CHUNK = 20
         for i in range(0, len(condition_ids), CHUNK):
             chunk = condition_ids[i:i + CHUNK]
+            # a LIST value makes requests send repeated condition_ids params
+            # (?condition_ids=a&condition_ids=b) — gamma's expected format;
+            # a comma-joined string silently matches nothing
             batch = self.http.get(f"{self.host}/markets", params={
-                "condition_ids": ",".join(chunk),
+                "condition_ids": chunk,
                 "limit": len(chunk),
             })
             if isinstance(batch, list):
-                out.extend(batch)
+                out.extend(b for b in batch if isinstance(b, dict))
         return out
 
     def negrisk_events(self, pages: int = 2, page_size: int = 50) -> list[dict]:
@@ -98,9 +104,10 @@ class GammaClient:
                 "limit": page_size,
                 "offset": page * page_size,
             })
-            if not batch:
+            if not batch or not isinstance(batch, list):
                 break
-            events.extend(e for e in batch if e.get("negRisk"))
+            events.extend(e for e in batch
+                          if isinstance(e, dict) and e.get("negRisk"))
             if len(batch) < page_size:
                 break
         return events
@@ -137,12 +144,22 @@ class ClobClient:
                     json=[{"token_id": t} for t in chunk],
                     timeout=self.http.timeout,
                 )
+                if resp.status_code == 429:
+                    # rate limited: do NOT fan out into 100 per-token GETs —
+                    # that amplifies the throttling into a ban. Return what we
+                    # have; the next cycle retries.
+                    log.warning("books batch rate-limited; skipping %d tokens "
+                                "this cycle", len(token_ids) - i)
+                    return result
                 resp.raise_for_status()
-                for entry in resp.json():
+                entries = resp.json()
+                if not isinstance(entries, list):
+                    raise ValueError("unexpected /books response shape")
+                for entry in entries:
                     ob = OrderBook.from_clob(entry)
                     if ob.token_id:
                         result[ob.token_id] = ob
-            except (requests.RequestException, ValueError):
+            except (requests.RequestException, ValueError, TypeError, KeyError):
                 for t in chunk:
                     ob = self.book(t)
                     if ob:

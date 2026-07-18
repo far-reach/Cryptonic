@@ -119,13 +119,23 @@ class Portfolio:
         self.save()
 
     def fill_open_order(self, order_id: str, shares: float, fee: float = 0.0) -> None:
-        """Convert (part of) a resting order into a position/sale."""
+        """Convert (part of) a resting order into a position/sale.
+
+        The order decrement, reservation release and position booking mutate
+        state in memory FIRST and persist once (inside apply_buy/apply_sell's
+        _record) — a crash can only ever persist the old image or the fully
+        consistent new one, never a half-booked fill.
+        """
         o = self.state["open_orders"].get(order_id)
         if not o:
             raise ValueError(f"unknown open order {order_id}")
         shares = min(shares, o["shares"])
+        if shares <= 1e-9:
+            return
+        o["shares"] -= shares
+        if o["shares"] <= 1e-9:
+            del self.state["open_orders"][order_id]
         if o["side"] == "BUY":
-            # release reservation for the filled part, then book the buy
             release = o["price"] * shares
             self.state["reserved"] = max(0.0, self.reserved - release)
             self.state["cash"] = self.cash + release
@@ -134,7 +144,7 @@ class Portfolio:
                 shares=shares, fee=fee, timestamp=_now(), strategy=o["strategy"],
                 market_question=o["market_question"], outcome=o["outcome"],
                 condition_id=o.get("condition_id", ""),
-            ))
+            ), force=True)  # exchange-confirmed: must book even if fees nudge past cash
         else:
             self.apply_sell(Fill(
                 token_id=o["token_id"], side="SELL", price=o["price"],
@@ -142,16 +152,18 @@ class Portfolio:
                 market_question=o["market_question"], outcome=o["outcome"],
                 condition_id=o.get("condition_id", ""),
             ))
-        o["shares"] -= shares
-        if o["shares"] <= 1e-9:
-            del self.state["open_orders"][order_id]
-        self.save()
 
     # -- position mutations ------------------------------------------------
-    def apply_buy(self, fill: Fill) -> None:
+    def apply_buy(self, fill: Fill, force: bool = False) -> None:
+        """Book a buy. `force=True` books it even past the cash check — used
+        for exchange-CONFIRMED fills, which must always enter the ledger
+        (a fill that already happened on-chain cannot be rejected locally)."""
         cost = fill.price * fill.shares + fill.fee
         if cost > self.cash + 1e-9:
-            raise ValueError(f"buy cost ${cost:.2f} exceeds cash ${self.cash:.2f}")
+            if not force:
+                raise ValueError(f"buy cost ${cost:.2f} exceeds cash ${self.cash:.2f}")
+            log.error("booking confirmed fill past cash check "
+                      "(cost $%.4f, cash $%.4f) — reconcile balances", cost, self.cash)
         self.state["cash"] = self.cash - cost
         pos = self.state["positions"].get(fill.token_id)
         if pos:

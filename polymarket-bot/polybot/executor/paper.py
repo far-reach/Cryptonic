@@ -32,16 +32,20 @@ class PaperExecutor(Executor):
         total = 0.0
         for leg in opp.legs:
             shares = leg.shares * scale
-            fee = self.fees.taker_fee(shares, leg.price, leg.category)
+            # book at the planned AVERAGE fill price from the depth walk, not
+            # the worst-level limit price — otherwise multi-level fills would
+            # overstate cost and corrupt paper PnL as a validation signal
+            px = leg.fill_price
+            fee = self.fees.taker_fee(shares, px, leg.category)
             fill = Fill(
-                token_id=leg.token_id, side=leg.side, price=leg.price,
+                token_id=leg.token_id, side=leg.side, price=px,
                 shares=shares, fee=fee, timestamp=now_iso(),
                 strategy=opp.strategy, market_question=leg.market_question,
                 outcome=leg.outcome, condition_id=leg.condition_id,
             )
             if leg.side == "BUY":
                 self.portfolio.apply_buy(fill)
-                total += leg.price * shares + fee
+                total += px * shares + fee
             else:
                 self.portfolio.apply_sell(fill)
         log.info("PAPER filled %s for $%.2f", opp.kind, total)
@@ -49,11 +53,15 @@ class PaperExecutor(Executor):
 
     def place_maker(self, opp: Opportunity, scale: float = 1.0) -> ExecutionResult:
         quote_key = opp.key
+        legs = [(leg, round(leg.shares * scale, 2)) for leg in opp.legs]
+        legs = [(l, s) for l, s in legs if s > 0]
+        # affordability check for the WHOLE quote before placing any leg,
+        # so a failure can never strand a one-legged quote
+        need = sum(l.price * s for l, s in legs if l.side == "BUY")
+        if need > self.portfolio.cash + 1e-9:
+            return ExecutionResult(False, "quote exceeds free cash; skipped")
         placed = 0.0
-        for leg in opp.legs:
-            shares = round(leg.shares * scale, 2)
-            if shares <= 0:
-                continue
+        for leg, shares in legs:
             order = OpenOrder(
                 order_id=f"paper-{uuid.uuid4().hex[:12]}",
                 token_id=leg.token_id, side=leg.side, price=leg.price,

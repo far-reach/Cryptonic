@@ -51,11 +51,15 @@ class NegRiskArb(Strategy):
             return []
         out: list[Opportunity] = []
         for event in events:
+            listed = event.get("markets") or []
             ms = _event_markets(event)
             if not (2 <= len(ms) <= cfg.negrisk_max_legs):
                 continue
             augmented = bool(event.get("negRiskAugmented", False))
-            if not augmented:
+            # YES basket needs the FULL outcome set: if any listed market was
+            # dropped (paused/closed/unparseable), the survivors are not
+            # exhaustive and the "guaranteed $1" payout is fiction.
+            if not augmented and len(ms) == len(listed):
                 opp = self._basket(event, ms, books, side="YES")
                 if opp:
                     out.append(opp)
@@ -93,7 +97,8 @@ class NegRiskArb(Strategy):
         legs = [
             Leg(m.yes_token_id if side == "YES" else m.no_token_id, "BUY",
                 limit_prices[i], shares, m.question,
-                "Yes" if side == "YES" else "No", m.category, m.condition_id)
+                "Yes" if side == "YES" else "No", m.category, m.condition_id,
+                avg_price=avg_prices[i])
             for i, m in enumerate(ms)
         ]
         return Opportunity(

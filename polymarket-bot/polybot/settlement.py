@@ -44,7 +44,7 @@ def _resolved_outcome(market_raw: dict) -> int | None:
 
 
 class SettlementChecker:
-    def __init__(self, gamma: GammaClient, portfolio: Portfolio):
+    def __init__(self, gamma: GammaClient | None, portfolio: Portfolio):
         self.gamma = gamma
         self.portfolio = portfolio
 
@@ -53,6 +53,8 @@ class SettlementChecker:
 
         Returns total realized PnL from settlements this pass.
         """
+        if self.gamma is None:
+            return 0.0
         positions = self.portfolio.positions()
         condition_ids = sorted({p.condition_id for p in positions if p.condition_id})
         if not condition_ids:

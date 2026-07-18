@@ -34,12 +34,18 @@ def size_basket(books: list[OrderBook], payout_per_share: float,
     candidates = sorted({round(cum, 6) for lad in ladders for cum, _, _ in lad})
 
     def leg_state(lad, size):
-        """(cum_cost, marginal_price) at `size`, or None if not enough depth."""
+        """(cum_cost, cum_fees, marginal_price) at `size`; None if not enough
+        depth. Fees accumulate PER LEVEL — the fee is charged at each fill's
+        own price, and fee(avg) != avg(fee) since p(1-p) is concave."""
         prev_shares = 0.0
         prev_cost = 0.0
+        prev_fees = 0.0
         for cum_shares, cum_cost, price in lad:
             if size <= cum_shares + 1e-9:
-                return prev_cost + (size - prev_shares) * price, price
+                part = size - prev_shares
+                return (prev_cost + part * price,
+                        prev_fees + part * fee_fn(price), price)
+            prev_fees += (cum_shares - prev_shares) * fee_fn(price)
             prev_shares, prev_cost = cum_shares, cum_cost
         return None
 
@@ -48,13 +54,13 @@ def size_basket(books: list[OrderBook], payout_per_share: float,
         states = [leg_state(lad, size) for lad in ladders]
         if any(s is None for s in states):
             break
-        marginal_prices = [s[1] for s in states]
+        marginal_prices = [s[2] for s in states]
         marginal_cost = sum(marginal_prices) + sum(fee_fn(p) for p in marginal_prices)
         marginal_edge = (payout_per_share - marginal_cost) / payout_per_share
         if marginal_edge < min_edge:
             break
         costs = [s[0] for s in states]
+        fees = [s[1] for s in states]
         avg_prices = [c / size for c in costs]
-        total_fees = sum(fee_fn(p) * size for p in avg_prices)
-        best = (size, avg_prices, marginal_prices, sum(costs) + total_fees)
+        best = (size, avg_prices, marginal_prices, sum(costs) + sum(fees))
     return best

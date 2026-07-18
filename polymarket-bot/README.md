@@ -38,16 +38,22 @@ for mispricings and trades them with a **$100 budget**. It ships in
 | 3 | `complement_arb` | **risk-free** | Buy YES + NO of one market for < $1 after fees. Books are normally mirrored, so this only fires on rare de-syncs — free to check, free money when it happens. |
 | 4 | `value_favorites` | probabilistic | Buy heavy favorites (0.90–0.985) within 14 days of resolution when the annualized after-fee return clears 35%. Quarter-Kelly sized, ≤ 8 positions, 15¢ stop-loss. **This one can lose.** |
 
-## The loop (each cycle, ~30s; 6s while hot)
+## The loop (each cycle, ~30s; 6s after real activity, never latched)
 
 1. scan markets + books (always including every token held or quoted)
-2. **settlement**: resolved markets credit automatically ($1 winners, $0 losers)
-3. sync resting maker orders → book fee-free maker fills
-4. **merge** completed YES+NO pairs back to cash (paper mode)
-5. inventory stop: dump one-sided maker inventory that ran 8¢ against us
-6. value stop-loss: exit favorites whose bid fell 15¢ below cost
-7. maker quote management: cancel stale → requote on 2-tick drift → place new
-8. taker opportunities (arbs first, then value) through the risk gate
+2. **mark-to-market**: fresh best bids feed the drawdown halt — it fires on
+   market value, not cost basis
+3. **settlement**: resolved markets credit automatically ($1 winners, $0 losers)
+4. sync resting maker orders → book fee-free maker fills
+5. **merge** completed YES+NO pairs back to cash (paper mode)
+6. inventory stop: dump **unpaired** maker inventory that ran 8¢ against us
+   (hedged YES+NO pairs are locked profit and are never stopped out); the
+   stopped market enters a ~20-minute quoting cooldown so losses can't churn
+7. value stop-loss: exit favorites whose bid fell 15¢ below cost — exits are
+   depth-aware (sell only what the book pays fairly for, retry the rest)
+8. maker quote management: cancel stale → requote on 2-tick drift (in the
+   market's own tick size) → place new
+9. taker opportunities (arbs first, then value) through the risk gate
 
 ## Risk management (the part that matters at $100)
 
@@ -110,9 +116,11 @@ pip install pytest && python -m pytest tests/ -q   # 62 tests, all offline
 
 ### Live-trading risks paper mode cannot show you
 
-- **Leg risk** — multi-leg arbs fill sequentially (FOK per leg); a failed
-  later leg triggers an automatic market unwind that eats the spread.
-  Watch logs for `UNWIND FAILED` — that position must be closed manually.
+- **Leg risk** — multi-leg arbs fill sequentially (limit-FOK per leg, so
+  each leg has a hard price cap); a failed later leg triggers an automatic
+  unwind that eats the spread, and the unwind IS booked to the ledger so it
+  counts toward the daily loss stop. Watch logs for `UNWIND FAILED` — that
+  position must be closed manually.
 - **Queue position** — live maker fills will be slower and more adverse
   than paper's optimistic simulation.
 - **Pair capital** — completed live YES+NO pairs stay on the book until

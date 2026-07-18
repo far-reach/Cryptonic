@@ -108,4 +108,5 @@ class MarketMaker(Strategy):
             end_date=m.end_date,
             key=f"maker:{m.condition_id}",       # one live quote per market
             execution="maker",
+            tick=tick,
         )

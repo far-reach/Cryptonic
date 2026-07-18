@@ -167,6 +167,13 @@ class Leg:
     outcome: str = ""
     category: str = ""       # fee category of the market
     condition_id: str = ""   # market identifier, needed for settlement
+    avg_price: float = 0.0   # planned average fill price when walking depth
+                             # (price is the worst/limit price); 0 -> use price
+
+    @property
+    def fill_price(self) -> float:
+        """Price the leg is expected to fill at on average."""
+        return self.avg_price or self.price
 
     @property
     def notional(self) -> float:
@@ -189,6 +196,7 @@ class Opportunity:
     end_date: str = ""
     key: str = ""                 # dedupe key so we don't re-enter the same opp
     execution: str = "taker"      # "taker" = cross the book now; "maker" = rest limit orders
+    tick: float = 0.01            # the market's price tick (drift/requote math)
 
     def summary(self) -> str:
         tag = "ARB " if self.guaranteed else "VALUE"
