@@ -29,6 +29,8 @@ export interface ClassifiedAnnouncement extends Announcement {
   severity: Severity;
   /** Human-readable reasons the classifier picked this severity. */
   reasons: string[];
+  /** Why the exchange took the action, extracted from the article body (see article.ts). */
+  reason?: import("./article.js").ArticleReason;
 }
 
 export interface Briefing {

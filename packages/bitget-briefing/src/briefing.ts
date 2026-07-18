@@ -46,7 +46,10 @@ function fmtTime(ms: number | null): string {
 function mdItem(a: ClassifiedAnnouncement): string {
   const link = a.url ? `[${a.title}](${a.url})` : a.title;
   const reasons = a.reasons.length ? ` · _${a.reasons.join(", ")}_` : "";
-  return `- **${link}**\n  ${fmtTime(a.publishedAt)}${reasons}`;
+  const why = a.reason?.excerpt ? `\n  ℹ️ _${a.reason.excerpt}_` : "";
+  const security =
+    a.reason?.cause === "security" ? `\n  🛡 **Security-related — treat as elevated risk**` : "";
+  return `- **${link}**\n  ${fmtTime(a.publishedAt)}${reasons}${why}${security}`;
 }
 
 /** Render the briefing as GitHub-flavoured markdown. */

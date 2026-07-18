@@ -280,6 +280,54 @@ describe("summary chart & photo delivery", () => {
   });
 });
 
+describe("article reasons", () => {
+  it("classifies causes and extracts the explanatory sentence", async () => {
+    const { findReason } = await import("../src/article.js");
+    const upgrade = findReason(
+      "Dear Bitget users. To support the Klever network upgrade, Bitget will suspend KLV deposit and withdrawal services on July 18. Trading is not affected. Thank you for your support.",
+    );
+    expect(upgrade).toMatchObject({ cause: "network-upgrade" });
+    expect(upgrade!.excerpt).toContain("Klever network upgrade");
+
+    const hack = findReason(
+      "Due to a security incident affecting the HOME bridge contract, deposits and withdrawals are suspended until further notice. Funds on Bitget remain safe.",
+    );
+    expect(hack).toMatchObject({ cause: "security" });
+    expect(hack!.excerpt).toContain("security incident");
+
+    const generic = findReason("We will list a new token soon. Trading opens tomorrow at noon exactly.");
+    expect(generic).toBeNull();
+  });
+
+  it("extracts article text from __NEXT_DATA__ pages and attaches reasons", async () => {
+    const { attachReasons, extractArticleText } = await import("../src/article.js");
+    const body =
+      "<p>To support the <b>Aptos network upgrade</b>, Bitget will suspend USDC deposits. Withdrawals resume once the network is stable. Thanks for understanding and support.</p>";
+    const html = `<html><head><script id="__NEXT_DATA__" type="application/json">${JSON.stringify({
+      props: { pageProps: { article: { content: body, title: "t" } } },
+    })}</script></head><body><div>chrome</div></body></html>`;
+    expect(extractArticleText(html)).toContain("Aptos network upgrade");
+
+    const anns = classifyAll([
+      ann({ id: "1", title: "Suspending USDC - APTOS", section: "maintenance_system_updates", url: "https://x/a" }),
+    ]);
+    const fetchFn: FetchLike = async () => ({ ok: true, status: 200, text: async () => html });
+    await attachReasons(anns, fetchFn);
+    expect(anns[0].reason).toMatchObject({ cause: "network-upgrade" });
+  });
+
+  it("renders the why-line and the security flag in telegram output", async () => {
+    const { renderTelegramHtml } = await import("../src/telegram.js");
+    const anns = classifyAll([
+      ann({ id: "1", title: "Suspending HOME - BASE network withdrawal service", section: "maintenance_system_updates" }),
+    ]);
+    anns[0].reason = { cause: "security", excerpt: "Due to a security incident affecting the HOME bridge contract." };
+    const html = renderTelegramHtml(buildBriefing(anns, { windowHours: 24, now: NOW }));
+    expect(html).toContain("ℹ️ <i>Due to a security incident");
+    expect(html).toContain("🛡 <b>Security-related — treat as elevated risk</b>");
+  });
+});
+
 describe("trade angles", () => {
   it("derives prioritized signals with extracted assets", async () => {
     const { deriveSignals, extractAsset } = await import("../src/signals.js");

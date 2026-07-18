@@ -27,6 +27,7 @@ import { buildSummaryChartUrl, renderTelegramCaption, renderTelegramHtml } from 
 import { buildTrendSeries, loadHistory } from "./history.js";
 import { attachPriceLevels } from "./signals.js";
 import { fetchSpotPrices } from "./prices.js";
+import { attachReasons } from "./article.js";
 import { existsSync } from "node:fs";
 import { sampleAnnouncements } from "./sample-data.js";
 import type { FetchLike } from "./types.js";
@@ -62,6 +63,9 @@ async function main(): Promise<number> {
   if (!demo && briefing.signals.some((s) => s.coin)) {
     briefing.signals = attachPriceLevels(briefing.signals, await fetchSpotPrices());
   }
+
+  // Fetch article bodies for critical items and attach the "why" (best-effort).
+  if (!demo) await attachReasons(briefing.critical);
 
   if (criticalOnly && briefing.critical.length === 0) {
     console.error("No critical announcements in the window; staying quiet (--critical-only).");
