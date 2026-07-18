@@ -23,6 +23,7 @@ import { fetchAnnouncements } from "./fetch.js";
 import { classifyAll } from "./classify.js";
 import { buildBriefing, renderMarkdown, renderText } from "./briefing.js";
 import { discoverTelegramChatId, notifyAll } from "./notify.js";
+import { renderTelegramHtml } from "./telegram.js";
 import { sampleAnnouncements } from "./sample-data.js";
 import type { FetchLike } from "./types.js";
 
@@ -64,7 +65,13 @@ async function main(): Promise<number> {
   if (process.env.BRIEFING_OUTPUT) writeFileSync(process.env.BRIEFING_OUTPUT, markdown);
   if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, markdown);
 
-  const notifyErrors = await notifyAll(renderText(briefing));
+  const historyUrl = process.env.GITHUB_REPOSITORY
+    ? `${process.env.GITHUB_SERVER_URL ?? "https://github.com"}/${process.env.GITHUB_REPOSITORY}/blob/${process.env.GITHUB_REF_NAME ?? "main"}/briefings/latest.md`
+    : undefined;
+  const notifyErrors = await notifyAll({
+    text: renderText(briefing),
+    telegramHtml: renderTelegramHtml(briefing, { historyUrl }),
+  });
 
   // After a successful auto-discovered delivery, record the chat id so the
   // workflow can pin it (delivery then no longer depends on recent messages).

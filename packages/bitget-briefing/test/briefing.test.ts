@@ -132,6 +132,74 @@ describe("parseAnnouncementCenterHtml", () => {
   });
 });
 
+describe("telegram rendering", () => {
+  const mk = (id: string, title: string, publishedAt: number): Announcement => ({
+    id,
+    title,
+    url: `https://www.bitget.com/en/support/articles/${id}`,
+    section: "maintenance_system_updates",
+    publishedAt,
+  });
+
+  it("pairs suspend→resume about the same subject into one resolved entry", async () => {
+    const { pairSuspendResume } = await import("../src/telegram.js");
+    const items = classifyAll([
+      mk("1", "Bitget announcement on suspending USDC - APTOS network withdrawal service", NOW - 8 * 3_600_000),
+      mk("2", "Bitget announcement on resuming USDC - APTOS withdrawals", NOW - 1 * 3_600_000),
+      mk("3", "Bitget announcement on suspending HOME - BASE network withdrawal service", NOW - 5 * 3_600_000),
+    ]);
+    const paired = pairSuspendResume(items);
+    expect(paired).toHaveLength(2);
+    expect(paired[0].kind).toBe("single"); // HOME still down, first
+    expect(paired[0].item.id).toBe("3");
+    expect(paired[1].kind).toBe("resolved");
+    expect(paired[1].item.id).toBe("2");
+    expect(paired[1].counterpart?.id).toBe("1");
+  });
+
+  it("renders HTML with glyphs, linked titles, no raw URLs in text", async () => {
+    const { renderTelegramHtml } = await import("../src/telegram.js");
+    const b = buildBriefing(
+      classifyAll([
+        mk("1", "Bitget announcement on suspending HOME - BASE network withdrawal service", NOW - 5 * 3_600_000),
+        mk("2", "Notice of <Special> & Maintenance", NOW - 2 * 3_600_000),
+      ]),
+      { windowHours: 24, now: NOW },
+    );
+    const html = renderTelegramHtml(b, { historyUrl: "https://github.com/x/y/blob/z/briefings/latest.md" });
+    expect(html).toContain("<b>Bitget Daily Briefing</b>");
+    expect(html).toContain('⏸ <a href="https://www.bitget.com/en/support/articles/1">');
+    expect(html).toContain("&lt;Special&gt; &amp; Maintenance"); // escaped
+    expect(html).toContain("🚨 <b>Needs attention</b>");
+    expect(html).toContain("📚 Briefing history");
+    expect(html).not.toMatch(/[^"]https:\/\/www\.bitget\.com/); // links only inside href attrs
+  });
+
+  it("condenses boilerplate titles and celebrates quiet days", async () => {
+    const { condenseTitle, renderTelegramHtml } = await import("../src/telegram.js");
+    expect(condenseTitle("Bitget announcement on resuming USDC - APTOS withdrawals")).toBe(
+      "Resuming USDC - APTOS withdrawals",
+    );
+    expect(condenseTitle("Notice of Suspension for TON Deposit and Withdrawal")).toBe(
+      "Suspension for TON Deposit and Withdrawal",
+    );
+    const html = renderTelegramHtml(buildBriefing([], { now: NOW }));
+    expect(html).toContain("Nothing critical today");
+  });
+
+  it("stays under Telegram's message limit with many items", async () => {
+    const { renderTelegramHtml } = await import("../src/telegram.js");
+    const many = classifyAll(
+      Array.from({ length: 60 }, (_, i) =>
+        mk(String(i), `Bitget announcement on suspending COIN${i} - CHAIN${i} network withdrawal service with a fairly long title padding ${"x".repeat(40)}`, NOW - i * 60_000),
+      ),
+    );
+    const html = renderTelegramHtml(buildBriefing(many, { windowHours: 24, now: NOW }));
+    expect(html.length).toBeLessThanOrEqual(4096);
+    expect(html).toContain("more</i>");
+  });
+});
+
 describe("fetchAnnouncements", () => {
   const apiOk = (rows: unknown[]): string => JSON.stringify({ code: "00000", data: rows });
 
