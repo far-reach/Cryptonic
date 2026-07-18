@@ -124,21 +124,35 @@ function link(a: ClassifiedAnnouncement, label: string): string {
   return a.url ? `<a href="${escapeHtml(a.url)}">${safe}</a>` : safe;
 }
 
+/** "why" line: the article's own explanation, with a loud flag for security causes. */
+function reasonLine(a: ClassifiedAnnouncement): string {
+  const r = a.reason;
+  if (!r) return "";
+  const parts: string[] = [];
+  if (r.excerpt) parts.push(`\n      ℹ️ <i>${escapeHtml(r.excerpt)}</i>`);
+  if (r.cause === "security") {
+    parts.push(`\n      🛡 <b>Security-related — treat as elevated risk</b>`);
+  }
+  return parts.join("");
+}
+
 function renderPaired(p: PairedItem): string {
   if (p.kind === "resolved") {
     // Subject from the resume title, verbs stripped: "USDC - APTOS withdrawals"
     const subject = condenseTitle(p.item.title).replace(/^resum\w*\s+(of\s+)?/i, "");
     const to = fmtTime(p.item.publishedAt);
+    // Prefer the resume article's reason; fall back to the suspension's.
+    const item = p.item.reason ? p.item : { ...p.item, reason: p.counterpart?.reason };
     if (p.counterpart) {
       const from = fmtTime(p.counterpart.publishedAt);
-      return `✅ ${link(p.item, subject)}\n      <i>⏸ ${escapeHtml(from)} → ✅ ${escapeHtml(to)} UTC — back to normal</i>`;
+      return `✅ ${link(p.item, subject)}\n      <i>⏸ ${escapeHtml(from)} → ✅ ${escapeHtml(to)} UTC — back to normal</i>${reasonLine(item)}`;
     }
-    return `✅ ${link(p.item, subject)}\n      <i>resumed ${escapeHtml(to)} UTC</i>`;
+    return `✅ ${link(p.item, subject)}\n      <i>resumed ${escapeHtml(to)} UTC</i>${reasonLine(item)}`;
   }
   const a = p.item;
   const when = fmtTime(a.publishedAt);
   const time = when ? `\n      <i>${escapeHtml(when)} UTC</i>` : "";
-  return `${glyphFor(a)} ${link(a, condenseTitle(a.title))}${time}`;
+  return `${glyphFor(a)} ${link(a, condenseTitle(a.title))}${time}${reasonLine(a)}`;
 }
 
 /**

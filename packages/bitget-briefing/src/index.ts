@@ -7,4 +7,5 @@ export * from "./telegram.js";
 export * from "./history.js";
 export * from "./signals.js";
 export * from "./prices.js";
+export * from "./article.js";
 export { sampleAnnouncements } from "./sample-data.js";
