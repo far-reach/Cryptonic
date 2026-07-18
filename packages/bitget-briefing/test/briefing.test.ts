@@ -300,6 +300,48 @@ describe("trade angles", () => {
     expect(signals.map((s) => s.stance)).toContain("avoid-chase");
   });
 
+  it("computes research-anchored entry/TP/SL brackets per stance", async () => {
+    const { deriveSignals, attachPriceLevels, computeLevels, formatLevels } = await import("../src/signals.js");
+    const signals = deriveSignals(
+      classifyAll([
+        ann({ id: "d", title: "Notice on the Delisting of KLV/USDT Spot Trading Pair", section: "symbol_delisting" }),
+        ann({ id: "r", title: "Bitget announcement on resuming OM - Mantra withdrawals", section: "maintenance_system_updates" }),
+        ann({ id: "l", title: "Bitget Will List NewCoin (NEW) in the Innovation Zone", section: "coin_listings" }),
+        ann({ id: "f", title: "Bitget announcement on suspending KAVA - Kava deposit services", section: "maintenance_system_updates" }),
+      ]),
+    );
+    const prices = new Map([["KLVUSDT", 0.002], ["OMUSDT", 2.5], ["NEWUSDT", 1.0], ["KAVAUSDT", 0.5]]);
+    const withLevels = attachPriceLevels(signals, prices);
+
+    const delist = withLevels.find((s) => s.stance === "exit-risk")!;
+    expect(delist.levels).toMatchObject({ side: "short", entry: 0.002, tp: 0.0014, sl: 0.00224 });
+    const resume = withLevels.find((s) => /resum/i.test(s.source.title))!;
+    expect(resume.levels).toMatchObject({ side: "short", entry: 2.5, tp: 2.375, sl: 2.6 });
+    const listing = withLevels.find((s) => s.stance === "avoid-chase")!;
+    expect(listing.levels).toMatchObject({ side: "long", entry: 0.85, tp: 1.0, sl: 0.765 });
+    // frozen transfers: watch only, no levels
+    const frozen = withLevels.find((s) => /suspending KAVA/i.test(s.source.title))!;
+    expect(frozen.levels).toBeUndefined();
+    // stablecoins never get levels
+    expect(computeLevels({ ...delist, coin: undefined }, 1)).toBeDefined(); // levels are stance-based
+    expect(formatLevels(delist.levels!)).toBe("Short @ 0.002 · TP 0.0014 (−30%) · SL 0.00224 (+12%)");
+  });
+
+  it("parses the Bitget spot tickers response", async () => {
+    const { fetchSpotPrices } = await import("../src/prices.js");
+    const fetchFn: FetchLike = async () => ({
+      ok: true,
+      status: 200,
+      text: async () =>
+        JSON.stringify({ code: "00000", data: [{ symbol: "KLVUSDT", lastPr: "0.002" }, { symbol: "BAD" }, {}] }),
+    });
+    const prices = await fetchSpotPrices(fetchFn);
+    expect(prices.get("KLVUSDT")).toBe(0.002);
+    expect(prices.size).toBe(1);
+    const failing: FetchLike = async () => ({ ok: false, status: 403, text: async () => "" });
+    expect((await fetchSpotPrices(failing)).size).toBe(0);
+  });
+
   it("renders trade angles in telegram and markdown with a disclaimer", async () => {
     const { renderTelegramHtml } = await import("../src/telegram.js");
     const b = buildBriefing(

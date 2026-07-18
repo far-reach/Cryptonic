@@ -1,6 +1,6 @@
 import type { Briefing, ClassifiedAnnouncement } from "./types.js";
 import type { TrendSeries } from "./history.js";
-import { STANCE_GLYPH } from "./signals.js";
+import { formatLevels, STANCE_GLYPH } from "./signals.js";
 
 /** Telegram sendMessage hard limit is 4096 chars; leave headroom for the footer. */
 const MAX_LEN = 3900;
@@ -329,7 +329,8 @@ export function renderTelegramHtml(
   if (b.signals.length) {
     const lines = b.signals.map((s) => {
       const asset = s.asset ? `<b>${escapeHtml(s.asset)}</b> — ` : "";
-      return `${STANCE_GLYPH[s.stance]} ${asset}${escapeHtml(s.note)}`;
+      const levels = s.levels ? `\n      <code>${escapeHtml(formatLevels(s.levels))}</code>` : "";
+      return `${STANCE_GLYPH[s.stance]} ${asset}${escapeHtml(s.note)}${levels}`;
     });
     sections.push(
       `💡 <b>Trade angles</b>\n\n${lines.join("\n\n")}\n\n<i>Pattern heuristics from historical announcement studies — not financial advice.</i>`,
