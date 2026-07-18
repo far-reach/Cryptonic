@@ -35,7 +35,7 @@ _Nothing else._
 - 🔁 **KLV (Klever)** — With transfers frozen, the Bitget price can decouple from other venues; note the gap — it historically closes on resumption.
 - 🔁 **USDC (APTOS)** — Transfers reconnected: any Bitget premium/discount vs the global price tends to snap shut, and trapped holders can finally move coins — watch for a supply wave.
 - 🔁 **MANTRA (Mantra)** — Transfers reconnected: any Bitget premium/discount vs the global price tends to snap shut, and trapped holders can finally move coins — watch for a supply wave.
-  `Short @ 0.006208 · TP 0.005898 (−5%) · SL 0.006456 (+4%)`
+  `Short @ 0.006207 · TP 0.005897 (−5%) · SL 0.006455 (+4%)`
 - 🔁 **HOME (BASE)** — With transfers frozen, the Bitget price can decouple from other venues; note the gap — it historically closes on resumption.
 
 _Pattern heuristics from historical announcement studies — not financial advice._
