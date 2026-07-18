@@ -34,10 +34,10 @@ _Nothing else._
 
 ## 💡 Trade angles
 
-- 🔁 **KLV (Klever)** — With transfers frozen, the Bitget price can decouple from other venues; note the gap — it historically closes on resumption.
-- 🔁 **USDC (APTOS)** — Transfers reconnected: any Bitget premium/discount vs the global price tends to snap shut, and trapped holders can finally move coins — watch for a supply wave.
-- 🔁 **MANTRA (Mantra)** — Transfers reconnected: any Bitget premium/discount vs the global price tends to snap shut, and trapped holders can finally move coins — watch for a supply wave.
-  `Short @ 0.006214 · TP 0.005903 (−5%) · SL 0.006463 (+4%)`
-- 🌊 **FWDIUSDT perp** — Exchange de-risking this contract flags unusual volatility/liquidity; size down and expect funding swings.
+- 🔁 **KLV (Klever)** — While transfers are frozen, the Bitget price can drift away from other exchanges. That gap usually snaps back once transfers reopen — worth tracking.
+- 🔁 **USDC (APTOS)** — Transfers just reopened: any price gap vs other exchanges usually closes fast, and holders who were stuck can now sell. Expect a brief selling wave.
+- 🔁 **MANTRA (Mantra)** — Transfers just reopened: any price gap vs other exchanges usually closes fast, and holders who were stuck can now sell. Expect a brief selling wave.
+  `Short @ 0.006197 · TP 0.005887 (−5%) · SL 0.006445 (+4%)`
+- 🌊 **FWDIUSDT perp** — Bitget just tightened this contract's risk settings — it expects sharp moves. Trade smaller and watch funding.
 
 _Pattern heuristics from historical announcement studies — not financial advice._
