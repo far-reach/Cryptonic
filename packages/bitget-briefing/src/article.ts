@@ -66,7 +66,7 @@ export function extractArticleText(html: string): string {
   // Bitget article bodies open with a salutation or the action lead-in; cutting
   // there drops the page chrome (nav, footers) that precedes the content.
   const lead = full.search(
-    /dear bitget|to support\b|due to\b|because of\b|as part of\b|in order to\b|will (temporarily )?(suspend|pause|halt|resume)/i,
+    /dear bitget|to support\b|due to\b|because of\b|as part of\b|in order to\b|((bitget|we) )?(will|has|have) (temporarily |now |been )?(suspend(ed)?|paus(e|ed)|halt(ed)?|resum(e|ed))/i,
   );
   return lead >= 0 ? full.slice(lead) : full;
 }

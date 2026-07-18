@@ -316,6 +316,15 @@ describe("article reasons", () => {
     expect(resumed!.excerpt).toContain("have now resumed");
   });
 
+  it("cuts 'has resumed' bodies out of the chrome blob", async () => {
+    const { extractArticleText, findReason } = await import("../src/article.js");
+    const html =
+      "<html><body><nav>Resuming USDC withdrawals Bitget Support Center Bitget App Trade smarter Buy crypto Markets Trade Futures Earn Square More lots of nav text without periods</nav>" +
+      "<p>Bitget has resumed the withdrawal function of the USDC - APTOS network. Thank you all for your patience.</p></body></html>";
+    const reason = findReason(extractArticleText(html));
+    expect(reason!.excerpt).toBe("Bitget has resumed the withdrawal function of the USDC - APTOS network.");
+  });
+
   it("extracts article text from __NEXT_DATA__ pages and attaches reasons", async () => {
     const { attachReasons, extractArticleText } = await import("../src/article.js");
     const body =
