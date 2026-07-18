@@ -25,6 +25,8 @@ import { buildBriefing, renderMarkdown, renderText } from "./briefing.js";
 import { discoverTelegramChatId, notifyAll } from "./notify.js";
 import { buildSummaryChartUrl, renderTelegramCaption, renderTelegramHtml } from "./telegram.js";
 import { buildTrendSeries, loadHistory } from "./history.js";
+import { attachPriceLevels } from "./signals.js";
+import { fetchSpotPrices } from "./prices.js";
 import { existsSync } from "node:fs";
 import { sampleAnnouncements } from "./sample-data.js";
 import type { FetchLike } from "./types.js";
@@ -55,6 +57,11 @@ async function main(): Promise<number> {
   }
 
   const briefing = buildBriefing(classifyAll(announcements), { windowHours, now, fetchErrors });
+
+  // Live prices turn signals into concrete entry/TP/SL brackets (best-effort).
+  if (!demo && briefing.signals.some((s) => s.coin)) {
+    briefing.signals = attachPriceLevels(briefing.signals, await fetchSpotPrices());
+  }
 
   if (criticalOnly && briefing.critical.length === 0) {
     console.error("No critical announcements in the window; staying quiet (--critical-only).");

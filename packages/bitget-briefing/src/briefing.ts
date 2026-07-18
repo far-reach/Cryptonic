@@ -1,5 +1,5 @@
 import type { Briefing, ClassifiedAnnouncement } from "./types.js";
-import { deriveSignals, STANCE_GLYPH } from "./signals.js";
+import { deriveSignals, formatLevels, STANCE_GLYPH } from "./signals.js";
 
 export interface BriefingOptions {
   /** Look-back window; announcements older than this are dropped. Default 24. */
@@ -77,7 +77,9 @@ export function renderMarkdown(b: Briefing): string {
       "## 💡 Trade angles",
       "",
       ...b.signals.map(
-        (s) => `- ${STANCE_GLYPH[s.stance]} ${s.asset ? `**${s.asset}** — ` : ""}${s.note}`,
+        (s) =>
+          `- ${STANCE_GLYPH[s.stance]} ${s.asset ? `**${s.asset}** — ` : ""}${s.note}` +
+          (s.levels ? `\n  \`${formatLevels(s.levels)}\`` : ""),
       ),
       "",
       "_Pattern heuristics from historical announcement studies — not financial advice._",

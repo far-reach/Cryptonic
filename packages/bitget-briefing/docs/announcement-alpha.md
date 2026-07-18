@@ -51,6 +51,23 @@ sometimes delistings). The angle is defensive: smaller size, wider stops,
 expect funding swings. New margin availability tends to raise short-term
 volume and volatility.
 
+## Entry / TP / SL brackets
+
+When a live Bitget spot price is available for the signal's coin, the briefing
+attaches mechanical brackets anchored to the research above (percentages from
+the last price at briefing time — rules of thumb, **not price predictions**):
+
+| Stance | Side | Entry | Take profit | Stop loss | Anchor |
+|---|---|---|---|---|---|
+| exit-risk (delisting) | short | last | −30% | +12% | documented −20…−40% drift; SL above typical dead-cat bounce |
+| short-bias (risk tag) | short | last | −15% | +8% | pre-delisting negative drift |
+| arb-watch (resumption only) | short | last | −5% | +4% | reconnect supply wave / premium close |
+| avoid-chase (listing/launch) | long | last −15% | back to last (+15%) | −10% below entry | post-listing retrace magnitude |
+| vol-watch | — | no levels | | | signal is about sizing, not direction |
+
+Frozen-transfer `arb-watch` signals carry no levels (nothing tradable until
+transfers reopen), and stablecoins never get levels.
+
 ## Launch events (→ `avoid-chase`)
 
 Launchpool/pre-market reward tokens face concentrated sell pressure when farmed
