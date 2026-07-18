@@ -18,6 +18,7 @@
  *   --critical-only        exit 0 and print nothing unless there are critical items
  */
 import { appendFileSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
 import { fetchAnnouncements } from "./fetch.js";
 import { classifyAll } from "./classify.js";
 import { buildBriefing, renderMarkdown, renderText } from "./briefing.js";
@@ -63,7 +64,13 @@ async function main(): Promise<number> {
   if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, markdown);
 
   const notifyErrors = await notifyAll(renderText(briefing));
-  for (const e of notifyErrors) console.error(`notify failed — ${e}`);
+  if (notifyErrors.length > 0) {
+    for (const e of notifyErrors) console.error(`notify failed — ${e}`);
+    // Record configured-channel failures where the workflow can pick them up;
+    // don't fail here so the briefing itself still gets published.
+    const dir = process.env.BRIEFING_OUTPUT ? dirname(process.env.BRIEFING_OUTPUT) : ".";
+    writeFileSync(join(dir, "notify-errors.log"), notifyErrors.join("\n") + "\n");
+  }
   return 0;
 }
 

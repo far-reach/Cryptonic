@@ -3,7 +3,9 @@ import {
   buildBriefing,
   classify,
   classifyAll,
+  discoverTelegramChatId,
   fetchAnnouncements,
+  notifyAll,
   parseAnnouncementCenterHtml,
   parseApiResponse,
   renderMarkdown,
@@ -163,6 +165,63 @@ describe("fetchAnnouncements", () => {
     expect(announcements).toHaveLength(1);
     expect(announcements[0].title).toBe("Fallback title");
     expect(errors.some((e) => e.includes("HTML fallback"))).toBe(true);
+  });
+
+  it("discovers the telegram chat id from the latest update", async () => {
+    const fetchFn: FetchLike = async () => ({
+      ok: true,
+      status: 200,
+      text: async () =>
+        JSON.stringify({
+          ok: true,
+          result: [
+            { message: { chat: { id: 111 } } },
+            { message: { chat: { id: 222 } } },
+            { edited_message: {} },
+          ],
+        }),
+    });
+    expect(await discoverTelegramChatId("tok", fetchFn)).toBe("222");
+  });
+
+  it("notifyAll sends to telegram with auto-discovered chat id and pin tip", async () => {
+    const calls: Array<{ url: string; body?: string }> = [];
+    const fetchFn: FetchLike = async (url, init) => {
+      calls.push({ url, body: init?.body });
+      if (url.includes("getUpdates")) {
+        return { ok: true, status: 200, text: async () => JSON.stringify({ ok: true, result: [{ message: { chat: { id: 42 } } }] }) };
+      }
+      return { ok: true, status: 200, text: async () => JSON.stringify({ ok: true }) };
+    };
+    const errors = await notifyAll("hello", { TELEGRAM_BOT_TOKEN: "tok" }, fetchFn);
+    expect(errors).toEqual([]);
+    const send = calls.find((c) => c.url.includes("sendMessage"));
+    const payload = JSON.parse(send!.body!);
+    expect(payload.chat_id).toBe("42");
+    expect(payload.text).toContain("hello");
+    expect(payload.text).toContain("TELEGRAM_CHAT_ID=42");
+  });
+
+  it("notifyAll reports a helpful error when nobody has messaged the bot", async () => {
+    const fetchFn: FetchLike = async (url) => ({
+      ok: true,
+      status: 200,
+      text: async () => JSON.stringify({ ok: true, result: [] }),
+    });
+    const errors = await notifyAll("hi", { TELEGRAM_BOT_TOKEN: "tok" }, fetchFn);
+    expect(errors).toHaveLength(1);
+    expect(errors[0]).toContain("press Start");
+  });
+
+  it("notifyAll uses a pinned TELEGRAM_CHAT_ID without discovery", async () => {
+    const calls: string[] = [];
+    const fetchFn: FetchLike = async (url, init) => {
+      calls.push(url);
+      return { ok: true, status: 200, text: async () => JSON.stringify({ ok: true }) };
+    };
+    const errors = await notifyAll("hi", { TELEGRAM_BOT_TOKEN: "tok", TELEGRAM_CHAT_ID: "99" }, fetchFn);
+    expect(errors).toEqual([]);
+    expect(calls.some((u) => u.includes("getUpdates"))).toBe(false);
   });
 
   it("retries the alternate API spelling on 404", async () => {

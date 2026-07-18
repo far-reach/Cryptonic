@@ -41,7 +41,8 @@ npm test --workspace @veil/bitget-briefing
 | `BRIEFING_WINDOW_HOURS` | `24` | Look-back window. |
 | `BRIEFING_LANGUAGE` | `en_US` | Bitget language code. |
 | `BRIEFING_OUTPUT` | — | Also write the markdown briefing to this file. |
-| `TELEGRAM_BOT_TOKEN` + `TELEGRAM_CHAT_ID` | — | Send the briefing to a Telegram chat. |
+| `TELEGRAM_BOT_TOKEN` | — | Send the briefing to a Telegram chat (see below). |
+| `TELEGRAM_CHAT_ID` | auto | Optional: pin the chat. Without it, the chat is auto-discovered from the bot's most recent incoming message (Telegram keeps updates ~24h, so pinning is recommended for daily delivery — the first delivered message tells you the id to pin). |
 | `SLACK_WEBHOOK_URL` | — | Send to a Slack incoming webhook. |
 | `DISCORD_WEBHOOK_URL` | — | Send to a Discord webhook. |
 
@@ -50,6 +51,17 @@ npm test --workspace @veil/bitget-briefing
 - `--demo` — render from bundled sample data (no network needed).
 - `--critical-only` — print nothing (and skip notifications) unless something critical
   happened; useful for alert-style scheduling.
+
+### Telegram setup
+
+1. In Telegram, talk to **@BotFather** → `/newbot` → copy the HTTP API token.
+2. Open your new bot's chat and press **Start** (or send it any message) — bots can't
+   message you first.
+3. Add the token as the `TELEGRAM_BOT_TOKEN` GitHub Actions secret
+   (repo → Settings → Secrets and variables → Actions). **Never commit the token** —
+   this repo is public.
+4. The next run delivers the briefing and includes your chat id — add it as
+   `TELEGRAM_CHAT_ID` to make delivery permanent.
 
 ## Daily schedule
 
