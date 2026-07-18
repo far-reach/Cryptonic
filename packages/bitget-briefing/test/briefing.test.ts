@@ -280,6 +280,43 @@ describe("summary chart & photo delivery", () => {
   });
 });
 
+describe("trade angles", () => {
+  it("derives prioritized signals with extracted assets", async () => {
+    const { deriveSignals, extractAsset } = await import("../src/signals.js");
+    expect(extractAsset("Bitget announcement on resuming USDC - APTOS withdrawals")).toBe("USDC (APTOS)");
+    expect(extractAsset("Bitget Will List NewCoin (NEW) in the Innovation Zone")).toBe("NEW");
+    expect(extractAsset("Notice on the Delisting of XYZ/USDT Spot Trading Pair")).toBe("XYZ/USDT");
+    expect(extractAsset("Bitget to adjust funding rate interval for 1000XECUSDT perpetual futures")).toBe("1000XECUSDT perp");
+
+    const anns = classifyAll([
+      ann({ id: "a", title: "Bitget Will List NewCoin (NEW) in the Innovation Zone", section: "coin_listings" }),
+      ann({ id: "b", title: "Notice on the Delisting of XYZ/USDT Spot Trading Pair", section: "symbol_delisting" }),
+      ann({ id: "c", title: "Bitget announcement on suspending VANA - Vana deposit and withdrawal services", section: "maintenance_system_updates" }),
+    ]);
+    const signals = deriveSignals(anns);
+    expect(signals[0].stance).toBe("exit-risk"); // delisting outranks the rest
+    expect(signals[0].asset).toBe("XYZ/USDT");
+    expect(signals.map((s) => s.stance)).toContain("arb-watch");
+    expect(signals.map((s) => s.stance)).toContain("avoid-chase");
+  });
+
+  it("renders trade angles in telegram and markdown with a disclaimer", async () => {
+    const { renderTelegramHtml } = await import("../src/telegram.js");
+    const b = buildBriefing(
+      classifyAll([ann({ id: "b", title: "Notice on the Delisting of XYZ/USDT Spot Trading Pair", section: "symbol_delisting" })]),
+      { windowHours: 24, now: NOW },
+    );
+    expect(b.signals).toHaveLength(1);
+    const html = renderTelegramHtml(b);
+    expect(html).toContain("💡 <b>Trade angles</b>");
+    expect(html).toContain("<b>XYZ/USDT</b>");
+    expect(html).toContain("not financial advice");
+    const md = renderMarkdown(b);
+    expect(md).toContain("## 💡 Trade angles");
+    expect(md).toContain("not financial advice");
+  });
+});
+
 describe("7-day trend", () => {
   it("parses TL;DR counts and builds a 7-day series with gaps and today's override", async () => {
     const { parseTldr, buildTrendSeries } = await import("../src/history.js");

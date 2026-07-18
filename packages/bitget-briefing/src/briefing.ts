@@ -1,4 +1,5 @@
 import type { Briefing, ClassifiedAnnouncement } from "./types.js";
+import { deriveSignals, STANCE_GLYPH } from "./signals.js";
 
 export interface BriefingOptions {
   /** Look-back window; announcements older than this are dropped. Default 24. */
@@ -24,12 +25,15 @@ export function buildBriefing(
     inWindow
       .filter((a) => a.severity === s)
       .sort((a, b) => (b.publishedAt ?? 0) - (a.publishedAt ?? 0));
+  const critical = bySeverity("critical");
+  const notable = bySeverity("notable");
   return {
     generatedAt: now,
     windowHours,
-    critical: bySeverity("critical"),
-    notable: bySeverity("notable"),
+    critical,
+    notable,
     info: bySeverity("info"),
+    signals: deriveSignals([...critical, ...notable]),
     fetchErrors: opts.fetchErrors ?? [],
   };
 }
@@ -67,6 +71,18 @@ export function renderMarkdown(b: Briefing): string {
     "",
     b.info.length ? b.info.map(mdItem).join("\n") : "_Nothing else._",
   ];
+  if (b.signals.length) {
+    lines.push(
+      "",
+      "## 💡 Trade angles",
+      "",
+      ...b.signals.map(
+        (s) => `- ${STANCE_GLYPH[s.stance]} ${s.asset ? `**${s.asset}** — ` : ""}${s.note}`,
+      ),
+      "",
+      "_Pattern heuristics from historical announcement studies — not financial advice._",
+    );
+  }
   if (b.fetchErrors.length) {
     lines.push("", "## ⚠️ Fetch warnings", "", ...b.fetchErrors.map((e) => `- ${e}`));
   }
@@ -85,6 +101,14 @@ export function renderText(b: Briefing): string {
     section("🔴 CRITICAL:", b.critical, "  none 🎉"),
     section("🟡 Notable:", b.notable, "  none"),
   ];
+  if (b.signals.length) {
+    parts.push(
+      "💡 Trade angles (not financial advice):\n" +
+        b.signals
+          .map((s) => `• ${STANCE_GLYPH[s.stance]} ${s.asset ? `${s.asset}: ` : ""}${s.note}`)
+          .join("\n"),
+    );
+  }
   if (b.info.length) parts.push(`🟢 FYI: ${b.info.length} promo/misc item(s) — see full briefing.`);
   if (b.fetchErrors.length) parts.push(`⚠️ ${b.fetchErrors.length} fetch warning(s).`);
   return parts.join("\n\n");

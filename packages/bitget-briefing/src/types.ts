@@ -37,6 +37,8 @@ export interface Briefing {
   critical: ClassifiedAnnouncement[];
   notable: ClassifiedAnnouncement[];
   info: ClassifiedAnnouncement[];
+  /** Rule-based trade angles derived from the day's announcements (see signals.ts). */
+  signals: import("./signals.js").TradeSignal[];
   /** Sections that failed to fetch (network errors, geo-blocks, …). */
   fetchErrors: string[];
 }

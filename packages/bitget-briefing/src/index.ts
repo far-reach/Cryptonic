@@ -5,4 +5,5 @@ export * from "./briefing.js";
 export * from "./notify.js";
 export * from "./telegram.js";
 export * from "./history.js";
+export * from "./signals.js";
 export { sampleAnnouncements } from "./sample-data.js";
