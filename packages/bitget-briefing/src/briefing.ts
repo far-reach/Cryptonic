@@ -1,5 +1,6 @@
 import type { Briefing, ClassifiedAnnouncement } from "./types.js";
 import { deriveSignals, formatLevels, STANCE_GLYPH } from "./signals.js";
+import { environmentGauge, scoreAnnouncement, starBar, tierDot } from "./importance.js";
 
 export interface BriefingOptions {
   /** Look-back window; announcements older than this are dropped. Default 24. */
@@ -45,11 +46,12 @@ function fmtTime(ms: number | null): string {
 
 function mdItem(a: ClassifiedAnnouncement): string {
   const link = a.url ? `[${a.title}](${a.url})` : a.title;
+  const { stars, label } = scoreAnnouncement(a);
   const reasons = a.reasons.length ? ` · _${a.reasons.join(", ")}_` : "";
   const why = a.reason?.excerpt ? `\n  ℹ️ _${a.reason.excerpt}_` : "";
   const security =
     a.reason?.cause === "security" ? `\n  🛡 **Security-related — treat as elevated risk**` : "";
-  return `- **${link}**\n  ${fmtTime(a.publishedAt)}${reasons}${why}${security}`;
+  return `- **${link}**\n  ${tierDot(stars)} ${starBar(stars)} _${label}_ · ${fmtTime(a.publishedAt)}${reasons}${why}${security}`;
 }
 
 /** Render the briefing as GitHub-flavoured markdown. */
@@ -61,6 +63,11 @@ export function renderMarkdown(b: Briefing): string {
     `_Last ${b.windowHours}h of the [Bitget announcement center](https://www.bitget.com/asia/support/announcement-center)._`,
     "",
     `**TL;DR:** ${b.critical.length} critical · ${b.notable.length} notable · ${b.info.length} FYI`,
+    "",
+    (() => {
+      const g = environmentGauge([...b.critical, ...b.notable]);
+      return `${g.emoji} **Environment:** _${g.text}_`;
+    })(),
     "",
     "## 🔴 Critical — act or verify today",
     "",
