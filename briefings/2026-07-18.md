@@ -8,6 +8,9 @@ _Last 24h of the [Bitget announcement center](https://www.bitget.com/asia/suppor
 
 ## 🔴 Critical — act or verify today
 
+- **[Bitget announcement on suspending ACE - Binance Smart Chain network withdrawal service](https://www.bitget.com/en/support/articles/12560603889569)**
+  🟢 ★★☆☆☆ _routine maintenance_ · 2026-07-18 15:40 UTC · _section: maintenance system updates, suspension, maintenance window_
+  ℹ️ _Due to wallet maintenance, Bitget will suspend the withdrawal function of the ACE - Binance Smart Chain network starting from 2026-07-18 23:40 (UTC+8), with the reopening date t…_
 - **[Announcement on adjustment of leverage, position tiers and maintenance margin rate for FWDIUSDT  perpetual futures trading pair](https://www.bitget.com/en/support/articles/12560603889568)**
   🟡 ★★★☆☆ _affects positions_ · 2026-07-18 14:22 UTC · _section: product updates, maintenance window, contract parameter change_
   ℹ️ _In order to avoid any potential liquidation._
@@ -20,9 +23,6 @@ _Last 24h of the [Bitget announcement center](https://www.bitget.com/asia/suppor
 - **[Bitget announcement on suspending USDC - APTOS network withdrawal service](https://www.bitget.com/en/support/articles/12560603889562)**
   🟢 ★★☆☆☆ _routine maintenance_ · 2026-07-18 02:18 UTC · _section: maintenance system updates, suspension, maintenance window_
   ℹ️ _Due to wallet maintenance, Bitget will suspend the withdrawal function of the USDC - APTOS network starting from 2026-07-18 10:18 (UTC+8), with the reopening date to be announce…_
-- **[Bitget announcement on resuming MANTRA - Mantra deposits and withdrawals](https://www.bitget.com/en/support/articles/12560603889558)**
-  ⚪ ★☆☆☆☆ _recovery_ · 2026-07-17 14:44 UTC · _section: maintenance system updates, maintenance window, deposit/withdrawal change_
-  ℹ️ _Bitget has now opened the MANTRA - Mantra deposit and withdrawal services._
 
 ## 🟡 Notable — worth a look
 
@@ -34,10 +34,9 @@ _Nothing else._
 
 ## 💡 Trade angles
 
+- 🔁 **ACE (Binance)** — While transfers are frozen, the Bitget price can drift away from other exchanges. That gap usually snaps back once transfers reopen — worth tracking.
 - 🔁 **KLV (Klever)** — While transfers are frozen, the Bitget price can drift away from other exchanges. That gap usually snaps back once transfers reopen — worth tracking.
 - 🔁 **USDC (APTOS)** — Transfers just reopened: any price gap vs other exchanges usually closes fast, and holders who were stuck can now sell. Expect a brief selling wave.
-- 🔁 **MANTRA (Mantra)** — Transfers just reopened: any price gap vs other exchanges usually closes fast, and holders who were stuck can now sell. Expect a brief selling wave.
-  `Short @ 0.006197 · TP 0.005887 (−5%) · SL 0.006445 (+4%)`
 - 🌊 **FWDIUSDT perp** — Bitget just tightened this contract's risk settings — it expects sharp moves. Trade smaller and watch funding.
 
 _Pattern heuristics from historical announcement studies — not financial advice._
