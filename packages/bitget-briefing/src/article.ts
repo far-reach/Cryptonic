@@ -62,13 +62,25 @@ export function extractArticleText(html: string): string {
       // fall through to whole-page text
     }
   }
-  return htmlToText(html);
+  const full = htmlToText(html);
+  // Bitget article bodies open with a salutation or the action lead-in; cutting
+  // there drops the page chrome (nav, footers) that precedes the content.
+  const lead = full.search(
+    /dear bitget|to support\b|due to\b|because of\b|as part of\b|in order to\b|will (temporarily )?(suspend|pause|halt|resume)/i,
+  );
+  return lead >= 0 ? full.slice(lead) : full;
 }
+
+/** Site chrome that must never be quoted as an explanation. */
+const CHROME_RE =
+  /support center|buy crypto|sign ?up|log ?in|trade smarter|futures earn|square more|copy trading|download (the )?app|announcement center|help center|customer support/i;
 
 /** Classify the cause and pick the single most explanatory sentence. */
 export function findReason(text: string): ArticleReason | null {
   if (!text) return null;
-  const sentences = text.split(/(?<=[.!?])\s+/).filter((s) => s.length > 25);
+  const sentences = text
+    .split(/(?<=[.!?])\s+/)
+    .filter((s) => s.length >= 25 && s.length <= 300 && !CHROME_RE.test(s) && !/\|/.test(s));
   let cause: ReasonCause = "other";
   for (const { cause: c, re } of CAUSE_PATTERNS) {
     if (re.test(text)) {
@@ -80,7 +92,8 @@ export function findReason(text: string): ArticleReason | null {
   const explanatory =
     (causeRe && sentences.find((s) => causeRe.test(s))) ??
     sentences.find((s) => /due to|because|as (a result|part) of|to (support|ensure|complete)|in order to/i.test(s));
-  if (!explanatory) return cause === "other" ? null : { cause, excerpt: "" };
+  // Junk-free excerpt or nothing: a missing why-line beats quoting page chrome.
+  if (!explanatory) return null;
   let excerpt = explanatory.trim();
   if (excerpt.length > 180) excerpt = excerpt.slice(0, 177).trimEnd() + "…";
   return { cause, excerpt };

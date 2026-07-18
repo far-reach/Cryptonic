@@ -297,6 +297,17 @@ describe("article reasons", () => {
 
     const generic = findReason("We will list a new token soon. Trading opens tomorrow at noon exactly.");
     expect(generic).toBeNull();
+
+    // page chrome must never be quoted, even when it contains cause keywords
+    const chromey = findReason(
+      "Bitget announcement on suspending KLV | Bitget Support Center Bitget App Trade smarter Buy crypto Markets Trade Futures Earn Square More maintenance something. " +
+        "To support the Klever network upgrade, Bitget will suspend KLV deposits. Thank you for your patience today.",
+    );
+    expect(chromey!.excerpt).toBe("To support the Klever network upgrade, Bitget will suspend KLV deposits.");
+    const onlyChrome = findReason(
+      "Suspending KLV | Bitget Support Center Bitget App Trade smarter Buy crypto Markets maintenance window something else here.",
+    );
+    expect(onlyChrome).toBeNull();
   });
 
   it("extracts article text from __NEXT_DATA__ pages and attaches reasons", async () => {
