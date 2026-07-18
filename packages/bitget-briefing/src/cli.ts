@@ -24,6 +24,8 @@ import { classifyAll } from "./classify.js";
 import { buildBriefing, renderMarkdown, renderText } from "./briefing.js";
 import { discoverTelegramChatId, notifyAll } from "./notify.js";
 import { buildSummaryChartUrl, renderTelegramCaption, renderTelegramHtml } from "./telegram.js";
+import { buildTrendSeries, loadHistory } from "./history.js";
+import { existsSync } from "node:fs";
 import { sampleAnnouncements } from "./sample-data.js";
 import type { FetchLike } from "./types.js";
 
@@ -65,6 +67,17 @@ async function main(): Promise<number> {
   if (process.env.BRIEFING_OUTPUT) writeFileSync(process.env.BRIEFING_OUTPUT, markdown);
   if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, markdown);
 
+  // 7-day trend from the committed briefing history (repo root ./briefings;
+  // ../../briefings covers running from within the package directory).
+  const briefingsDir =
+    process.env.BRIEFINGS_DIR ??
+    (existsSync("briefings") ? "briefings" : existsSync("../../briefings") ? "../../briefings" : undefined);
+  const trend = buildTrendSeries(briefingsDir ? loadHistory(briefingsDir) : [], now, {
+    critical: briefing.critical.length,
+    notable: briefing.notable.length,
+    info: briefing.info.length,
+  });
+
   const historyUrl = process.env.GITHUB_REPOSITORY
     ? `${process.env.GITHUB_SERVER_URL ?? "https://github.com"}/${process.env.GITHUB_REPOSITORY}/blob/${process.env.GITHUB_REF_NAME ?? "main"}/briefings/latest.md`
     : undefined;
@@ -73,7 +86,7 @@ async function main(): Promise<number> {
     telegramHtml: renderTelegramHtml(briefing, { historyUrl }),
     telegramHtmlCompact: renderTelegramHtml(briefing, { historyUrl, compact: true }),
     telegramPhoto: {
-      url: buildSummaryChartUrl(briefing),
+      url: buildSummaryChartUrl(briefing, trend),
       caption: renderTelegramCaption(briefing),
     },
   });

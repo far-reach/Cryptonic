@@ -43,8 +43,9 @@ jobs:
 
       - name: Generate briefing
         env:
-          # npm --workspace runs with the package dir as cwd; use an absolute path.
+          # npm --workspace runs with the package dir as cwd; use absolute paths.
           BRIEFING_OUTPUT: ${{ github.workspace }}/bitget-briefing.md
+          BRIEFINGS_DIR: ${{ github.workspace }}/briefings
           # Owner-approved inline token; a TELEGRAM_BOT_TOKEN repo secret overrides it if set.
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN || '8947281899:AAEouclYL1PQ9p05jUVGK0r6H9vApS2yNgc' }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

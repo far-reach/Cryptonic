@@ -280,6 +280,106 @@ describe("summary chart & photo delivery", () => {
   });
 });
 
+describe("trade angles", () => {
+  it("derives prioritized signals with extracted assets", async () => {
+    const { deriveSignals, extractAsset } = await import("../src/signals.js");
+    expect(extractAsset("Bitget announcement on resuming USDC - APTOS withdrawals")).toBe("USDC (APTOS)");
+    expect(extractAsset("Bitget Will List NewCoin (NEW) in the Innovation Zone")).toBe("NEW");
+    expect(extractAsset("Notice on the Delisting of XYZ/USDT Spot Trading Pair")).toBe("XYZ/USDT");
+    expect(extractAsset("Bitget to adjust funding rate interval for 1000XECUSDT perpetual futures")).toBe("1000XECUSDT perp");
+
+    const anns = classifyAll([
+      ann({ id: "a", title: "Bitget Will List NewCoin (NEW) in the Innovation Zone", section: "coin_listings" }),
+      ann({ id: "b", title: "Notice on the Delisting of XYZ/USDT Spot Trading Pair", section: "symbol_delisting" }),
+      ann({ id: "c", title: "Bitget announcement on suspending VANA - Vana deposit and withdrawal services", section: "maintenance_system_updates" }),
+    ]);
+    const signals = deriveSignals(anns);
+    expect(signals[0].stance).toBe("exit-risk"); // delisting outranks the rest
+    expect(signals[0].asset).toBe("XYZ/USDT");
+    expect(signals.map((s) => s.stance)).toContain("arb-watch");
+    expect(signals.map((s) => s.stance)).toContain("avoid-chase");
+  });
+
+  it("renders trade angles in telegram and markdown with a disclaimer", async () => {
+    const { renderTelegramHtml } = await import("../src/telegram.js");
+    const b = buildBriefing(
+      classifyAll([ann({ id: "b", title: "Notice on the Delisting of XYZ/USDT Spot Trading Pair", section: "symbol_delisting" })]),
+      { windowHours: 24, now: NOW },
+    );
+    expect(b.signals).toHaveLength(1);
+    const html = renderTelegramHtml(b);
+    expect(html).toContain("💡 <b>Trade angles</b>");
+    expect(html).toContain("<b>XYZ/USDT</b>");
+    expect(html).toContain("not financial advice");
+    const md = renderMarkdown(b);
+    expect(md).toContain("## 💡 Trade angles");
+    expect(md).toContain("not financial advice");
+  });
+});
+
+describe("7-day trend", () => {
+  it("parses TL;DR counts and builds a 7-day series with gaps and today's override", async () => {
+    const { parseTldr, buildTrendSeries } = await import("../src/history.js");
+    expect(parseTldr("x\n**TL;DR:** 7 critical · 1 notable · 0 FYI\ny")).toEqual({
+      critical: 7,
+      notable: 1,
+      info: 0,
+    });
+    const dayMs = 86_400_000;
+    const iso = (i: number) => new Date(NOW - i * dayMs).toISOString().slice(0, 10);
+    const history = [
+      { date: iso(4), critical: 7, notable: 1, info: 0 },
+      { date: iso(0), critical: 99, notable: 0, info: 0 }, // stale today's file
+    ];
+    const t = buildTrendSeries(history, NOW, { critical: 4, notable: 0, info: 0 });
+    expect(t.labels).toHaveLength(7);
+    expect(t.daysWithData).toBe(2);
+    expect(t.critical[2]).toBe(7); // 4 days ago
+    expect(t.critical[6]).toBe(4); // today: live counts win over the file
+    expect(t.critical[5]).toBeNull(); // gap day
+  });
+
+  it("uses the trend line chart when history exists, bars on day one", async () => {
+    const { buildSummaryChartUrl } = await import("../src/telegram.js");
+    const { buildTrendSeries } = await import("../src/history.js");
+    const b = buildBriefing(classifyAll(sampleAnnouncements(NOW)), { windowHours: 24, now: NOW });
+    const iso = (i: number) => new Date(NOW - i * 86_400_000).toISOString().slice(0, 10);
+    const trend = buildTrendSeries([{ date: iso(3), critical: 2, notable: 1, info: 0 }], NOW, {
+      critical: 3,
+      notable: 3,
+      info: 1,
+    });
+    const cfg = JSON.parse(new URL(buildSummaryChartUrl(b, trend)).searchParams.get("c")!);
+    expect(cfg.type).toBe("line");
+    expect(cfg.data.labels).toHaveLength(7);
+    expect(cfg.data.datasets[0].label).toBe("Critical");
+    expect(cfg.data.datasets[0].data[6]).toBe(3);
+    expect(cfg.options.plugins.title.text[1]).toContain("7-day trend");
+
+    const dayOne = buildTrendSeries([], NOW, { critical: 3, notable: 3, info: 1 });
+    const barCfg = JSON.parse(new URL(buildSummaryChartUrl(b, dayOne)).searchParams.get("c")!);
+    expect(barCfg.type).toBe("bar"); // not enough history yet
+  });
+
+  it("loads history from disk, ignoring latest.md and junk", async () => {
+    const { loadHistory } = await import("../src/history.js");
+    const { mkdtempSync, writeFileSync } = await import("node:fs");
+    const { tmpdir } = await import("node:os");
+    const { join } = await import("node:path");
+    const dir = mkdtempSync(join(tmpdir(), "briefings-"));
+    writeFileSync(join(dir, "2026-07-14.md"), "**TL;DR:** 7 critical · 1 notable · 0 FYI");
+    writeFileSync(join(dir, "2026-07-18.md"), "**TL;DR:** 4 critical · 0 notable · 0 FYI");
+    writeFileSync(join(dir, "latest.md"), "**TL;DR:** 4 critical · 0 notable · 0 FYI");
+    writeFileSync(join(dir, "telegram-chat-id.txt"), "226763300");
+    const h = loadHistory(dir);
+    expect(h).toEqual([
+      { date: "2026-07-14", critical: 7, notable: 1, info: 0 },
+      { date: "2026-07-18", critical: 4, notable: 0, info: 0 },
+    ]);
+    expect(loadHistory(join(dir, "missing"))).toEqual([]);
+  });
+});
+
 describe("fetchAnnouncements", () => {
   const apiOk = (rows: unknown[]): string => JSON.stringify({ code: "00000", data: rows });
 
