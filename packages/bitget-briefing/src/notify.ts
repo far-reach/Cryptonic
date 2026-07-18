@@ -46,22 +46,30 @@ export async function discoverTelegramChatId(
   return null;
 }
 
+export interface NotifyContent {
+  /** Plain text used for Slack/Discord (and Telegram when no HTML is provided). */
+  text: string;
+  /** Rich Telegram HTML (parse_mode: "HTML"); falls back to `text` when absent. */
+  telegramHtml?: string;
+}
+
 /**
- * Deliver the briefing text to every channel configured via env vars.
+ * Deliver the briefing to every channel configured via env vars.
  * Returns a list of "channel: error" strings for channels that failed;
  * channels that aren't configured are skipped silently.
  */
 export async function notifyAll(
-  text: string,
+  content: string | NotifyContent,
   env: NotifyEnv = process.env as NotifyEnv,
   fetchFn: FetchLike = fetch as unknown as FetchLike,
 ): Promise<string[]> {
+  const { text, telegramHtml } = typeof content === "string" ? { text: content, telegramHtml: undefined } : content;
   const errors: string[] = [];
 
   if (env.TELEGRAM_BOT_TOKEN) {
     try {
       let chatId = env.TELEGRAM_CHAT_ID;
-      let body = text;
+      let body = telegramHtml ?? text;
       if (!chatId) {
         const discovered = await discoverTelegramChatId(env.TELEGRAM_BOT_TOKEN, fetchFn);
         if (!discovered) {
@@ -78,6 +86,7 @@ export async function notifyAll(
       await post(fetchFn, `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
         chat_id: chatId,
         text: body,
+        ...(telegramHtml ? { parse_mode: "HTML" } : {}),
         disable_web_page_preview: true,
       });
     } catch (err) {

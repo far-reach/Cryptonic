@@ -64,15 +64,16 @@ jobs:
         run: |
           exec > >(tee commit-step.log) 2>&1
           set -x
+          git config user.name "bitget-briefing-bot"
+          git config user.email "actions@github.com"
+          # npm install may have touched the lockfile on the runner; don't commit or carry
+          # that. Must run BEFORE copying the fresh briefing in, or it reverts the copies.
+          git checkout -- . || true
           mkdir -p briefings
           cp bitget-briefing.md "briefings/$(date -u +%F).md"
           cp bitget-briefing.md briefings/latest.md
           # Pin the auto-discovered Telegram chat id once known.
-          [ -f telegram-chat-id.txt ] && cp telegram-chat-id.txt briefings/telegram-chat-id.txt
-          git config user.name "bitget-briefing-bot"
-          git config user.email "actions@github.com"
-          # npm install may have touched the lockfile on the runner; don't commit or carry that.
-          git checkout -- . || true
+          if [ -f telegram-chat-id.txt ]; then cp telegram-chat-id.txt briefings/telegram-chat-id.txt; fi
           git status --short
           git add briefings/
           if git diff --cached --quiet; then
