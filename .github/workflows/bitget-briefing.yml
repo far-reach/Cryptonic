@@ -31,13 +31,22 @@ jobs:
       - name: Install workspace dependencies
         run: npm install
 
+      - name: Load pinned Telegram chat id
+        env:
+          SECRET_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          if [ -n "$SECRET_CHAT_ID" ]; then
+            echo "TELEGRAM_CHAT_ID=$SECRET_CHAT_ID" >> "$GITHUB_ENV"
+          elif [ -f briefings/telegram-chat-id.txt ]; then
+            echo "TELEGRAM_CHAT_ID=$(tr -d '[:space:]' < briefings/telegram-chat-id.txt)" >> "$GITHUB_ENV"
+          fi
+
       - name: Generate briefing
         env:
           # npm --workspace runs with the package dir as cwd; use an absolute path.
           BRIEFING_OUTPUT: ${{ github.workspace }}/bitget-briefing.md
           # Owner-approved inline token; a TELEGRAM_BOT_TOKEN repo secret overrides it if set.
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN || '8947281899:AAEouclYL1PQ9p05jUVGK0r6H9vApS2yNgc' }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: npm run briefing --workspace @veil/bitget-briefing
@@ -58,6 +67,8 @@ jobs:
           mkdir -p briefings
           cp bitget-briefing.md "briefings/$(date -u +%F).md"
           cp bitget-briefing.md briefings/latest.md
+          # Pin the auto-discovered Telegram chat id once known.
+          [ -f telegram-chat-id.txt ] && cp telegram-chat-id.txt briefings/telegram-chat-id.txt
           git config user.name "bitget-briefing-bot"
           git config user.email "actions@github.com"
           # npm install may have touched the lockfile on the runner; don't commit or carry that.
