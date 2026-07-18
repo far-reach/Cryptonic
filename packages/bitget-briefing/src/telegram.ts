@@ -1,6 +1,7 @@
 import type { Briefing, ClassifiedAnnouncement } from "./types.js";
 import type { TrendSeries } from "./history.js";
 import { formatLevels, STANCE_GLYPH } from "./signals.js";
+import { environmentGauge, scoreAnnouncement, starBar, tierDot } from "./importance.js";
 
 /** Telegram sendMessage hard limit is 4096 chars; leave headroom for the footer. */
 const MAX_LEN = 3900;
@@ -136,6 +137,13 @@ function reasonLine(a: ClassifiedAnnouncement): string {
   return parts.join("");
 }
 
+/** "🟢 ★★☆☆☆ routine maintenance · Jul 18, 12:03 UTC" */
+function importanceLine(a: ClassifiedAnnouncement, timeText?: string): string {
+  const { stars, label } = scoreAnnouncement(a);
+  const time = timeText ? ` · <i>${escapeHtml(timeText)}</i>` : "";
+  return `\n      ${tierDot(stars)} ${starBar(stars)} <i>${escapeHtml(label)}</i>${time}`;
+}
+
 function renderPaired(p: PairedItem): string {
   if (p.kind === "resolved") {
     // Subject from the resume title, verbs stripped: "USDC - APTOS withdrawals"
@@ -143,16 +151,14 @@ function renderPaired(p: PairedItem): string {
     const to = fmtTime(p.item.publishedAt);
     // Prefer the resume article's reason; fall back to the suspension's.
     const item = p.item.reason ? p.item : { ...p.item, reason: p.counterpart?.reason };
-    if (p.counterpart) {
-      const from = fmtTime(p.counterpart.publishedAt);
-      return `✅ ${link(p.item, subject)}\n      <i>⏸ ${escapeHtml(from)} → ✅ ${escapeHtml(to)} UTC — back to normal</i>${reasonLine(item)}`;
-    }
-    return `✅ ${link(p.item, subject)}\n      <i>resumed ${escapeHtml(to)} UTC</i>${reasonLine(item)}`;
+    const journey = p.counterpart
+      ? `⏸ ${escapeHtml(fmtTime(p.counterpart.publishedAt))} → ✅ ${escapeHtml(to)} UTC — back to normal`
+      : `resumed ${escapeHtml(to)} UTC`;
+    return `✅ ${link(p.item, subject)}${importanceLine(p.item, undefined)}\n      <i>${journey}</i>${reasonLine(item)}`;
   }
   const a = p.item;
   const when = fmtTime(a.publishedAt);
-  const time = when ? `\n      <i>${escapeHtml(when)} UTC</i>` : "";
-  return `${glyphFor(a)} ${link(a, condenseTitle(a.title))}${time}${reasonLine(a)}`;
+  return `${glyphFor(a)} ${link(a, condenseTitle(a.title))}${importanceLine(a, when ? `${when} UTC` : undefined)}${reasonLine(a)}`;
 }
 
 /**
@@ -299,10 +305,12 @@ export function buildSummaryChartUrl(b: Briefing, trend?: TrendSeries | null): s
 /** Short HTML caption for the summary image (Telegram caps captions at 1024 chars). */
 export function renderTelegramCaption(b: Briefing): string {
   const counts = `🔴 <b>${b.critical.length} critical</b> · 🟡 ${b.notable.length} notable · 🎁 ${b.info.length} promo`;
-  const mood = b.critical.length === 0 ? "😌 A quiet day on Bitget." : "";
-  return [`📊 <b>Bitget Daily Briefing</b> — ${fmtDay(b.generatedAt)}`, counts, mood]
-    .filter(Boolean)
-    .join("\n");
+  const gauge = environmentGauge([...b.critical, ...b.notable]);
+  return [
+    `📊 <b>Bitget Daily Briefing</b> — ${fmtDay(b.generatedAt)}`,
+    counts,
+    `${gauge.emoji} <i>${escapeHtml(gauge.text)}</i>`,
+  ].join("\n");
 }
 
 /**
@@ -315,16 +323,23 @@ export function renderTelegramHtml(
 ): string {
   const divider = "──────────────";
   const critical = pairSuspendResume(b.critical);
-  const active = critical.filter((p) => p.kind === "single");
+  const byStars = (x: PairedItem, y: PairedItem) =>
+    scoreAnnouncement(y.item).stars - scoreAnnouncement(x.item).stars ||
+    (y.item.publishedAt ?? 0) - (x.item.publishedAt ?? 0);
+  const active = critical.filter((p) => p.kind === "single").sort(byStars);
   const resolved = critical.filter((p) => p.kind === "resolved");
+  const allItems = [...b.critical, ...b.notable];
+  const gauge = environmentGauge(allItems);
+  const gaugeLine = `${gauge.emoji} <b>Environment:</b> <i>${escapeHtml(gauge.text)}</i>`;
 
   // compact: the summary photo + caption already carry the title and counts.
   const head = opts.compact
-    ? ""
+    ? gaugeLine
     : [
         `📊 <b>Bitget Daily Briefing</b> — ${fmtDay(b.generatedAt)}`,
         divider,
         `🔴 <b>${b.critical.length} critical</b> · 🟡 ${b.notable.length} notable · 🎁 ${b.info.length} promo`,
+        gaugeLine,
       ].join("\n");
 
   const sections: string[] = [];
@@ -338,13 +353,21 @@ export function renderTelegramHtml(
     sections.push(`😌 <b>Nothing critical today.</b>`);
   }
   if (b.notable.length) {
-    sections.push(`🟡 <b>Worth a look</b>\n\n${b.notable.map((a) => renderPaired({ kind: "single", item: a })).join("\n\n")}`);
+    const notableSorted = [...b.notable].sort(
+      (x, y) => scoreAnnouncement(y).stars - scoreAnnouncement(x).stars,
+    );
+    sections.push(`🟡 <b>Worth a look</b>\n\n${notableSorted.map((a) => renderPaired({ kind: "single", item: a })).join("\n\n")}`);
   }
   if (b.signals.length) {
-    const lines = b.signals.map((s) => {
-      const asset = s.asset ? `<b>${escapeHtml(s.asset)}</b> — ` : "";
+    const sorted = [...b.signals].sort(
+      (x, y) => scoreAnnouncement(y.source).stars - scoreAnnouncement(x.source).stars,
+    );
+    const lines = sorted.map((s) => {
+      const stars = scoreAnnouncement(s.source).stars;
+      const chip = stars >= 4 ? `🔥 ` : "";
+      const asset = s.asset ? `<b>${escapeHtml(s.asset)}</b> <i>(★${stars})</i> — ` : "";
       const levels = s.levels ? `\n      <code>${escapeHtml(formatLevels(s.levels))}</code>` : "";
-      return `${STANCE_GLYPH[s.stance]} ${asset}${escapeHtml(s.note)}${levels}`;
+      return `${chip}${STANCE_GLYPH[s.stance]} ${asset}${escapeHtml(s.note)}${levels}`;
     });
     sections.push(
       `💡 <b>Trade angles</b>\n\n${lines.join("\n\n")}\n\n<i>Pattern heuristics from historical announcement studies — not financial advice.</i>`,

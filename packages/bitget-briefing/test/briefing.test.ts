@@ -280,6 +280,55 @@ describe("summary chart & photo delivery", () => {
   });
 });
 
+describe("importance stars & environment gauge", () => {
+  it("scores by trade impact, with the stated cause modulating suspensions", async () => {
+    const { scoreAnnouncement } = await import("../src/importance.js");
+    const suspend = classify(ann({ title: "Suspending KLV - Klever deposit and withdrawal services", section: "maintenance_system_updates" }));
+    // unexplained suspension: yellow flag
+    expect(scoreAnnouncement(suspend).stars).toBe(3);
+    // same headline, stated routine maintenance: business as usual
+    suspend.reason = { cause: "maintenance", excerpt: "Due to wallet maintenance, Bitget will suspend…" };
+    expect(scoreAnnouncement(suspend)).toMatchObject({ stars: 2, label: "routine maintenance" });
+    // security cause escalates to max
+    suspend.reason = { cause: "security", excerpt: "Due to a security incident…" };
+    expect(scoreAnnouncement(suspend).stars).toBe(5);
+
+    expect(scoreAnnouncement(classify(ann({ title: "Notice on the Delisting of XYZ/USDT", section: "symbol_delisting" }))).stars).toBe(5);
+    expect(scoreAnnouncement(classify(ann({ title: "Bitget announcement on resuming OM - Mantra withdrawals", section: "maintenance_system_updates" }))).stars).toBe(1);
+    expect(scoreAnnouncement(classify(ann({ title: "Bitget to adjust funding rate interval for 1000XECUSDT perpetual futures", section: "product_updates" }))).stars).toBe(3);
+    expect(scoreAnnouncement(classify(ann({ title: "Trade GHI to Share a 100,000 USDT Prize Pool!", section: "trading_competitions_promotions" }))).stars).toBe(1);
+  });
+
+  it("gauges the environment from the day's worst events", async () => {
+    const { environmentGauge } = await import("../src/importance.js");
+    const routine = classify(ann({ title: "Suspending KLV deposits", section: "maintenance_system_updates" }));
+    routine.reason = { cause: "maintenance", excerpt: "wallet maintenance" };
+    expect(environmentGauge([routine]).emoji).toBe("🟢");
+    const delist = classify(ann({ title: "Notice on the Delisting of XYZ/USDT", section: "symbol_delisting" }));
+    expect(environmentGauge([routine, delist]).emoji).toBe("🔴");
+    expect(environmentGauge([]).text).toContain("Quiet");
+  });
+
+  it("renders stars, tier dots, gauge line, and star-sorted sections", async () => {
+    const { renderTelegramHtml, renderTelegramCaption } = await import("../src/telegram.js");
+    const items = classifyAll([
+      ann({ id: "1", title: "Suspending KLV - Klever deposit and withdrawal services", section: "maintenance_system_updates", publishedAt: NOW - 1000 }),
+      ann({ id: "2", title: "Notice on the Delisting of XYZ/USDT Spot Trading Pair", section: "symbol_delisting", publishedAt: NOW - 5000 }),
+    ]);
+    items[0].reason = { cause: "maintenance", excerpt: "Due to wallet maintenance, deposits pause." };
+    const b = buildBriefing(items, { windowHours: 24, now: NOW });
+    const html = renderTelegramHtml(b);
+    expect(html).toContain("🟢 ★★☆☆☆ <i>routine maintenance</i>");
+    expect(html).toContain("🔴 ★★★★★ <i>forced-seller event</i>");
+    expect(html).toContain("<b>Environment:</b>");
+    // delisting (5★) sorts above routine maintenance (2★) despite being older
+    expect(html.indexOf("Delisting of XYZ/USDT")).toBeLessThan(html.indexOf("Suspending KLV"));
+    expect(renderTelegramCaption(b)).toContain("Turbulent");
+    // high-relevance signals get the fire chip
+    expect(html).toContain("🔥 ⚠️ <b>XYZ/USDT</b> <i>(★5)</i>");
+  });
+});
+
 describe("article reasons", () => {
   it("classifies causes and extracts the explanatory sentence", async () => {
     const { findReason } = await import("../src/article.js");
