@@ -28,6 +28,7 @@ import { buildTrendSeries, loadHistory } from "./history.js";
 import { attachPriceLevels } from "./signals.js";
 import { fetchSpotPrices } from "./prices.js";
 import { attachReasons } from "./article.js";
+import { renderWeeklyCaption, renderWeeklyMarkdown, renderWeeklyTelegramHtml } from "./weekly.js";
 import { existsSync } from "node:fs";
 import { sampleAnnouncements } from "./sample-data.js";
 import type { FetchLike } from "./types.js";
@@ -36,7 +37,8 @@ async function main(): Promise<number> {
   const args = new Set(process.argv.slice(2));
   const demo = args.has("--demo");
   const criticalOnly = args.has("--critical-only");
-  const windowHours = Number(process.env.BRIEFING_WINDOW_HOURS) || 24;
+  const weekly = args.has("--weekly") || process.env.BRIEFING_MODE === "weekly";
+  const windowHours = Number(process.env.BRIEFING_WINDOW_HOURS) || (weekly ? 168 : 24);
   const now = Date.now();
 
   let announcements;
@@ -65,14 +67,16 @@ async function main(): Promise<number> {
   }
 
   // Fetch article bodies for critical items and attach the "why" (best-effort).
-  if (!demo) await attachReasons(briefing.critical);
+  if (!demo) {
+    await attachReasons(briefing.critical, fetch as unknown as FetchLike, weekly ? 14 : 8);
+  }
 
   if (criticalOnly && briefing.critical.length === 0) {
     console.error("No critical announcements in the window; staying quiet (--critical-only).");
     return 0;
   }
 
-  const markdown = renderMarkdown(briefing);
+  const markdown = weekly ? renderWeeklyMarkdown(briefing) : renderMarkdown(briefing);
   console.log(markdown);
 
   if (process.env.BRIEFING_OUTPUT) writeFileSync(process.env.BRIEFING_OUTPUT, markdown);
@@ -83,22 +87,31 @@ async function main(): Promise<number> {
   const briefingsDir =
     process.env.BRIEFINGS_DIR ??
     (existsSync("briefings") ? "briefings" : existsSync("../../briefings") ? "../../briefings" : undefined);
-  const trend = buildTrendSeries(briefingsDir ? loadHistory(briefingsDir) : [], now, {
-    critical: briefing.critical.length,
-    notable: briefing.notable.length,
-    info: briefing.info.length,
-  });
+  // In weekly mode the briefing counts span 7 days — for the chart's "today"
+  // point, prefer the committed daily file so the trend stays a daily series.
+  const history = briefingsDir ? loadHistory(briefingsDir) : [];
+  const todayIso = new Date(now).toISOString().slice(0, 10);
+  const todayFromHistory = history.find((h) => h.date === todayIso);
+  const todayCounts =
+    weekly && todayFromHistory
+      ? todayFromHistory
+      : { critical: briefing.critical.length, notable: briefing.notable.length, info: briefing.info.length };
+  const trend = buildTrendSeries(history, now, todayCounts);
 
   const historyUrl = process.env.GITHUB_REPOSITORY
     ? `${process.env.GITHUB_SERVER_URL ?? "https://github.com"}/${process.env.GITHUB_REPOSITORY}/blob/${process.env.GITHUB_REF_NAME ?? "main"}/briefings/latest.md`
     : undefined;
   const notifyErrors = await notifyAll({
     text: renderText(briefing),
-    telegramHtml: renderTelegramHtml(briefing, { historyUrl }),
-    telegramHtmlCompact: renderTelegramHtml(briefing, { historyUrl, compact: true }),
+    telegramHtml: weekly
+      ? renderWeeklyTelegramHtml(briefing, { historyUrl })
+      : renderTelegramHtml(briefing, { historyUrl }),
+    telegramHtmlCompact: weekly
+      ? renderWeeklyTelegramHtml(briefing, { historyUrl, compact: true })
+      : renderTelegramHtml(briefing, { historyUrl, compact: true }),
     telegramPhoto: {
       url: buildSummaryChartUrl(briefing, trend),
-      caption: renderTelegramCaption(briefing),
+      caption: weekly ? renderWeeklyCaption(briefing) : renderTelegramCaption(briefing),
     },
   });
 

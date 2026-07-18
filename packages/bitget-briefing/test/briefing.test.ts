@@ -280,6 +280,57 @@ describe("summary chart & photo delivery", () => {
   });
 });
 
+describe("weekly review", () => {
+  const wk = (id: string, title: string, hoursAgo: number): Announcement => ({
+    id,
+    title,
+    url: `https://x/${id}`,
+    section: "maintenance_system_updates",
+    publishedAt: NOW - hoursAgo * 3_600_000,
+  });
+
+  it("folds suspend→resume pairs into one resolved incident and ranks by stars", async () => {
+    const { summarizeWeek } = await import("../src/weekly.js");
+    const items = classifyAll([
+      wk("1", "Bitget announcement on suspending KLV - Klever deposit and withdrawal services", 100),
+      wk("2", "Bitget announcement on resuming KLV - Klever deposits and withdrawals", 80),
+      wk("3", "Bitget announcement on suspending HOME - BASE network withdrawal service", 50),
+      wk("4", "Notice on the Delisting of XYZ/USDT Spot Trading Pair", 120),
+    ]);
+    const b = buildBriefing(items, { windowHours: 168, now: NOW });
+    const { events, stats } = summarizeWeek(b);
+    expect(events[0].item.title).toContain("Delisting"); // 5★ first
+    const klv = events.find((e) => e.item.title.includes("KLV"))!;
+    expect(klv.status).toBe("resolved"); // pair folded, one entry
+    expect(events.filter((e) => e.item.title.includes("KLV"))).toHaveLength(1);
+    expect(events.find((e) => e.item.title.includes("HOME"))!.status).toBe("active");
+    expect(stats).toMatchObject({ freezes: 2, backOnline: 1, stillDown: 1, delistings: 1 });
+  });
+
+  it("renders the weekly telegram message and markdown", async () => {
+    const { renderWeeklyTelegramHtml, renderWeeklyMarkdown, renderWeeklyCaption } = await import("../src/weekly.js");
+    const b = buildBriefing(
+      classifyAll([
+        wk("1", "Notice on the Delisting of XYZ/USDT Spot Trading Pair", 30),
+        wk("2", "Bitget announcement on suspending HOME - BASE network withdrawal service", 50),
+      ]),
+      { windowHours: 168, now: NOW },
+    );
+    const html = renderWeeklyTelegramHtml(b, { historyUrl: "https://x/h" });
+    expect(html).toContain("📆 <b>Bitget Weekly Review</b>");
+    expect(html).toContain("🏆 <b>Biggest events of the week</b>");
+    expect(html).toContain("1. 🔴 ★★★★★");
+    expect(html).toContain("XYZ/USDT — being delisted");
+    expect(html).toContain("<b>still down</b>");
+    expect(html).toContain("📊 <b>Week in numbers</b>");
+    expect(renderWeeklyTelegramHtml(b, { compact: true })).not.toContain("Weekly Review</b> —");
+    expect(renderWeeklyCaption(b)).toContain("Weekly Review");
+    const md = renderWeeklyMarkdown(b);
+    expect(md).toContain("# Bitget weekly review");
+    expect(md).toContain("Biggest events");
+  });
+});
+
 describe("humanized wording", () => {
   it("rewrites headlines in plain trader language", async () => {
     const { humanTitle } = await import("../src/humanize.js");
