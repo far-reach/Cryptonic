@@ -1,0 +1,105 @@
+name: Bitget daily briefing
+
+on:
+  schedule:
+    - cron: "0 6 * * *" # every day at 06:00 UTC
+  workflow_dispatch:
+  push:
+    # Live integration test: re-run the briefing whenever the bot itself changes.
+    paths:
+      - "packages/bitget-briefing/**"
+      - ".github/workflows/bitget-briefing.yml"
+
+permissions:
+  contents: write # commits the briefing history under briefings/
+  issues: write # files an issue when a run fails, with the captured log
+
+concurrency:
+  group: bitget-briefing-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  briefing:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install workspace dependencies
+        run: npm install
+
+      - name: Generate briefing
+        env:
+          # npm --workspace runs with the package dir as cwd; use an absolute path.
+          BRIEFING_OUTPUT: ${{ github.workspace }}/bitget-briefing.md
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: npm run briefing --workspace @veil/bitget-briefing
+        # The briefing is appended to the job summary automatically via GITHUB_STEP_SUMMARY.
+
+      - name: Upload briefing artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bitget-briefing-${{ github.run_id }}
+          path: bitget-briefing.md
+          retention-days: 30
+          if-no-files-found: error
+
+      - name: Commit briefing history
+        run: |
+          exec > >(tee commit-step.log) 2>&1
+          set -x
+          mkdir -p briefings
+          cp bitget-briefing.md "briefings/$(date -u +%F).md"
+          cp bitget-briefing.md briefings/latest.md
+          git config user.name "bitget-briefing-bot"
+          git config user.email "actions@github.com"
+          # npm install may have touched the lockfile on the runner; don't commit or carry that.
+          git checkout -- . || true
+          git status --short
+          git add briefings/
+          if git diff --cached --quiet; then
+            echo "Briefing unchanged; nothing to commit."
+          else
+            git commit -m "briefings: $(date -u +%F) [skip ci]"
+            git pull --rebase --autostash origin "${GITHUB_REF_NAME}"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
+
+      - name: Fail if a configured delivery channel errored
+        run: |
+          if [ -f notify-errors.log ]; then
+            echo "Delivery failed:"
+            cat notify-errors.log
+            exit 1
+          fi
+
+      - name: File failure issue with captured log
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 - <<'EOF'
+          import json, os, urllib.request
+          logs = []
+          for f in ("commit-step.log", "notify-errors.log"):
+              if os.path.exists(f):
+                  logs.append(f + ":\n" + open(f).read()[-5000:])
+          log = "\n\n".join(logs) or "(no log captured)"
+          body = json.dumps({
+              "title": f"bitget-briefing run {os.environ['GITHUB_RUN_ID']} failed",
+              "body": "Captured log of the failing step:\n\n```\n" + log + "\n```",
+              "labels": ["bitget-briefing"],
+          }).encode()
+          req = urllib.request.Request(
+              f"https://api.github.com/repos/{os.environ['GITHUB_REPOSITORY']}/issues",
+              data=body, method="POST",
+              headers={"Authorization": "Bearer " + os.environ["GH_TOKEN"],
+                       "Accept": "application/vnd.github+json"})
+          print(urllib.request.urlopen(req).status)
+          EOF

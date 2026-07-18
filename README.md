@@ -24,6 +24,7 @@ alternatives.
 | [`packages/app`](packages/app) | Business payments client + `veil` CLI (shield / pay / audit). |
 | [`packages/web`](packages/web) | Local dashboard at `localhost:3000` that runs & visualizes a real confidential payment. |
 | [`packages/solana`](packages/solana) | Solana Token-2022 confidential-transfer prototype + CLI runbook. |
+| [`packages/bitget-briefing`](packages/bitget-briefing) | Bot that reads the Bitget announcement center and produces a critical daily briefing (scheduled via GitHub Actions). |
 
 ## How it works (one paragraph)
 
