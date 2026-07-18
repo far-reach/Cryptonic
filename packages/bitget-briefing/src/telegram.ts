@@ -1,4 +1,5 @@
 import type { Briefing, ClassifiedAnnouncement } from "./types.js";
+import type { TrendSeries } from "./history.js";
 
 /** Telegram sendMessage hard limit is 4096 chars; leave headroom for the footer. */
 const MAX_LEN = 3900;
@@ -144,7 +145,92 @@ function renderPaired(p: PairedItem): string {
  * bar chart of severity counts. Telegram fetches the URL itself (sendPhoto),
  * so no image rendering happens in the bot.
  */
-export function buildSummaryChartUrl(b: Briefing): string {
+function chartUrl(config: unknown): string {
+  const params = new URLSearchParams({
+    version: "3",
+    w: "700",
+    h: "360",
+    devicePixelRatio: "2",
+    backgroundColor: "#111827",
+    c: JSON.stringify(config),
+  });
+  return `https://quickchart.io/chart?${params}`;
+}
+
+/**
+ * 7-day trend line chart: critical (red, filled), notable (amber), promos
+ * (green), today's point emphasized. Used once ≥2 days of history exist.
+ */
+export function buildTrendChartUrl(b: Briefing, trend: TrendSeries): string {
+  const allValues = [...trend.critical, ...trend.notable, ...trend.info].filter(
+    (v): v is number => v !== null,
+  );
+  const max = Math.max(...allValues, 1);
+  const emphasizeToday = (base: number, today: number) =>
+    trend.labels.map((_, i) => (i === trend.labels.length - 1 ? today : base));
+  const line = (label: string, data: Array<number | null>, color: string) => ({
+    label,
+    data,
+    borderColor: color,
+    pointBackgroundColor: color,
+    pointBorderColor: color,
+    borderWidth: 2,
+    tension: 0.35,
+    spanGaps: true,
+    fill: false,
+    pointRadius: emphasizeToday(3, 6),
+  });
+  const config = {
+    type: "line",
+    data: {
+      labels: trend.labels,
+      datasets: [
+        {
+          ...line("Critical", trend.critical, "#ef4444"),
+          borderWidth: 3,
+          backgroundColor: "rgba(239,68,68,0.15)",
+          fill: true,
+        },
+        line("Notable", trend.notable, "#f59e0b"),
+        line("Promos", trend.info, "#22c55e"),
+      ],
+    },
+    options: {
+      layout: { padding: { top: 8, right: 24, bottom: 8, left: 8 } },
+      plugins: {
+        legend: {
+          display: true,
+          labels: { color: "#e5e7eb", usePointStyle: true, boxWidth: 8, font: { size: 13 }, padding: 16 },
+        },
+        title: {
+          display: true,
+          text: ["Bitget Daily Briefing", `${fmtDay(b.generatedAt)} — 7-day trend`],
+          color: "#f9fafb",
+          font: { size: 22, weight: "bold" },
+          padding: { top: 12, bottom: 12 },
+        },
+        datalabels: { display: false },
+      },
+      scales: {
+        x: {
+          grid: { display: false, drawBorder: false },
+          ticks: { color: "#9ca3af", font: { size: 12 } },
+        },
+        y: {
+          beginAtZero: true,
+          suggestedMax: max + 1,
+          grid: { color: "rgba(255,255,255,0.06)", drawBorder: false },
+          ticks: { color: "#6b7280", stepSize: 1, precision: 0, font: { size: 11 } },
+        },
+      },
+    },
+  };
+  return chartUrl(config);
+}
+
+export function buildSummaryChartUrl(b: Briefing, trend?: TrendSeries | null): string {
+  // With real history, show the 7-day trend; on day one fall back to today's bars.
+  if (trend && trend.daysWithData >= 2) return buildTrendChartUrl(b, trend);
   const counts = [b.critical.length, b.notable.length, b.info.length];
   const max = Math.max(...counts, 1);
   // Chart.js v3: rounded horizontal bars, no axis clutter — the numbers are the story.
@@ -192,15 +278,7 @@ export function buildSummaryChartUrl(b: Briefing): string {
       },
     },
   };
-  const params = new URLSearchParams({
-    version: "3",
-    w: "700",
-    h: "360",
-    devicePixelRatio: "2",
-    backgroundColor: "#111827",
-    c: JSON.stringify(config),
-  });
-  return `https://quickchart.io/chart?${params}`;
+  return chartUrl(config);
 }
 
 /** Short HTML caption for the summary image (Telegram caps captions at 1024 chars). */
