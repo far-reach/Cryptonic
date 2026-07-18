@@ -103,9 +103,11 @@ export function pairSuspendResume(items: ClassifiedAnnouncement[]): PairedItem[]
       out.push({ kind: "resolved", item: a, counterpart: match });
     }
   }
-  // Second pass: everything unmatched stands on its own.
+  // Second pass: everything unmatched stands on its own. A lone resumption
+  // (its suspension predates the briefing window) is still good news — file it
+  // under "resolved" so it never sits beside active problems.
   for (const a of items) {
-    if (!used.has(a.id)) out.push({ kind: "single", item: a });
+    if (!used.has(a.id)) out.push({ kind: isResume(a) ? "resolved" : "single", item: a });
   }
 
   // Active problems first, resolved pairs last; newest first within each group.
@@ -121,12 +123,15 @@ function link(a: ClassifiedAnnouncement, label: string): string {
 }
 
 function renderPaired(p: PairedItem): string {
-  if (p.kind === "resolved" && p.counterpart) {
+  if (p.kind === "resolved") {
     // Subject from the resume title, verbs stripped: "USDC - APTOS withdrawals"
-    const subject = condenseTitle(p.item.title).replace(/^resum\w*\s+/i, "");
-    const from = fmtTime(p.counterpart.publishedAt);
+    const subject = condenseTitle(p.item.title).replace(/^resum\w*\s+(of\s+)?/i, "");
     const to = fmtTime(p.item.publishedAt);
-    return `✅ ${link(p.item, subject)}\n      <i>⏸ ${escapeHtml(from)} → ✅ ${escapeHtml(to)} UTC — back to normal</i>`;
+    if (p.counterpart) {
+      const from = fmtTime(p.counterpart.publishedAt);
+      return `✅ ${link(p.item, subject)}\n      <i>⏸ ${escapeHtml(from)} → ✅ ${escapeHtml(to)} UTC — back to normal</i>`;
+    }
+    return `✅ ${link(p.item, subject)}\n      <i>resumed ${escapeHtml(to)} UTC</i>`;
   }
   const a = p.item;
   const when = fmtTime(a.publishedAt);
@@ -140,53 +145,55 @@ function renderPaired(p: PairedItem): string {
  * so no image rendering happens in the bot.
  */
 export function buildSummaryChartUrl(b: Briefing): string {
+  const counts = [b.critical.length, b.notable.length, b.info.length];
+  const max = Math.max(...counts, 1);
+  // Chart.js v3: rounded horizontal bars, no axis clutter — the numbers are the story.
   const config = {
-    type: "horizontalBar",
+    type: "bar",
     data: {
-      labels: ["🔴 Critical", "🟡 Notable", "🎁 Promos"],
+      labels: ["Critical", "Notable", "Promos"],
       datasets: [
         {
-          data: [b.critical.length, b.notable.length, b.info.length],
+          data: counts,
           backgroundColor: ["#ef4444", "#f59e0b", "#22c55e"],
           borderWidth: 0,
-          barPercentage: 0.6,
+          borderRadius: 10,
+          borderSkipped: false,
+          barThickness: 36,
         },
       ],
     },
     options: {
-      legend: { display: false },
-      title: {
-        display: true,
-        text: [`Bitget Daily Briefing`, `${fmtDay(b.generatedAt)} — last ${b.windowHours}h`],
-        fontColor: "#f9fafb",
-        fontSize: 20,
-        padding: 16,
-      },
-      scales: {
-        xAxes: [
-          {
-            ticks: { beginAtZero: true, stepSize: 1, fontColor: "#9ca3af", fontSize: 13, precision: 0 },
-            gridLines: { color: "rgba(255,255,255,0.08)", zeroLineColor: "rgba(255,255,255,0.2)" },
-          },
-        ],
-        yAxes: [
-          {
-            ticks: { fontColor: "#e5e7eb", fontSize: 16 },
-            gridLines: { display: false },
-          },
-        ],
-      },
+      indexAxis: "y",
+      layout: { padding: { top: 8, right: 64, bottom: 12, left: 12 } },
       plugins: {
+        legend: { display: false },
+        title: {
+          display: true,
+          text: ["Bitget Daily Briefing", `${fmtDay(b.generatedAt)} — last ${b.windowHours}h`],
+          color: "#f9fafb",
+          font: { size: 22, weight: "bold" },
+          padding: { top: 12, bottom: 20 },
+        },
         datalabels: {
           anchor: "end",
-          align: "end",
+          align: "right",
+          offset: 8,
           color: "#f9fafb",
-          font: { size: 18, weight: "bold" },
+          font: { size: 22, weight: "bold" },
+        },
+      },
+      scales: {
+        x: { display: false, suggestedMax: max + 1, beginAtZero: true },
+        y: {
+          grid: { display: false, drawBorder: false },
+          ticks: { color: "#e5e7eb", font: { size: 17, weight: "600" } },
         },
       },
     },
   };
   const params = new URLSearchParams({
+    version: "3",
     w: "700",
     h: "360",
     devicePixelRatio: "2",
@@ -209,17 +216,23 @@ export function renderTelegramCaption(b: Briefing): string {
  * Render the briefing as Telegram HTML (parse_mode: "HTML"): linked titles instead
  * of raw URLs, status glyphs, suspend→resume pairing, and a compact layout.
  */
-export function renderTelegramHtml(b: Briefing, opts: { historyUrl?: string } = {}): string {
+export function renderTelegramHtml(
+  b: Briefing,
+  opts: { historyUrl?: string; compact?: boolean } = {},
+): string {
   const divider = "──────────────";
   const critical = pairSuspendResume(b.critical);
   const active = critical.filter((p) => p.kind === "single");
   const resolved = critical.filter((p) => p.kind === "resolved");
 
-  const head = [
-    `📊 <b>Bitget Daily Briefing</b> — ${fmtDay(b.generatedAt)}`,
-    divider,
-    `🔴 <b>${b.critical.length} critical</b> · 🟡 ${b.notable.length} notable · 🎁 ${b.info.length} promo`,
-  ].join("\n");
+  // compact: the summary photo + caption already carry the title and counts.
+  const head = opts.compact
+    ? ""
+    : [
+        `📊 <b>Bitget Daily Briefing</b> — ${fmtDay(b.generatedAt)}`,
+        divider,
+        `🔴 <b>${b.critical.length} critical</b> · 🟡 ${b.notable.length} notable · 🎁 ${b.info.length} promo`,
+      ].join("\n");
 
   const sections: string[] = [];
   if (active.length) {

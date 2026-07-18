@@ -175,6 +175,48 @@ describe("telegram rendering", () => {
     expect(html).not.toMatch(/[^"]https:\/\/www\.bitget\.com/); // links only inside href attrs
   });
 
+  it("files a lone resumption under resolved, not needs-attention", async () => {
+    const { pairSuspendResume, renderTelegramHtml } = await import("../src/telegram.js");
+    const items = classifyAll([
+      mk("1", "Bitget announcement on resuming MANTRA - Mantra deposits and withdrawals", NOW - 2 * 3_600_000),
+      mk("2", "Bitget announcement on suspending HOME - BASE network withdrawal service", NOW - 5 * 3_600_000),
+    ]);
+    const paired = pairSuspendResume(items);
+    expect(paired[0].item.id).toBe("2"); // active problem first
+    expect(paired[1].kind).toBe("resolved");
+    expect(paired[1].counterpart).toBeUndefined();
+    const html = renderTelegramHtml(buildBriefing(items, { windowHours: 24, now: NOW }));
+    const attention = html.slice(html.indexOf("Needs attention"), html.indexOf("Resolved"));
+    expect(attention).not.toContain("MANTRA");
+    expect(html.slice(html.indexOf("Resolved"))).toContain("MANTRA");
+  });
+
+  it("compact mode omits the header the photo caption already carries", async () => {
+    const { renderTelegramHtml } = await import("../src/telegram.js");
+    const b = buildBriefing(classifyAll(sampleAnnouncements(NOW)), { windowHours: 24, now: NOW });
+    const compact = renderTelegramHtml(b, { compact: true });
+    expect(compact).not.toContain("Bitget Daily Briefing");
+    expect(compact).toContain("Needs attention");
+  });
+
+  it("sends the compact body only when the photo actually delivered", async () => {
+    const bodies: string[] = [];
+    const mkFetch = (photoOk: boolean): FetchLike => async (url, init) => {
+      if (url.includes("sendPhoto")) return { ok: photoOk, status: photoOk ? 200 : 500, text: async () => "{}" };
+      if (url.includes("sendMessage")) bodies.push(JSON.parse(init!.body!).text);
+      return { ok: true, status: 200, text: async () => JSON.stringify({ ok: true }) };
+    };
+    const content = {
+      text: "t",
+      telegramHtml: "FULL",
+      telegramHtmlCompact: "COMPACT",
+      telegramPhoto: { url: "https://quickchart.io/chart?c=x" },
+    };
+    await notifyAll(content, { TELEGRAM_BOT_TOKEN: "tok", TELEGRAM_CHAT_ID: "9" }, mkFetch(true));
+    await notifyAll(content, { TELEGRAM_BOT_TOKEN: "tok", TELEGRAM_CHAT_ID: "9" }, mkFetch(false));
+    expect(bodies).toEqual(["COMPACT", "FULL"]);
+  });
+
   it("condenses boilerplate titles and celebrates quiet days", async () => {
     const { condenseTitle, renderTelegramHtml } = await import("../src/telegram.js");
     expect(condenseTitle("Bitget announcement on resuming USDC - APTOS withdrawals")).toBe(
@@ -206,8 +248,13 @@ describe("summary chart & photo delivery", () => {
     const b = buildBriefing(classifyAll(sampleAnnouncements(NOW)), { windowHours: 24, now: NOW });
     const url = buildSummaryChartUrl(b);
     expect(url).toMatch(/^https:\/\/quickchart\.io\/chart\?/);
+    expect(new URL(url).searchParams.get("version")).toBe("3");
     const cfg = JSON.parse(new URL(url).searchParams.get("c")!);
     expect(cfg.data.datasets[0].data).toEqual([3, 3, 1]);
+    // plain-text labels: emoji render badly in the chart rasterizer
+    expect(cfg.data.labels).toEqual(["Critical", "Notable", "Promos"]);
+    // headroom so the largest bar's count label is never clipped
+    expect(cfg.options.scales.x.suggestedMax).toBe(4);
     const caption = renderTelegramCaption(b);
     expect(caption).toContain("<b>3 critical</b>");
   });
