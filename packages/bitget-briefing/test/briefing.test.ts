@@ -200,6 +200,39 @@ describe("telegram rendering", () => {
   });
 });
 
+describe("summary chart & photo delivery", () => {
+  it("builds a QuickChart URL embedding the severity counts", async () => {
+    const { buildSummaryChartUrl, renderTelegramCaption } = await import("../src/telegram.js");
+    const b = buildBriefing(classifyAll(sampleAnnouncements(NOW)), { windowHours: 24, now: NOW });
+    const url = buildSummaryChartUrl(b);
+    expect(url).toMatch(/^https:\/\/quickchart\.io\/chart\?/);
+    const cfg = JSON.parse(new URL(url).searchParams.get("c")!);
+    expect(cfg.data.datasets[0].data).toEqual([3, 3, 1]);
+    const caption = renderTelegramCaption(b);
+    expect(caption).toContain("<b>3 critical</b>");
+  });
+
+  it("sends the photo before the message; a photo failure is non-fatal", async () => {
+    const calls: string[] = [];
+    const fetchFn: FetchLike = async (url) => {
+      calls.push(url);
+      if (url.includes("sendPhoto")) {
+        return { ok: false, status: 500, text: async () => "quickchart down" };
+      }
+      return { ok: true, status: 200, text: async () => JSON.stringify({ ok: true }) };
+    };
+    const errors = await notifyAll(
+      { text: "t", telegramHtml: "<b>t</b>", telegramPhoto: { url: "https://quickchart.io/chart?c=x", caption: "cap" } },
+      { TELEGRAM_BOT_TOKEN: "tok", TELEGRAM_CHAT_ID: "99" },
+      fetchFn,
+    );
+    expect(errors).toEqual([]); // message still delivered
+    expect(calls.findIndex((u) => u.includes("sendPhoto"))).toBeLessThan(
+      calls.findIndex((u) => u.includes("sendMessage")),
+    );
+  });
+});
+
 describe("fetchAnnouncements", () => {
   const apiOk = (rows: unknown[]): string => JSON.stringify({ code: "00000", data: rows });
 

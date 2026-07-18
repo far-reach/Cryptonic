@@ -135,6 +135,77 @@ function renderPaired(p: PairedItem): string {
 }
 
 /**
+ * Build a QuickChart URL for the day's summary card: a dark-themed horizontal
+ * bar chart of severity counts. Telegram fetches the URL itself (sendPhoto),
+ * so no image rendering happens in the bot.
+ */
+export function buildSummaryChartUrl(b: Briefing): string {
+  const config = {
+    type: "horizontalBar",
+    data: {
+      labels: ["🔴 Critical", "🟡 Notable", "🎁 Promos"],
+      datasets: [
+        {
+          data: [b.critical.length, b.notable.length, b.info.length],
+          backgroundColor: ["#ef4444", "#f59e0b", "#22c55e"],
+          borderWidth: 0,
+          barPercentage: 0.6,
+        },
+      ],
+    },
+    options: {
+      legend: { display: false },
+      title: {
+        display: true,
+        text: [`Bitget Daily Briefing`, `${fmtDay(b.generatedAt)} — last ${b.windowHours}h`],
+        fontColor: "#f9fafb",
+        fontSize: 20,
+        padding: 16,
+      },
+      scales: {
+        xAxes: [
+          {
+            ticks: { beginAtZero: true, stepSize: 1, fontColor: "#9ca3af", fontSize: 13, precision: 0 },
+            gridLines: { color: "rgba(255,255,255,0.08)", zeroLineColor: "rgba(255,255,255,0.2)" },
+          },
+        ],
+        yAxes: [
+          {
+            ticks: { fontColor: "#e5e7eb", fontSize: 16 },
+            gridLines: { display: false },
+          },
+        ],
+      },
+      plugins: {
+        datalabels: {
+          anchor: "end",
+          align: "end",
+          color: "#f9fafb",
+          font: { size: 18, weight: "bold" },
+        },
+      },
+    },
+  };
+  const params = new URLSearchParams({
+    w: "700",
+    h: "360",
+    devicePixelRatio: "2",
+    backgroundColor: "#111827",
+    c: JSON.stringify(config),
+  });
+  return `https://quickchart.io/chart?${params}`;
+}
+
+/** Short HTML caption for the summary image (Telegram caps captions at 1024 chars). */
+export function renderTelegramCaption(b: Briefing): string {
+  const counts = `🔴 <b>${b.critical.length} critical</b> · 🟡 ${b.notable.length} notable · 🎁 ${b.info.length} promo`;
+  const mood = b.critical.length === 0 ? "😌 A quiet day on Bitget." : "";
+  return [`📊 <b>Bitget Daily Briefing</b> — ${fmtDay(b.generatedAt)}`, counts, mood]
+    .filter(Boolean)
+    .join("\n");
+}
+
+/**
  * Render the briefing as Telegram HTML (parse_mode: "HTML"): linked titles instead
  * of raw URLs, status glyphs, suspend→resume pairing, and a compact layout.
  */
