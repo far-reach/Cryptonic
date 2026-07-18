@@ -280,6 +280,44 @@ describe("summary chart & photo delivery", () => {
   });
 });
 
+describe("humanized wording", () => {
+  it("rewrites headlines in plain trader language", async () => {
+    const { humanTitle } = await import("../src/humanize.js");
+    const t = (title: string) => humanTitle(classify(ann({ title })));
+    expect(t("Bitget announcement on suspending KLV - Klever deposit and withdrawal services")).toBe(
+      "KLV (Klever) — deposits & withdrawals paused",
+    );
+    expect(t("Bitget announcement on resuming USDC - APTOS withdrawals")).toBe(
+      "USDC (APTOS) — withdrawals back online",
+    );
+    expect(t("Notice on the Delisting of XYZ/USDT Spot Trading Pair")).toBe("XYZ/USDT — being delisted");
+    expect(
+      t("Adjustment of leverage, position tiers and maintenance margin rate for FWDIUSDT perpetual futures trading pair"),
+    ).toBe("FWDIUSDT perp — leverage & margin rules changed");
+    // unfamiliar patterns fall back to the condensed original
+    expect(t("Bitget announcement on something entirely new")).toBe("Something entirely new");
+  });
+
+  it("explains the why in plain language, quoting only informative unknowns", async () => {
+    const { humanWhy } = await import("../src/humanize.js");
+    const a = classify(ann({ title: "Suspending KLV - Klever deposit and withdrawal services" }));
+    a.reason = { cause: "maintenance", excerpt: "Due to wallet maintenance, Bitget will suspend…" };
+    expect(humanWhy(a)).toBe("Routine scheduled wallet maintenance — nothing unusual.");
+
+    const adj = classify(ann({ title: "Adjustment of leverage and maintenance margin rate for FWDIUSDT perpetual" }));
+    adj.reason = { cause: "other", excerpt: "In order to avoid any potential liquidation." };
+    expect(humanWhy(adj)).toContain("tightening this contract's risk limits");
+
+    const unknownShort = classify(ann({ title: "Suspending ABC - Chain deposits" }));
+    unknownShort.reason = { cause: "other", excerpt: "Short fragment." };
+    expect(humanWhy(unknownShort)).toBeNull();
+
+    const unknownLong = classify(ann({ title: "Suspending ABC - Chain deposits" }));
+    unknownLong.reason = { cause: "other", excerpt: "Bitget has now opened the withdrawal service on the USDC - APTOS network." };
+    expect(humanWhy(unknownLong)).toBe("“Bitget has now opened the withdrawal service on the USDC - APTOS network.”");
+  });
+});
+
 describe("importance stars & environment gauge", () => {
   it("scores by trade impact, with the stated cause modulating suspensions", async () => {
     const { scoreAnnouncement } = await import("../src/importance.js");
@@ -322,7 +360,9 @@ describe("importance stars & environment gauge", () => {
     expect(html).toContain("🔴 ★★★★★ <i>forced-seller event</i>");
     expect(html).toContain("<b>Environment:</b>");
     // delisting (5★) sorts above routine maintenance (2★) despite being older
-    expect(html.indexOf("Delisting of XYZ/USDT")).toBeLessThan(html.indexOf("Suspending KLV"));
+    expect(html.indexOf("XYZ/USDT — being delisted")).toBeLessThan(
+      html.indexOf("KLV (Klever) — deposits &amp; withdrawals paused"),
+    );
     expect(renderTelegramCaption(b)).toContain("Turbulent");
     // high-relevance signals get the fire chip
     expect(html).toContain("🔥 ⚠️ <b>XYZ/USDT</b> <i>(★5)</i>");
@@ -410,7 +450,7 @@ describe("article reasons", () => {
     ]);
     anns[0].reason = { cause: "security", excerpt: "Due to a security incident affecting the HOME bridge contract." };
     const html = renderTelegramHtml(buildBriefing(anns, { windowHours: 24, now: NOW }));
-    expect(html).toContain("ℹ️ <i>Due to a security incident");
+    expect(html).toContain("ℹ️ <i>A security issue — Bitget froze transfers to protect funds.</i>");
     expect(html).toContain("🛡 <b>Security-related — treat as elevated risk</b>");
   });
 });

@@ -87,43 +87,43 @@ function signalFor(a: ClassifiedAnnouncement): TradeSignal | null {
   if (/delist/.test(t)) {
     return mk(
       "exit-risk",
-      "Delisted assets historically drop 20–70% into removal on forced selling; exit or avoid — post-capitulation bounces are usually traps.",
+      "History: delisted coins keep falling (typically −20…−70%) until removal day as holders are forced out. If you hold it, exit early — the bounces are traps.",
     );
   }
   if (/\bst\b|risk (warning|alert)|special treatment/.test(t)) {
-    return mk("short-bias", "Risk tags often precede delisting; negative drift has historically followed.");
+    return mk("short-bias", "Risk-flagged coins usually keep sliding — this tag is often the last step before a delisting.");
   }
   if (/resum/.test(t)) {
     return mk(
       "arb-watch",
-      "Transfers reconnected: any Bitget premium/discount vs the global price tends to snap shut, and trapped holders can finally move coins — watch for a supply wave.",
+      "Transfers just reopened: any price gap vs other exchanges usually closes fast, and holders who were stuck can now sell. Expect a brief selling wave.",
     );
   }
   if (/suspend|halt|paus/.test(t) && /deposit|withdraw/.test(t)) {
     return mk(
       "arb-watch",
-      "With transfers frozen, the Bitget price can decouple from other venues; note the gap — it historically closes on resumption.",
+      "While transfers are frozen, the Bitget price can drift away from other exchanges. That gap usually snaps back once transfers reopen — worth tracking.",
     );
   }
   if (/funding rate|leverage|margin tier|position limit|tick size/.test(t)) {
     return mk(
       "vol-watch",
-      "Exchange de-risking this contract flags unusual volatility/liquidity; size down and expect funding swings.",
+      "Bitget just tightened this contract's risk settings — it expects sharp moves. Trade smaller and watch funding.",
     );
   }
   if (/margin trading pair|margin pair/.test(t)) {
-    return mk("vol-watch", "Fresh leverage availability tends to lift volume and volatility short-term.");
+    return mk("vol-watch", "New leverage on this pair tends to bring a burst of volume and sharper moves.");
   }
   if (/launchpool|launchpad|pre-?market|candybomb|poolx/.test(t)) {
     return mk(
       "avoid-chase",
-      "Farmed rewards are typically sold at claim; the better entry has historically been after the first unlock dump.",
+      "Launchpool rewards usually get sold the moment they unlock — the better entry has been after that first wave.",
     );
   }
   if (/will list|lists |listing|listed/.test(t)) {
     return mk(
       "avoid-chase",
-      "Listings average ~6% pop on the day (~9–10% around the event) then fade; chasing late has been a losing pattern — wait for the retrace.",
+      "New listings usually pop (~6%) and then give it back. Skip the spike — the dip after has been the better entry.",
     );
   }
   return null;

@@ -9,4 +9,5 @@ export * from "./signals.js";
 export * from "./prices.js";
 export * from "./article.js";
 export * from "./importance.js";
+export { humanTitle, humanWhy } from "./humanize.js";
 export { sampleAnnouncements } from "./sample-data.js";
