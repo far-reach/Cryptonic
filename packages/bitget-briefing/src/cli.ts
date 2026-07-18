@@ -23,7 +23,7 @@ import { fetchAnnouncements } from "./fetch.js";
 import { classifyAll } from "./classify.js";
 import { buildBriefing, renderMarkdown, renderText } from "./briefing.js";
 import { discoverTelegramChatId, notifyAll } from "./notify.js";
-import { renderTelegramHtml } from "./telegram.js";
+import { buildSummaryChartUrl, renderTelegramCaption, renderTelegramHtml } from "./telegram.js";
 import { sampleAnnouncements } from "./sample-data.js";
 import type { FetchLike } from "./types.js";
 
@@ -71,6 +71,10 @@ async function main(): Promise<number> {
   const notifyErrors = await notifyAll({
     text: renderText(briefing),
     telegramHtml: renderTelegramHtml(briefing, { historyUrl }),
+    telegramPhoto: {
+      url: buildSummaryChartUrl(briefing),
+      caption: renderTelegramCaption(briefing),
+    },
   });
 
   // After a successful auto-discovered delivery, record the chat id so the

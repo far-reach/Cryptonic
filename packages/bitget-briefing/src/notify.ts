@@ -51,6 +51,8 @@ export interface NotifyContent {
   text: string;
   /** Rich Telegram HTML (parse_mode: "HTML"); falls back to `text` when absent. */
   telegramHtml?: string;
+  /** Optional summary image sent (best-effort) before the message via sendPhoto. */
+  telegramPhoto?: { url: string; caption?: string };
 }
 
 /**
@@ -63,7 +65,8 @@ export async function notifyAll(
   env: NotifyEnv = process.env as NotifyEnv,
   fetchFn: FetchLike = fetch as unknown as FetchLike,
 ): Promise<string[]> {
-  const { text, telegramHtml } = typeof content === "string" ? { text: content, telegramHtml: undefined } : content;
+  const c: NotifyContent = typeof content === "string" ? { text: content } : content;
+  const { text, telegramHtml, telegramPhoto } = c;
   const errors: string[] = [];
 
   if (env.TELEGRAM_BOT_TOKEN) {
@@ -82,6 +85,21 @@ export async function notifyAll(
           `\n\n🛠 Delivered via auto-discovered chat id ${chatId}. ` +
           `Add TELEGRAM_CHAT_ID=${chatId} as a secret to make delivery permanent ` +
           `(auto-discovery stops working ~24h after your last message to the bot).`;
+      }
+      // Summary image first, so the chart leads the delivery. Best-effort: a chart
+      // service hiccup must never block the briefing itself.
+      if (telegramPhoto) {
+        try {
+          await post(fetchFn, `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendPhoto`, {
+            chat_id: chatId,
+            photo: telegramPhoto.url,
+            ...(telegramPhoto.caption ? { caption: telegramPhoto.caption, parse_mode: "HTML" } : {}),
+          });
+        } catch (err) {
+          console.error(
+            `telegram photo skipped — ${err instanceof Error ? err.message : String(err)}`,
+          );
+        }
       }
       await post(fetchFn, `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
         chat_id: chatId,
