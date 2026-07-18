@@ -20,9 +20,13 @@ if not exist "%DIR%\.git" (
 cd /d "%DIR%"
 git fetch --quiet origin
 
-rem Use main once the bot is merged there; fall back to the feature branch.
-set "BR=claude/bitget-briefing-bot-0z9sdw"
-git ls-tree -r --name-only origin/main 2>nul | findstr /b /c:"packages/bitget-briefing" >nul && set "BR=main"
+rem Follow the repo's default branch (where the bot now lives); fall back to the feature branch.
+git remote set-head origin --auto >nul 2>nul
+set "BR="
+for /f "delims=" %%b in ('git rev-parse --abbrev-ref origin/HEAD 2^>nul') do set "BR=%%b"
+set "BR=%BR:origin/=%"
+if "%BR%"=="" set "BR=claude/bitget-briefing-bot-0z9sdw"
+git ls-tree -r --name-only "origin/%BR%" 2>nul | findstr /b /c:"packages/bitget-briefing" >nul || set "BR=claude/bitget-briefing-bot-0z9sdw"
 
 git checkout --quiet "%BR%"
 git pull --quiet origin "%BR%"

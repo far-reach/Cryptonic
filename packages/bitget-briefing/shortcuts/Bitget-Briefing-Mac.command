@@ -23,10 +23,11 @@ fi
 cd "$DIR"
 git fetch --quiet origin
 
-# Use main once the bot is merged there; fall back to the feature branch.
-BR="claude/bitget-briefing-bot-0z9sdw"
-if git ls-tree -r --name-only origin/main 2>/dev/null | grep -q '^packages/bitget-briefing'; then
-  BR="main"
+# Follow the repo's default branch (where the bot now lives); fall back to the feature branch.
+git remote set-head origin --auto >/dev/null 2>&1 || true
+BR="$(git rev-parse --abbrev-ref origin/HEAD 2>/dev/null | sed 's|^origin/||')"
+if [ -z "$BR" ] || ! git ls-tree -r --name-only "origin/$BR" 2>/dev/null | grep -q '^packages/bitget-briefing'; then
+  BR="claude/bitget-briefing-bot-0z9sdw"
 fi
 
 git checkout --quiet "$BR"
