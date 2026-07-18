@@ -29,14 +29,33 @@ strategies:
   value_min_annualized_return: 0.35   # after fees
   value_min_volume_24h: 5000
   value_min_liquidity: 2000
+  value_stop_loss: 0.15               # exit if bid falls this far below cost
+
+  # Passive market making: rest paired YES/NO bids summing < $1.
+  # Makers pay ZERO fees and earn daily rebates funded by taker fees —
+  # the most dependable earner for a small account.
+  maker_enabled: true
+  maker_min_spread: 0.03        # only quote markets whose spread pays
+  maker_min_capture: 0.02       # required locked profit per matched pair
+  maker_max_markets: 3          # concurrent markets quoted
+  maker_quote_usdc: 8.0         # notional per quote pair
+  maker_min_volume_24h: 10000   # busy markets fill both sides faster
+  maker_mid_low: 0.15           # never quote the tails
+  maker_mid_high: 0.85
+  maker_min_days_to_end: 2      # never quote into a resolution
+  maker_requote_ticks: 2        # cancel/replace when mid drifts 2 ticks
+  maker_max_inventory_usdc: 12  # unpaired inventory cap per market
+  maker_inventory_stop: 0.08    # dump inventory if it runs 8c against us
 
 scanner:
   market_pages: 4             # 4 x 100 most-active markets per cycle
   min_volume_24h: 500
   poll_seconds: 30
+  fast_poll_seconds: 6        # tighter loop right after activity/near-misses
   book_top_n: 120
   request_timeout: 15
   max_retries: 3
+  settle_every_cycles: 10     # resolution check cadence for held positions
 
 # Taker-fee base rates by category (fee = shares * rate * p * (1-p)).
 # Defaults follow the March 2026 schedule; override here if Polymarket

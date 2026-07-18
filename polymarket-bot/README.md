@@ -4,13 +4,13 @@ A small, risk-managed bot that scans [Polymarket](https://polymarket.com)
 for mispricings and trades them with a **$100 budget**. It ships in
 **paper-trading mode by default**; live trading is an explicit, gated opt-in.
 
-> **Honesty first:** no bot can guarantee profit. What this bot does is
-> (a) hunt for *structural arbitrage* — positions whose payout at resolution
-> exceeds their cost no matter the outcome — and (b) take small, fee-aware,
-> Kelly-sized positions in near-certain favorites, a documented statistical
-> edge (favorite-longshot bias). Arbitrage windows are rare, small, and
-> contested by faster bots; the value strategy can and will lose individual
-> bets. The risk manager exists to make sure no single mistake is fatal.
+> **Honesty first:** no bot can guarantee profit. This bot stacks four edges
+> that exist for structural reasons — maker rebates, basket arbitrage,
+> book de-syncs, and the favorite-longshot bias — and wraps them in a risk
+> manager whose job is to make sure no single mistake is fatal. Arbitrage
+> windows are contested by faster bots, maker fills carry adverse-selection
+> risk, and value bets can simply lose. Expect slow compounding with
+> variance, not a money printer.
 
 ---
 
@@ -20,39 +20,49 @@ for mispricings and trades them with a **$100 budget**. It ships in
   **$1** or **$0**. Prices live on a central limit order book (CLOB) and are
   denominated in **USDC on Polygon**.
 - One YES + one NO of the same market always pays exactly **$1** combined,
-  and can be merged back into $1 of USDC at any time.
+  and can be merged back into $1 of USDC.
 - "Negative-risk" events ("Who will win X?") list one binary market per
   candidate and guarantee **exactly one YES** resolves true.
 - **Fees (since March 2026):** *takers* pay `shares × rate × p × (1−p)` per
-  trade — the fee peaks at p=0.50 and vanishes toward $0/$1. Rates vary by
-  category (politics ≈ $1.00 max per 100 shares, crypto ≈ $1.75,
-  geopolitics free). **Makers pay nothing** and earn rebates. Every edge
-  calculation in this bot is net of taker fees.
+  trade (peaks at p=0.50; politics ≈ $1.00 max per 100 shares, crypto ≈
+  $1.75, geopolitics free). **Makers pay nothing** — and 100% of taker fees
+  are redistributed to makers as daily rebates. Every edge calculation in
+  this bot is net of taker fees.
 
 ## The strategies
 
 | # | Strategy | Type | Idea |
 |---|----------|------|------|
-| 1 | `negrisk_arb` | **risk-free** | In a multi-outcome event, buy 1 **YES of every candidate** when they sum below $1 (basket must pay exactly $1), or 1 **NO of every candidate** when the NO basket costs less than $(n−1). Sibling markets have independent books, so they genuinely drift out of line — this is the workhorse. The YES basket is skipped for "augmented" events (where new candidates can still be added); the NO basket is provably safe even then. |
-| 2 | `complement_arb` | **risk-free** | Buy YES + NO of one market for < $1 after fees. Polymarket's matching engine keeps the two books mirrored, so this only fires on rare de-syncs — it costs nothing to check and is free money when it happens. |
-| 3 | `value_favorites` | probabilistic | Buy heavy favorites (0.90–0.985) within 14 days of resolution when the annualized return after fees clears 35%. Harvests the favorite-longshot bias plus time-value convergence. Sized at quarter-Kelly, diversified across ≤ 8 positions. **This one can lose.** |
+| 1 | `market_maker` | income | Rest a BUY on YES at `b_y` and a BUY on NO at `b_n` with `b_y + b_n ≤ 1 − capture` in busy, wide-spread, mid-range markets. If both sides fill, we own a YES+NO pair worth exactly $1 — bought for less, with **zero fees**, plus maker rebates on top. One-sided fills are the risk: managed by mid-range-only quoting, per-market inventory caps, an inventory stop, and cancel/replace on drift. The most dependable earner for a small account. |
+| 2 | `negrisk_arb` | **risk-free** | In a multi-outcome event, buy 1 YES of every candidate when they sum below $1 (pays exactly $1), or the full NO basket below $(n−1). Sizing walks all legs' book depth and stops where the marginal unit no longer clears the edge. YES baskets are skipped for "augmented" events (new candidates can appear); NO baskets are provably safe even then. |
+| 3 | `complement_arb` | **risk-free** | Buy YES + NO of one market for < $1 after fees. Books are normally mirrored, so this only fires on rare de-syncs — free to check, free money when it happens. |
+| 4 | `value_favorites` | probabilistic | Buy heavy favorites (0.90–0.985) within 14 days of resolution when the annualized after-fee return clears 35%. Quarter-Kelly sized, ≤ 8 positions, 15¢ stop-loss. **This one can lose.** |
 
-Planned next (see roadmap): passive market-making to *earn* the maker
-rebates instead of paying taker fees.
+## The loop (each cycle, ~30s; 6s while hot)
+
+1. scan markets + books (always including every token held or quoted)
+2. **settlement**: resolved markets credit automatically ($1 winners, $0 losers)
+3. sync resting maker orders → book fee-free maker fills
+4. **merge** completed YES+NO pairs back to cash (paper mode)
+5. inventory stop: dump one-sided maker inventory that ran 8¢ against us
+6. value stop-loss: exit favorites whose bid fell 15¢ below cost
+7. maker quote management: cancel stale → requote on 2-tick drift → place new
+8. taker opportunities (arbs first, then value) through the risk gate
 
 ## Risk management (the part that matters at $100)
 
-All enforced by `polybot/risk.py`, none of it optional:
+All enforced by `polybot/risk.py` and the portfolio ledger, none optional:
 
-- max **$10 per trade**, max **$15 per market**, max **80% deployed** (≥ $20
-  always in cash)
-- quarter-Kelly sizing for probabilistic bets, hard cap of 8 open value positions
-- **halt everything** if equity drops below $75 (25% drawdown) or realized
-  losses hit **−$10 in a day**
-- every opportunity is deduplicated by key — the bot never doubles into the
-  same mispricing
-- unknown fee categories are charged the *conservative* (higher) rate when
-  estimating edge
+- max **$10 per trade**, max **$15 per market** (positions **and** resting
+  orders count), max **80% deployed**, ≥ $20 always in cash
+- resting BUY orders **reserve their cash up front** — quotes can never
+  over-commit the bankroll
+- quarter-Kelly for probabilistic bets; hard cap of 8 open value positions
+- **halt everything** below $75 equity (25% drawdown) or −$10 realized in a
+  day — the bot cancels all resting orders and stops
+- risk-reducing exits (stops, unwinds) always pass the gate, even during a halt
+- taker opportunities are deduplicated; maker quotes are deduplicated by a
+  per-market quote registry (requoting is the normal cancel/replace cycle)
 
 ## Quick start
 
@@ -60,93 +70,93 @@ All enforced by `polybot/risk.py`, none of it optional:
 cd polymarket-bot
 pip install -r requirements.txt
 
-# 1. one-shot scan — see what's out there right now (no keys needed)
-python -m polybot scan
-
-# 2. paper-trade the loop (no keys needed; state in state/portfolio.json)
-python -m polybot run
-
-# 3. check the book
-python -m polybot status
+python -m polybot scan      # one-shot: what does it see right now? (no keys)
+python -m polybot run       # paper-trade the full loop (no keys)
+python -m polybot status    # cash / reserved / positions / orders / PnL
 ```
 
-Run paper mode for **at least a week** and look at `status` before even
-thinking about live mode.
+Run paper mode for **at least a week** before going live. Caveat: paper
+maker fills are **optimistic** (no queue modeling — a resting bid "fills"
+whenever the ask trades through it), so treat paper maker PnL as an upper
+bound.
 
 ### Tests
 
 ```bash
-pip install pytest && python -m pytest tests/ -q
+pip install pytest && python -m pytest tests/ -q   # 62 tests, all offline
 ```
 
 ## Going live (deliberately annoying)
 
-1. **Fund a wallet.** Deposit **$100 USDC** to your Polymarket account
-   (polymarket.com → Deposit). Your funds live in a proxy wallet; copy its
-   address from your profile.
+1. **Fund the account.** Deposit **$100 USDC** at polymarket.com → Deposit.
+   Place one tiny manual trade in the UI first so trading approvals are
+   initialized. Copy your proxy-wallet address from your profile.
 2. **Install the trading client:** `pip install py-clob-client-v2`
-   (the old `py-clob-client` was archived in May 2026 and no longer works —
-   Polymarket migrated to CLOB v2).
+   (the old `py-clob-client` was archived in May 2026 and no longer works).
 3. **Set the environment** (copy `.env.example` → `.env`, `source .env`):
-   - `POLYMARKET_PRIVATE_KEY` — the key that controls the account.
-     *Anyone with this key can drain the wallet. Keep at most your $100
-     budget in it, never reuse the key elsewhere, never commit it.*
-   - `POLYMARKET_FUNDER_ADDRESS` — your proxy wallet address (empty for a
-     plain EOA holding the USDC itself)
-   - `POLYMARKET_SIGNATURE_TYPE` — 0 EOA · 1 email/Magic login · 2 browser wallet
+   - `POLYMARKET_PRIVATE_KEY` — controls the account. *Anyone with this key
+     can drain the wallet. Keep only the $100 budget in it, never reuse the
+     key, never commit it.*
+   - `POLYMARKET_FUNDER_ADDRESS` — proxy wallet (empty for a plain EOA)
+   - `POLYMARKET_SIGNATURE_TYPE` — 0 EOA · 1 email/Magic · 2 browser wallet
    - `POLYBOT_LIVE_ACK=I_UNDERSTAND_THE_RISKS`
-4. ```bash
+4. **First live week, run conservative:** in `config.yaml` set
+   `max_trade_usdc: 3`, `maker_quote_usdc: 4`, `value_enabled: false`. Then:
+   ```bash
    python -m polybot run --live
    ```
+5. Watch `python -m polybot status` daily against your Polymarket account
+   page. If clean after a week, restore the default caps.
 
 ### Live-trading risks paper mode cannot show you
 
-- **Leg risk** — multi-leg arbs fill sequentially (FOK per leg). If leg 3 of
-  a basket fails after legs 1–2 filled, the bot unwinds at market and eats
-  the spread. Small sizes keep this cheap, never zero.
-- **Competition** — arbitrage on Polymarket is contested by low-latency
-  bots. Expect to win the leftovers, not every window a scan shows.
+- **Leg risk** — multi-leg arbs fill sequentially (FOK per leg); a failed
+  later leg triggers an automatic market unwind that eats the spread.
+  Watch logs for `UNWIND FAILED` — that position must be closed manually.
+- **Queue position** — live maker fills will be slower and more adverse
+  than paper's optimistic simulation.
+- **Pair capital** — completed live YES+NO pairs stay on the book until
+  resolution unless you merge them in the Polymarket UI (Portfolio → Merge)
+  to free the cash immediately; on-chain merge isn't exposed by the CLOB
+  client yet.
 - **Resolution risk** — markets resolve per their written rules (UMA
-  oracle). A "sure thing" can resolve against the obvious reading.
-- **Stale books** — a beautiful edge on a dead market usually means the
-  price is stale, not that you're early. Volume/liquidity floors filter
-  most of this; not all.
-- **Regulatory** — check that trading on Polymarket is legal where you live.
+  oracle); a "sure thing" can resolve against the obvious reading.
+- **Competition** — expect to win arb leftovers, not every scanned window.
+- **Regulatory** — confirm Polymarket is legal where you live.
 
 ## Configuration
 
-Everything lives in [`config.yaml`](config.yaml) (thresholds, caps, fee-rate
-overrides, poll interval) — commented inline. Secrets only ever come from
-the environment.
+Everything lives in [`config.yaml`](config.yaml) — every threshold, cap and
+cadence, commented inline. Secrets only ever come from the environment.
 
 ## Architecture
 
 ```
 polybot/
-  api.py            Gamma (metadata) + CLOB (books) public REST clients, retries
-  scanner.py        pulls data, prefilters candidates, runs all strategies
-  strategies/       complement_arb | negrisk_arb | value  (pure functions of data)
-  risk.py           sizing, caps, dedupe, drawdown halts — sole trade gatekeeper
-  executor/paper.py simulated fills at scanned prices
-  executor/live.py  CLOB v2 FOK orders, sequential legs + auto-unwind
-  portfolio.py      cash / positions / PnL, persisted to state/portfolio.json
-  bot.py            scan → risk-check → execute loop
+  api.py            Gamma (metadata/settlement) + CLOB (books) REST, retries
+  scanner.py        data pull, candidate prefilter, all strategies -> ScanResult
+  strategies/
+    market_maker.py paired maker quotes (fee-free spread capture)
+    negrisk_arb.py  multi-outcome basket arb, depth-aware sizing
+    complement_arb.py YES+NO de-sync arb, depth-aware sizing
+    value.py        near-resolution favorites, quarter-Kelly
+    depth.py        marginal-edge book walking shared by the arbs
+  risk.py           caps, dedupe, drawdown halts — sole trade gatekeeper
+  portfolio.py      cash/reserved/positions/orders ledger, JSON persistence
+  settlement.py     resolution detection -> automatic position settlement
+  executor/paper.py simulated taker fills + resting-order fill simulation
+  executor/live.py  CLOB v2: FOK takers with auto-unwind, GTC makers with
+                    status polling, cancel/replace
+  bot.py            the cycle above + adaptive polling + clean shutdown
   fees.py           taker-fee model: shares × rate × p × (1−p), per category
 ```
 
-Data sources (public, no auth): `gamma-api.polymarket.com` for market and
-event metadata, `clob.polymarket.com` for order books.
-
 ## Roadmap
 
-- **Market-making mode** — quote both sides of tight, active markets as a
-  *maker*: zero fees plus the Maker Rebates Program (rebates funded by 100%
-  of taker fees). This is the most reliable earner for small accounts, at
-  the cost of real order-management complexity (cancel/replace, inventory
-  and adverse-selection control).
-- Settlement detection: auto-credit resolved positions in paper mode.
-- WebSocket book streaming (`ws-subscriptions-clob.polymarket.com`) to react
-  in seconds instead of the 30s polling cadence.
+- WebSocket book streaming (`ws-subscriptions-clob.polymarket.com`) to
+  react in ~1s instead of 6–30s polling.
+- On-chain pair merge for live mode (via Polymarket's unified `py-sdk`)
+  to recycle maker capital without waiting for resolution.
 - Cross-venue arbitrage vs. Kalshi on equivalent markets.
 
 ## Disclaimer

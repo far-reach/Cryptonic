@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+from dataclasses import dataclass, field
 
 from .api import ClobClient, GammaClient
 from .config import Config
@@ -10,10 +11,18 @@ from .fees import FeeModel
 from .models import Market, Opportunity, OrderBook
 from .strategies.base import Strategy
 from .strategies.complement_arb import ComplementArb
+from .strategies.market_maker import MarketMaker
 from .strategies.negrisk_arb import NegRiskArb
 from .strategies.value import ValueFavorites, days_until
 
 log = logging.getLogger(__name__)
+
+
+@dataclass
+class ScanResult:
+    opportunities: list[Opportunity] = field(default_factory=list)
+    books: dict[str, OrderBook] = field(default_factory=dict)
+    markets: list[Market] = field(default_factory=list)
 
 
 class Scanner:
@@ -28,11 +37,12 @@ class Scanner:
             ComplementArb(config, self.fees),
             NegRiskArb(config, self.fees),
             ValueFavorites(config, self.fees),
+            MarketMaker(config, self.fees),
         ]
 
     def _candidate_tokens(self, markets: list[Market], events: list[dict]) -> list[str]:
         """Pick which order books to fetch this cycle (bounded by book_top_n)."""
-        scfg, stcfg = self.config.scanner, self.config.strategies
+        stcfg = self.config.strategies
         tokens: list[str] = []
         seen: set[str] = set()
 
@@ -48,20 +58,27 @@ class Scanner:
                 m = Market.from_gamma(raw)
                 if m and m.active and not m.closed:
                     add(m)
-        # then: markets whose indicative YES bid+ask already hints at
-        # complement mispricing, and near-resolution favorites
+        # then, scored: complement hints, near-resolution favorites, and
+        # maker candidates (busy mid-range markets with a wide spread)
         scored: list[tuple[float, Market]] = []
         for m in markets:
             if m.best_bid is None or m.best_ask is None:
                 continue
-            # complement hint: implied NO ask = 1 - YES bid
-            pair = m.best_ask + (1.0 - m.best_bid)
-            hint = 1.0 - pair  # > 0 means YES ask + NO ask < 1 indicatively
+            pair = m.best_ask + (1.0 - m.best_bid)  # indicative YES+NO ask sum
+            hint = 1.0 - pair
             days = days_until(m.end_date)
             fav = (max(m.best_bid, 1.0 - m.best_ask) >= stcfg.value_min_price
                    and days is not None and days <= stcfg.value_max_days_to_end)
-            score = hint + (0.001 if fav else -0.5)
-            if hint > -0.02 or fav:
+            mid = (m.best_bid + m.best_ask) / 2
+            spread = m.best_ask - m.best_bid
+            makerish = (stcfg.maker_enabled
+                        and m.volume_24h >= stcfg.maker_min_volume_24h
+                        and stcfg.maker_mid_low <= mid <= stcfg.maker_mid_high
+                        and spread >= stcfg.maker_min_spread
+                        and days is not None
+                        and days >= stcfg.maker_min_days_to_end)
+            score = hint + (0.001 if fav else 0.0) + (m.volume_24h / 1e9 if makerish else 0.0)
+            if hint > -0.02 or fav or makerish:
                 scored.append((score, m))
         scored.sort(key=lambda x: x[0], reverse=True)
         for _, m in scored:
@@ -70,7 +87,9 @@ class Scanner:
             add(m)
         return tokens
 
-    def scan(self) -> list[Opportunity]:
+    def scan(self, extra_token_ids: list[str] | None = None) -> ScanResult:
+        """Full cycle: metadata, books (incl. `extra_token_ids` — held/quoted
+        tokens the bot must track), strategies."""
         scfg = self.config.scanner
         markets = self.gamma.active_markets(
             pages=scfg.market_pages, min_volume_24h=scfg.min_volume_24h)
@@ -78,6 +97,9 @@ class Scanner:
         log.info("scan: %d markets, %d negRisk events", len(markets), len(events))
 
         tokens = self._candidate_tokens(markets, events)
+        for t in extra_token_ids or []:
+            if t and t not in tokens:
+                tokens.append(t)
         books: dict[str, OrderBook] = self.clob.books(tokens) if tokens else {}
         log.info("fetched %d order books", len(books))
 
@@ -90,6 +112,7 @@ class Scanner:
                 continue
             opportunities.extend(found)
 
-        # guaranteed arbs first, then by edge
-        opportunities.sort(key=lambda o: (not o.guaranteed, -o.edge))
-        return opportunities
+        # guaranteed arbs first, then takers by edge, maker quotes last
+        opportunities.sort(
+            key=lambda o: (not o.guaranteed, o.execution == "maker", -o.edge))
+        return ScanResult(opportunities=opportunities, books=books, markets=markets)

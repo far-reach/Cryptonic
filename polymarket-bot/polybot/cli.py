@@ -28,7 +28,7 @@ def _setup_logging(verbose: bool) -> None:
 
 def cmd_scan(cfg: Config) -> int:
     from .scanner import Scanner
-    opportunities = Scanner(cfg).scan()
+    opportunities = Scanner(cfg).scan().opportunities
     if not opportunities:
         print("No opportunities passed the filters this cycle. "
               "That is normal — arbitrage windows are rare and short-lived. "
@@ -36,7 +36,8 @@ def cmd_scan(cfg: Config) -> int:
         return 0
     print(f"{len(opportunities)} opportunit{'y' if len(opportunities) == 1 else 'ies'}:\n")
     for opp in opportunities:
-        print(" ", opp.summary())
+        tag = "QUOTE" if opp.execution == "maker" else opp.summary()
+        print(" ", f"[MAKER] {opp.description}" if opp.execution == "maker" else tag)
         for leg in opp.legs:
             print(f"      {leg.side} {leg.shares:.1f} {leg.outcome}"
                   f" @ {leg.price:.3f}  ({leg.market_question[:60]})")
@@ -54,15 +55,20 @@ def cmd_status(cfg: Config) -> int:
     p = Portfolio(cfg.risk.bankroll_usdc, cfg.state_file)
     print(json.dumps({
         "cash": round(p.cash, 2),
+        "reserved_by_orders": round(p.reserved, 2),
         "deployed_at_cost": round(p.deployed(), 2),
         "equity_at_cost": round(p.equity(), 2),
         "realized_pnl": round(float(p.state["realized_pnl"]), 2),
         "open_positions": p.open_position_count(),
+        "open_orders": len(p.state["open_orders"]),
         "fills": len(p.state["fills"]),
     }, indent=2))
     for pos in p.positions():
-        print(f"  {pos.outcome:>3} x{pos.shares:8.2f} @ {pos.avg_price:.3f}"
+        print(f"  POS   {pos.outcome:>3} x{pos.shares:8.2f} @ {pos.avg_price:.3f}"
               f"  [{pos.strategy}] {pos.market_question[:60]}")
+    for o in p.open_orders():
+        print(f"  ORDER {o.side:>4} x{o.shares:8.2f} @ {o.price:.3f}"
+              f"  [{o.strategy}] {o.market_question[:60]}")
     return 0
 
 

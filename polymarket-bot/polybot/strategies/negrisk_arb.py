@@ -23,10 +23,9 @@ are skipped.
 
 from __future__ import annotations
 
-import json
-
 from ..models import Leg, Market, Opportunity, OrderBook
 from .base import Strategy
+from .depth import size_basket
 
 
 def _event_markets(event: dict) -> list[Market]:
@@ -68,40 +67,44 @@ class NegRiskArb(Strategy):
     def _basket(self, event: dict, ms: list[Market],
                 books: dict[str, OrderBook], side: str):
         cfg = self.config.strategies
-        legs: list[Leg] = []
-        basket_cost = 0.0   # per 1-share basket, ex fees
-        fee_cost = 0.0      # per 1-share basket
-        max_shares = float("inf")
-
+        leg_books: list[OrderBook] = []
         for m in ms:
             token = m.yes_token_id if side == "YES" else m.no_token_id
             ob = books.get(token)
             if not ob or not ob.best_ask:
                 return None
-            ask = ob.best_ask
-            basket_cost += ask.price
-            fee_cost += self.fees.taker_fee(1, ask.price, m.category)
-            max_shares = min(max_shares, ask.size)
-            legs.append(Leg(token, "BUY", ask.price, 0.0, m.question,
-                            "Yes" if side == "YES" else "No", m.category))
+            leg_books.append(ob)
 
         payout = 1.0 if side == "YES" else float(len(ms) - 1)
-        edge_total = payout - basket_cost - fee_cost
-        edge = edge_total / payout  # normalize per $1 of payout
-        if edge < cfg.negrisk_min_edge or max_shares <= 0:
+        # per-leg categories can differ in theory; use the first market's
+        # (an event's markets share a category in practice)
+        category = ms[0].category
+        sized = size_basket(
+            leg_books, payout_per_share=payout,
+            fee_fn=lambda p: self.fees.taker_fee(1, p, category),
+            min_edge=cfg.negrisk_min_edge,
+        )
+        if not sized:
             return None
+        shares, avg_prices, limit_prices, total_cost = sized
+        basket_cost = sum(avg_prices)
+        profit = shares * payout - total_cost
 
-        for leg in legs:
-            leg.shares = max_shares
+        legs = [
+            Leg(m.yes_token_id if side == "YES" else m.no_token_id, "BUY",
+                limit_prices[i], shares, m.question,
+                "Yes" if side == "YES" else "No", m.category, m.condition_id)
+            for i, m in enumerate(ms)
+        ]
         return Opportunity(
             strategy=self.name,
             kind=f"negrisk_{side.lower()}_arb",
             description=(f"{side} basket x{len(ms)} @ {basket_cost:.3f} "
                          f"(pays {payout:.0f}) | {event.get('title', '')[:60]}"),
             legs=legs,
-            edge=edge,
-            expected_profit=max_shares * edge_total,
-            total_cost=max_shares * (basket_cost + fee_cost),
+            edge=profit / (shares * payout),
+            expected_profit=profit,
+            total_cost=total_cost,
             guaranteed=True,
             end_date=event.get("endDate", "") or "",
             key=f"negrisk:{side}:{event.get('slug', '')}:{basket_cost:.3f}",

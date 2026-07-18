@@ -71,6 +71,20 @@ class GammaClient:
                 break
         return out
 
+    def markets_by_condition(self, condition_ids: list[str]) -> list[dict]:
+        """Raw market objects for specific condition ids (for settlement)."""
+        out: list[dict] = []
+        CHUNK = 20  # gamma accepts repeated condition_ids params
+        for i in range(0, len(condition_ids), CHUNK):
+            chunk = condition_ids[i:i + CHUNK]
+            batch = self.http.get(f"{self.host}/markets", params={
+                "condition_ids": ",".join(chunk),
+                "limit": len(chunk),
+            })
+            if isinstance(batch, list):
+                out.extend(batch)
+        return out
+
     def negrisk_events(self, pages: int = 2, page_size: int = 50) -> list[dict]:
         """Active negative-risk (mutually exclusive multi-outcome) events,
         each with nested markets."""

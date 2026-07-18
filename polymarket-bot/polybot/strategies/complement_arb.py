@@ -3,7 +3,7 @@
 Whichever way the market resolves, one share of YES plus one share of NO
 always pays exactly $1 total. If
 
-    best_ask(YES) + best_ask(NO) + taker_fees  <  1 - min_edge
+    ask(YES) + ask(NO) + taker_fees  <  1 - min_edge
 
 we can lock in a risk-free profit at resolution (or merge the pair back to
 $1 of USDC early).
@@ -15,12 +15,16 @@ The strategy exists to catch the rare de-syncs (operator hiccups, stale
 books during volatility spikes) and costs nothing to check. The dependable
 structural arb on Polymarket is the multi-outcome basket in negrisk_arb.py,
 where sibling candidate markets have *independent* books.
+
+Sizing walks BOTH books level by level (see depth.py) and stops where the
+marginal pair no longer clears the edge threshold.
 """
 
 from __future__ import annotations
 
 from ..models import Leg, Market, Opportunity, OrderBook
 from .base import Strategy
+from .depth import size_basket
 
 
 class ComplementArb(Strategy):
@@ -43,31 +47,32 @@ class ComplementArb(Strategy):
 
     def evaluate(self, m: Market, yes: OrderBook, no: OrderBook):
         cfg = self.config.strategies
-        ask_y, ask_n = yes.best_ask.price, no.best_ask.price
-        pair_price = ask_y + ask_n
-        fee_per_pair = (self.fees.taker_fee(1, ask_y, m.category)
-                        + self.fees.taker_fee(1, ask_n, m.category))
-        edge = 1.0 - pair_price - fee_per_pair
-        if edge < cfg.complement_min_edge:
+        sized = size_basket(
+            [yes, no], payout_per_share=1.0,
+            fee_fn=lambda p: self.fees.taker_fee(1, p, m.category),
+            min_edge=cfg.complement_min_edge,
+        )
+        if not sized:
             return None
-
-        # size to the shallower best-ask level; budget cap applied later by risk mgr
-        shares = min(yes.best_ask.size, no.best_ask.size)
-        if shares <= 0:
-            return None
-        cost = shares * (pair_price + fee_per_pair)
+        shares, avg_prices, limit_prices, total_cost = sized
+        profit = shares * 1.0 - total_cost
+        edge = profit / shares
         return Opportunity(
             strategy=self.name,
             kind="complement_arb",
-            description=f"YES@{ask_y:.3f} + NO@{ask_n:.3f} < $1 | {m.question[:70]}",
+            description=(f"YES@{avg_prices[0]:.3f} + NO@{avg_prices[1]:.3f} < $1 "
+                         f"| {m.question[:70]}"),
             legs=[
-                Leg(m.yes_token_id, "BUY", ask_y, shares, m.question, "Yes", m.category),
-                Leg(m.no_token_id, "BUY", ask_n, shares, m.question, "No", m.category),
+                Leg(m.yes_token_id, "BUY", limit_prices[0], shares, m.question,
+                    "Yes", m.category, m.condition_id),
+                Leg(m.no_token_id, "BUY", limit_prices[1], shares, m.question,
+                    "No", m.category, m.condition_id),
             ],
             edge=edge,
-            expected_profit=shares * edge,
-            total_cost=cost,
+            expected_profit=profit,
+            total_cost=total_cost,
             guaranteed=True,
             end_date=m.end_date,
-            key=f"comp:{m.condition_id}:{ask_y:.3f}:{ask_n:.3f}",
+            key=(f"comp:{m.condition_id}:"
+                 f"{yes.best_ask.price:.3f}:{no.best_ask.price:.3f}"),
         )

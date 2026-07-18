@@ -104,7 +104,7 @@ class ValueFavorites(Strategy):
             kind="value",
             description=(f"{outcome}@{ask:.3f}, {days:.1f}d left, "
                          f"{annualized:.0%} ann. | {m.question[:60]}"),
-            legs=[Leg(token_id, "BUY", ask, shares, m.question, outcome, m.category)],
+            legs=[Leg(token_id, "BUY", ask, shares, m.question, outcome, m.category, m.condition_id)],
             edge=ev_per_share,
             expected_profit=shares * ev_per_share,
             total_cost=shares * cost,

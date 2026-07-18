@@ -49,6 +49,21 @@ class StrategyConfig:
     value_min_annualized_return: float = 0.35   # 35%+ annualized after fees
     value_min_volume_24h: float = 5_000.0       # ignore dead markets
     value_min_liquidity: float = 2_000.0
+    value_stop_loss: float = 0.15               # exit if bid drops this far below cost
+
+    # passive market making (maker = zero fees + rebates)
+    maker_enabled: bool = True
+    maker_min_spread: float = 0.03      # only quote where the spread pays
+    maker_min_capture: float = 0.02     # required profit per matched pair
+    maker_max_markets: int = 3          # concurrent markets we quote
+    maker_quote_usdc: float = 8.0       # notional per quote pair
+    maker_min_volume_24h: float = 10_000.0
+    maker_mid_low: float = 0.15         # avoid tails: inventory there is toxic
+    maker_mid_high: float = 0.85
+    maker_min_days_to_end: float = 2.0  # never quote into a resolution
+    maker_requote_ticks: int = 2        # cancel/replace if mid moved this far
+    maker_max_inventory_usdc: float = 12.0  # unpaired inventory cap per market
+    maker_inventory_stop: float = 0.08  # dump inventory if mid ran this far away
 
 
 @dataclass
@@ -56,9 +71,11 @@ class ScannerConfig:
     market_pages: int = 4              # pages of 100 markets, by 24h volume
     min_volume_24h: float = 500.0      # skip illiquid markets entirely
     poll_seconds: float = 30.0         # main loop interval
+    fast_poll_seconds: float = 6.0     # interval while hot (opps found / near-miss)
     book_top_n: int = 120              # fetch books for at most N candidates/cycle
     request_timeout: float = 15.0
     max_retries: int = 3
+    settle_every_cycles: int = 10      # check held markets for resolution every N cycles
 
 
 @dataclass

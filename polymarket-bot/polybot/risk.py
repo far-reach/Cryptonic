@@ -2,10 +2,14 @@
 
 Hard rules for a $100 bankroll:
   - never deploy more than max_deployed_frac of the bankroll
+    (positions at cost + cash reserved by resting orders)
   - cap any single opportunity at max_trade_usdc
   - cap total exposure to one market at max_market_usdc
   - halt everything on drawdown (halt_drawdown_frac) or daily loss stop
-  - never repeat the same opportunity key
+  - never repeat the same taker opportunity key (maker quotes are exempt —
+    requoting the same market is the normal cancel/replace cycle and is
+    de-duplicated by the bot's quote registry instead)
+  - SELL-only opportunities (exits, unwinds) always pass: they reduce risk
 """
 
 from __future__ import annotations
@@ -19,6 +23,8 @@ from .portfolio import Portfolio
 
 log = logging.getLogger(__name__)
 
+MAX_SEEN_KEYS = 500
+
 
 @dataclass
 class RiskDecision:
@@ -31,7 +37,7 @@ class RiskManager:
     def __init__(self, config: Config, portfolio: Portfolio):
         self.config = config
         self.portfolio = portfolio
-        self.seen_keys: set[str] = set(portfolio.state.get("seen_keys", []))
+        self.seen_keys: list[str] = list(portfolio.state.get("seen_keys", []))
 
     def halted(self) -> str | None:
         risk = self.config.risk
@@ -45,10 +51,13 @@ class RiskManager:
 
     def check(self, opp: Opportunity) -> RiskDecision:
         risk = self.config.risk
+        # exits reduce risk — they pass unconditionally, even during a halt
+        if opp.legs and all(leg.side == "SELL" for leg in opp.legs):
+            return RiskDecision(True, "sell-only (risk-reducing)")
         halt = self.halted()
         if halt:
             return RiskDecision(False, halt)
-        if opp.key in self.seen_keys:
+        if opp.execution != "maker" and opp.key in self.seen_keys:
             return RiskDecision(False, "duplicate opportunity")
         if opp.total_cost <= 0:
             return RiskDecision(False, "zero-cost opportunity (malformed)")
@@ -60,14 +69,15 @@ class RiskManager:
         if headroom < 1.0:
             return RiskDecision(False, f"deployed cap reached (${deployed:.2f} in market)")
 
-        if (not opp.guaranteed
+        if (not opp.guaranteed and opp.execution != "maker"
                 and self.portfolio.open_position_count() >= risk.max_value_positions):
             return RiskDecision(False, "max value positions open")
 
         # per-market cap: existing exposure to any market these legs touch
         cap = risk.max_trade_usdc
         for leg in opp.legs:
-            existing = self.portfolio.market_exposure(leg.market_question)
+            existing = self.portfolio.market_exposure(leg.condition_id,
+                                                      leg.market_question)
             cap = min(cap, risk.max_market_usdc - existing)
         cap = min(cap, headroom)
         if cap < 1.0:
@@ -79,5 +89,9 @@ class RiskManager:
         return RiskDecision(True, "ok", scale)
 
     def mark_taken(self, opp: Opportunity) -> None:
-        self.seen_keys.add(opp.key)
-        self.portfolio.state["seen_keys"] = sorted(self.seen_keys)
+        if opp.execution == "maker":
+            return  # requotes must not be blocked by dedupe
+        self.seen_keys.append(opp.key)
+        if len(self.seen_keys) > MAX_SEEN_KEYS:
+            self.seen_keys = self.seen_keys[-MAX_SEEN_KEYS:]
+        self.portfolio.state["seen_keys"] = self.seen_keys

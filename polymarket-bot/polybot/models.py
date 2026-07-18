@@ -55,6 +55,32 @@ class OrderBook:
     def depth_at_best_ask(self) -> float:
         return self.asks[0].size if self.asks else 0.0
 
+    def ask_breakpoints(self, max_levels: int = 5) -> list[tuple[float, float, float]]:
+        """Cumulative ask ladder: (cum_shares, cum_cost, marginal_price) per level.
+
+        Lets strategies size beyond the best level: at each breakpoint the
+        average fill price is cum_cost / cum_shares and the *marginal* price
+        (what the next share costs) is level price — edge checks must use the
+        marginal price, since edge decays level by level.
+        """
+        out, cum_shares, cum_cost = [], 0.0, 0.0
+        for level in self.asks[:max_levels]:
+            cum_shares += level.size
+            cum_cost += level.size * level.price
+            out.append((cum_shares, cum_cost, level.price))
+        return out
+
+    def sell_value(self, shares: float) -> Optional[float]:
+        """USDC received selling `shares` into the bids. None if not enough depth."""
+        remaining, value = shares, 0.0
+        for level in self.bids:
+            take = min(remaining, level.size)
+            value += take * level.price
+            remaining -= take
+            if remaining <= 1e-9:
+                return value
+        return None
+
     @classmethod
     def from_clob(cls, data: dict) -> "OrderBook":
         """Parse a CLOB /book response. Bids/asks arrive unsorted in some cases."""
@@ -139,7 +165,8 @@ class Leg:
     shares: float
     market_question: str = ""
     outcome: str = ""
-    category: str = ""  # fee category of the market
+    category: str = ""       # fee category of the market
+    condition_id: str = ""   # market identifier, needed for settlement
 
     @property
     def notional(self) -> float:
@@ -161,6 +188,7 @@ class Opportunity:
     confidence: float = 1.0       # 0..1, strategies below 1 are probabilistic
     end_date: str = ""
     key: str = ""                 # dedupe key so we don't re-enter the same opp
+    execution: str = "taker"      # "taker" = cross the book now; "maker" = rest limit orders
 
     def summary(self) -> str:
         tag = "ARB " if self.guaranteed else "VALUE"
@@ -180,6 +208,7 @@ class Position:
     strategy: str
     opened_at: str = ""
     end_date: str = ""
+    condition_id: str = ""
 
     @property
     def cost_basis(self) -> float:
@@ -197,3 +226,22 @@ class Fill:
     strategy: str
     market_question: str = ""
     outcome: str = ""
+    condition_id: str = ""
+
+
+@dataclass
+class OpenOrder:
+    """A resting limit order (maker execution)."""
+
+    order_id: str            # exchange id (live) or synthetic id (paper)
+    token_id: str
+    side: str                # "BUY" / "SELL"
+    price: float
+    shares: float            # remaining unfilled shares
+    strategy: str
+    market_question: str = ""
+    outcome: str = ""
+    category: str = ""
+    condition_id: str = ""
+    placed_at: str = ""
+    quote_key: str = ""      # groups the two sides of one maker quote
