@@ -22,8 +22,9 @@ import { dirname, join } from "node:path";
 import { fetchAnnouncements } from "./fetch.js";
 import { classifyAll } from "./classify.js";
 import { buildBriefing, renderMarkdown, renderText } from "./briefing.js";
-import { notifyAll } from "./notify.js";
+import { discoverTelegramChatId, notifyAll } from "./notify.js";
 import { sampleAnnouncements } from "./sample-data.js";
+import type { FetchLike } from "./types.js";
 
 async function main(): Promise<number> {
   const args = new Set(process.argv.slice(2));
@@ -64,6 +65,24 @@ async function main(): Promise<number> {
   if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, markdown);
 
   const notifyErrors = await notifyAll(renderText(briefing));
+
+  // After a successful auto-discovered delivery, record the chat id so the
+  // workflow can pin it (delivery then no longer depends on recent messages).
+  if (process.env.TELEGRAM_BOT_TOKEN && !process.env.TELEGRAM_CHAT_ID && notifyErrors.length === 0) {
+    try {
+      const id = await discoverTelegramChatId(
+        process.env.TELEGRAM_BOT_TOKEN,
+        fetch as unknown as FetchLike,
+      );
+      if (id) {
+        const dir = process.env.BRIEFING_OUTPUT ? dirname(process.env.BRIEFING_OUTPUT) : ".";
+        writeFileSync(join(dir, "telegram-chat-id.txt"), id + "\n");
+      }
+    } catch {
+      // best-effort; the next delivery will try again
+    }
+  }
+
   if (notifyErrors.length > 0) {
     for (const e of notifyErrors) console.error(`notify failed — ${e}`);
     // Record configured-channel failures where the workflow can pick them up;
