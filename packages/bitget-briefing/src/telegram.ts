@@ -2,6 +2,7 @@ import type { Briefing, ClassifiedAnnouncement } from "./types.js";
 import type { TrendSeries } from "./history.js";
 import { formatLevels, STANCE_GLYPH } from "./signals.js";
 import { environmentGauge, scoreAnnouncement, starBar, tierDot } from "./importance.js";
+import { condenseTitle, humanTitle, humanWhy } from "./humanize.js";
 
 /** Telegram sendMessage hard limit is 4096 chars; leave headroom for the footer. */
 const MAX_LEN = 3900;
@@ -25,17 +26,7 @@ function fmtTime(ms: number | null): string {
   return `${fmtDay(ms)}, ${hh}:${mm}`;
 }
 
-/** Strip boilerplate lead-ins so the subject stands on its own. */
-export function condenseTitle(title: string): string {
-  let t = title
-    .replace(/^bitget announcement (on|regarding)\s+/i, "")
-    .replace(/^announcement (on|of|regarding)\s+(the\s+)?/i, "")
-    .replace(/^notice (on|of|regarding)\s+(the\s+)?/i, "")
-    .replace(/^bitget (to|will)\s+/i, "")
-    .replace(/\s+/g, " ")
-    .trim();
-  return t.charAt(0).toUpperCase() + t.slice(1);
-}
+export { condenseTitle } from "./humanize.js";
 
 /** Pick the status glyph that "shows instead of tells". */
 export function glyphFor(a: ClassifiedAnnouncement): string {
@@ -125,13 +116,12 @@ function link(a: ClassifiedAnnouncement, label: string): string {
   return a.url ? `<a href="${escapeHtml(a.url)}">${safe}</a>` : safe;
 }
 
-/** "why" line: the article's own explanation, with a loud flag for security causes. */
+/** "why" line: plain-language explanation, with a loud flag for security causes. */
 function reasonLine(a: ClassifiedAnnouncement): string {
-  const r = a.reason;
-  if (!r) return "";
   const parts: string[] = [];
-  if (r.excerpt) parts.push(`\n      ℹ️ <i>${escapeHtml(r.excerpt)}</i>`);
-  if (r.cause === "security") {
+  const why = humanWhy(a);
+  if (why) parts.push(`\n      ℹ️ <i>${escapeHtml(why)}</i>`);
+  if (a.reason?.cause === "security") {
     parts.push(`\n      🛡 <b>Security-related — treat as elevated risk</b>`);
   }
   return parts.join("");
@@ -147,7 +137,7 @@ function importanceLine(a: ClassifiedAnnouncement, timeText?: string): string {
 function renderPaired(p: PairedItem): string {
   if (p.kind === "resolved") {
     // Subject from the resume title, verbs stripped: "USDC - APTOS withdrawals"
-    const subject = condenseTitle(p.item.title).replace(/^resum\w*\s+(of\s+)?/i, "");
+    const subject = humanTitle(p.item);
     const to = fmtTime(p.item.publishedAt);
     // Prefer the resume article's reason; fall back to the suspension's.
     const item = p.item.reason ? p.item : { ...p.item, reason: p.counterpart?.reason };
@@ -158,7 +148,7 @@ function renderPaired(p: PairedItem): string {
   }
   const a = p.item;
   const when = fmtTime(a.publishedAt);
-  return `${glyphFor(a)} ${link(a, condenseTitle(a.title))}${importanceLine(a, when ? `${when} UTC` : undefined)}${reasonLine(a)}`;
+  return `${glyphFor(a)} ${link(a, humanTitle(a))}${importanceLine(a, when ? `${when} UTC` : undefined)}${reasonLine(a)}`;
 }
 
 /**
