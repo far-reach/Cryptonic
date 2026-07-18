@@ -91,7 +91,9 @@ export function findReason(text: string): ArticleReason | null {
   const causeRe = CAUSE_PATTERNS.find((p) => p.cause === cause)?.re;
   const explanatory =
     (causeRe && sentences.find((s) => causeRe.test(s))) ??
-    sentences.find((s) => /due to|because|as (a result|part) of|to (support|ensure|complete)|in order to/i.test(s));
+    sentences.find((s) => /due to|because|as (a result|part) of|to (support|ensure|complete)|in order to/i.test(s)) ??
+    // Resumption articles often state only the fact — quote that line.
+    sentences.find((s) => /resum(ed|ption)|(deposit|withdrawal)s?\b.*\b(reopened?|restored|open again)/i.test(s));
   // Junk-free excerpt or nothing: a missing why-line beats quoting page chrome.
   if (!explanatory) return null;
   let excerpt = explanatory.trim();

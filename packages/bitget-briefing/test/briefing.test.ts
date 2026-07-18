@@ -308,6 +308,12 @@ describe("article reasons", () => {
       "Suspending KLV | Bitget Support Center Bitget App Trade smarter Buy crypto Markets maintenance window something else here.",
     );
     expect(onlyChrome).toBeNull();
+
+    // resumption articles that state only the fact still yield an excerpt
+    const resumed = findReason(
+      "Deposit and withdrawal services for MANTRA have now resumed on Bitget. Thank you for your patience and continued support.",
+    );
+    expect(resumed!.excerpt).toContain("have now resumed");
   });
 
   it("extracts article text from __NEXT_DATA__ pages and attaches reasons", async () => {
