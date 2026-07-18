@@ -51,6 +51,8 @@ export interface NotifyContent {
   text: string;
   /** Rich Telegram HTML (parse_mode: "HTML"); falls back to `text` when absent. */
   telegramHtml?: string;
+  /** Headerless variant used when the photo+caption (which carry the header) delivered. */
+  telegramHtmlCompact?: string;
   /** Optional summary image sent (best-effort) before the message via sendPhoto. */
   telegramPhoto?: { url: string; caption?: string };
 }
@@ -72,7 +74,7 @@ export async function notifyAll(
   if (env.TELEGRAM_BOT_TOKEN) {
     try {
       let chatId = env.TELEGRAM_CHAT_ID;
-      let body = telegramHtml ?? text;
+      let tip = "";
       if (!chatId) {
         const discovered = await discoverTelegramChatId(env.TELEGRAM_BOT_TOKEN, fetchFn);
         if (!discovered) {
@@ -81,13 +83,14 @@ export async function notifyAll(
           );
         }
         chatId = discovered;
-        body +=
+        tip =
           `\n\n🛠 Delivered via auto-discovered chat id ${chatId}. ` +
           `Add TELEGRAM_CHAT_ID=${chatId} as a secret to make delivery permanent ` +
           `(auto-discovery stops working ~24h after your last message to the bot).`;
       }
       // Summary image first, so the chart leads the delivery. Best-effort: a chart
       // service hiccup must never block the briefing itself.
+      let photoDelivered = false;
       if (telegramPhoto) {
         try {
           await post(fetchFn, `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendPhoto`, {
@@ -95,12 +98,17 @@ export async function notifyAll(
             photo: telegramPhoto.url,
             ...(telegramPhoto.caption ? { caption: telegramPhoto.caption, parse_mode: "HTML" } : {}),
           });
+          photoDelivered = true;
         } catch (err) {
           console.error(
             `telegram photo skipped — ${err instanceof Error ? err.message : String(err)}`,
           );
         }
       }
+      // When the photo+caption delivered the header, send the headerless variant.
+      const body =
+        (photoDelivered && c.telegramHtmlCompact ? c.telegramHtmlCompact : telegramHtml ?? text) +
+        tip;
       await post(fetchFn, `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
         chat_id: chatId,
         text: body,

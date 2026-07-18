@@ -71,6 +71,7 @@ async function main(): Promise<number> {
   const notifyErrors = await notifyAll({
     text: renderText(briefing),
     telegramHtml: renderTelegramHtml(briefing, { historyUrl }),
+    telegramHtmlCompact: renderTelegramHtml(briefing, { historyUrl, compact: true }),
     telegramPhoto: {
       url: buildSummaryChartUrl(briefing),
       caption: renderTelegramCaption(briefing),
