@@ -3,3 +3,8 @@ state/
 __pycache__/
 *.pyc
 .pytest_cache/
+venv/
+.venv/
+
+# the root .gitignore excludes `.env.*`; keep the committed template anyway
+!.env.example

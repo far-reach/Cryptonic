@@ -20,6 +20,28 @@ DATA_HOST = "https://data-api.polymarket.com"
 POLYGON_CHAIN_ID = 137
 
 
+def _load_dotenv() -> None:
+    """Populate os.environ from a `.env` file in the project root, if one
+    exists and the vars aren't already set. Zero-dependency (no python-dotenv
+    needed) so `python -m polybot ...` "just works" on Windows/macOS/Linux
+    without having to `source` anything. Real env vars always win.
+    """
+    env_path = Path(__file__).resolve().parent.parent / ".env"
+    if not env_path.exists():
+        return
+    try:
+        for line in env_path.read_text().splitlines():
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, _, val = line.partition("=")
+            key, val = key.strip(), val.strip().strip('"').strip("'")
+            if key and key not in os.environ:
+                os.environ[key] = val
+    except OSError:
+        pass
+
+
 @dataclass
 class RiskConfig:
     bankroll_usdc: float = 100.0          # total budget
@@ -97,6 +119,7 @@ class Config:
     @classmethod
     def load(cls, path: str | None = None) -> "Config":
         cfg = cls()
+        _load_dotenv()  # populate os.environ from a local .env if present
         candidate = Path(path) if path else Path(__file__).resolve().parent.parent / "config.yaml"
         if yaml is not None and candidate.exists():
             raw = yaml.safe_load(candidate.read_text()) or {}

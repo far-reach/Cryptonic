@@ -4,6 +4,11 @@ A small, risk-managed bot that scans [Polymarket](https://polymarket.com)
 for mispricings and trades them with a **$100 budget**. It ships in
 **paper-trading mode by default**; live trading is an explicit, gated opt-in.
 
+> 📄 **Continuing this project or handing it to another machine/developer?**
+> Read [`PROJECT_HANDOFF.md`](PROJECT_HANDOFF.md) — a precise report of the
+> goal, everything built so far, current state, the Windows setup steps, and
+> the prioritized continuation roadmap.
+
 > **Honesty first:** no bot can guarantee profit. This bot stacks four edges
 > that exist for structural reasons — maker rebates, basket arbitrage,
 > book de-syncs, and the favorite-longshot bias — and wraps them in a risk
