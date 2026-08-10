@@ -6,6 +6,8 @@
   "type": "module",
   "scripts": {
     "test": "node test/run-tests.mjs",
+    "smoke": "node test/smoke-chromium.mjs",
+    "build": "node scripts/build-zip.mjs",
     "icons": "node scripts/make-icons.mjs"
   }
 }

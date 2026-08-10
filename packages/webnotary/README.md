@@ -83,6 +83,21 @@ extension/
 Everything is vanilla ES modules — no build step, no dependencies. The same `lib/` files run in
 the service worker, the extension pages, and Node (tests).
 
+## Publishing
+
+```bash
+cd packages/webnotary
+npm run build     # → release/webnotary-<version>.zip (manifest at ZIP root, reproducible; prints its SHA-256)
+```
+
+Upload `release/webnotary-<version>.zip` in the [Chrome Web Store developer console]
+(https://chrome.google.com/webstore/devconsole). Listing copy and per-permission
+justifications are in [`docs/STORE_LISTING.md`](docs/STORE_LISTING.md); ready-made listing
+images (3 × 1280×800 screenshots, 440×280 small promo tile, 1400×560 marquee) are in
+[`store-assets/`](store-assets/). The privacy-practices form is answered by
+[`PRIVACY.md`](PRIVACY.md). A real captured bundle for demos lives at
+[`docs/sample-bundle.zip`](docs/sample-bundle.zip) — drop it on the Verify page.
+
 ## Tests
 
 ```bash
@@ -97,6 +112,12 @@ tampered TSTInfo), bare-token form, `openssl ts -verify` interop on our request,
 validated by `unzip`/Python's `zipfile`, and structural PDF checks (xref offsets).
 
 Regenerate icons with `npm run icons` (pure-Node PNG writer, no image deps).
+
+There is also a **real-browser end-to-end smoke test** (`npm run smoke`, needs
+`npm i --no-save playwright-core` and a Chromium binary via `WN_CHROME`): it loads a test build
+of the extension in headless Chromium, captures a locally served page, timestamps it against a
+local OpenSSL TSA, downloads the bundle, and verifies every digest and the RFC 3161 token — the
+committed `docs/sample-bundle.zip` and the store screenshots were produced by this run.
 
 ## Roadmap
 

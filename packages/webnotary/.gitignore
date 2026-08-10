@@ -1,1 +1,3 @@
 test/fixtures/
+test/.smoke-work/
+node_modules/
