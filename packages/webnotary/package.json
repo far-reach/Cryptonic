@@ -1,0 +1,11 @@
+{
+  "name": "webnotary",
+  "version": "0.1.0",
+  "private": true,
+  "description": "WebNotary — evidence-grade web capture Chrome extension: MHTML archive + SHA-256 digests + RFC 3161 trusted timestamps + chain-of-custody PDF, all client-side.",
+  "type": "module",
+  "scripts": {
+    "test": "node test/run-tests.mjs",
+    "icons": "node scripts/make-icons.mjs"
+  }
+}

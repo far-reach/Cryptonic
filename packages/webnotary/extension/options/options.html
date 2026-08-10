@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>WebNotary — Settings</title>
+<link rel="stylesheet" href="options.css">
+</head>
+<body>
+<header>
+  <img src="../icons/icon48.png" alt="" width="30" height="30">
+  <div>
+    <h1>WebNotary settings</h1>
+    <p>Operator identity, time-stamping authorities, capture behavior</p>
+  </div>
+</header>
+
+<main>
+  <section class="card">
+    <h2>Operator identity</h2>
+    <p class="hint">Recorded in metadata.json and the chain-of-custody report of every capture.</p>
+    <label>Operator name
+      <input id="operatorName" placeholder="e.g. Jordan Rivera" autocomplete="off">
+    </label>
+    <label>Organization
+      <input id="organization" placeholder="e.g. Rivera & Associates LLP" autocomplete="off">
+    </label>
+  </section>
+
+  <section class="card">
+    <h2>Time-stamping authorities (RFC 3161)</h2>
+    <p class="hint">
+      Each enabled TSA receives only the 32-byte SHA-256 digest of the evidence manifest plus a
+      random nonce — never the page content. Enabling two independent TSAs gives your evidence a
+      second, redundant time anchor.
+    </p>
+    <ul id="tsaList" class="tsa-list"></ul>
+    <div class="custom-tsa">
+      <label class="row">
+        <input type="checkbox" id="customEnabled">
+        <span>Custom TSA endpoint (e.g. your firm’s qualified eIDAS provider)</span>
+      </label>
+      <input id="customUrl" placeholder="https://tsa.example.com/tsr">
+      <p class="hint">Saving with a custom TSA asks for permission to contact that host.</p>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Capture</h2>
+    <label class="row">
+      <input type="radio" name="screenshotMode" value="fullpage" id="modeFull">
+      <span><strong>Full-page screenshot</strong> — one atomic render of the entire page via the
+      Chrome debugging API (an info bar appears for a moment during capture).</span>
+    </label>
+    <label class="row">
+      <input type="radio" name="screenshotMode" value="viewport" id="modeViewport">
+      <span><strong>Visible viewport only</strong> — captures just what is on screen, without
+      attaching the debugger.</span>
+    </label>
+  </section>
+
+  <section class="card muted-card">
+    <h2>Privacy</h2>
+    <p class="hint">
+      Everything — archiving, hashing, report generation, bundling — happens locally in your
+      browser. The only network traffic WebNotary generates is the timestamp request described
+      above. There is no account, no telemetry, and no server.
+    </p>
+  </section>
+
+  <div class="actions">
+    <button id="save" class="primary">Save settings</button>
+    <span id="savedToast" class="toast hidden">Saved ✓</span>
+  </div>
+</main>
+
+<script type="module" src="options.js"></script>
+</body>
+</html>

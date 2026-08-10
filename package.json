@@ -11,7 +11,8 @@
     "packages/app",
     "packages/web",
     "packages/solana",
-    "packages/bitget-briefing"
+    "packages/bitget-briefing",
+    "packages/webnotary"
   ],
   "scripts": {
     "test": "npm run test --workspace @veil/contracts && npm run test --workspace @veil/sdk",
@@ -25,6 +26,7 @@
     "typecheck:solana": "npm run typecheck --workspace @veil/solana",
     "briefing": "npm run briefing --workspace @veil/bitget-briefing",
     "test:briefing": "npm run test --workspace @veil/bitget-briefing",
-    "typecheck:briefing": "npm run typecheck --workspace @veil/bitget-briefing"
+    "typecheck:briefing": "npm run typecheck --workspace @veil/bitget-briefing",
+    "test:webnotary": "npm run test --workspace webnotary"
   }
 }

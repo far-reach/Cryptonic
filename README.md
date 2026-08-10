@@ -25,6 +25,7 @@ alternatives.
 | [`packages/web`](packages/web) | Local dashboard at `localhost:3000` that runs & visualizes a real confidential payment. |
 | [`packages/solana`](packages/solana) | Solana Token-2022 confidential-transfer prototype + CLI runbook. |
 | [`packages/bitget-briefing`](packages/bitget-briefing) | Bot that reads the Bitget announcement center and produces a critical daily briefing (scheduled via GitHub Actions). |
+| [`packages/webnotary`](packages/webnotary) | **WebNotary** — separate product: evidence-grade web-capture Chrome extension (MHTML + SHA-256 + RFC 3161 trusted timestamps + chain-of-custody PDF), fully client-side. |
 
 ## How it works (one paragraph)
 
