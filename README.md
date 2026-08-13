@@ -25,7 +25,11 @@ alternatives.
 | [`packages/web`](packages/web) | Local dashboard at `localhost:3000` that runs & visualizes a real confidential payment. |
 | [`packages/solana`](packages/solana) | Solana Token-2022 confidential-transfer prototype + CLI runbook. |
 | [`packages/bitget-briefing`](packages/bitget-briefing) | Bot that reads the Bitget announcement center and produces a critical daily briefing (scheduled via GitHub Actions). |
-| [`packages/webnotary`](packages/webnotary) | **WebNotary** — separate product: evidence-grade web-capture Chrome extension (MHTML + SHA-256 + RFC 3161 trusted timestamps + chain-of-custody PDF), fully client-side. |
+
+Unrelated products live in their own repositories, not in this monorepo — e.g.
+[**WebNotary**](https://github.com/far-reach/webnotary) (evidence-grade web-capture extension,
+originally developed here in PR #25) and [**Honest Web**](https://github.com/far-reach/honestweb)
+(de-clickbait extension).
 
 ## How it works (one paragraph)
 
