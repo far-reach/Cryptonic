@@ -28,6 +28,10 @@ export function scoreAnnouncement(a: ClassifiedAnnouncement): Importance {
     return { stars: 4, label: "token migration" };
   }
   if (/resum/.test(t)) return { stars: 1, label: "recovery" };
+  // Scheduled maintenance of a spot pair/system: announced, routine, low impact.
+  if (/^(bitget announcement on )?maintenance of\b|scheduled maintenance/.test(t)) {
+    return { stars: 2, label: "scheduled maintenance" };
+  }
   if (/suspend|halt|paus/.test(t)) {
     if (cause === "maintenance" || /wallet maintenance|scheduled/.test(excerpt)) {
       return { stars: 2, label: "routine maintenance" };
@@ -43,7 +47,7 @@ export function scoreAnnouncement(a: ClassifiedAnnouncement): Importance {
   if (/margin trading pair|margin pair/.test(t)) return { stars: 2, label: "leverage expansion" };
   if (/launchpool|launchpad|pre-?market|candybomb|poolx/.test(t)) return { stars: 2, label: "launch event" };
   if (/\bapi\b|websocket|endpoint/.test(t)) return { stars: 2, label: "integration change" };
-  if (a.severity === "critical") return { stars: 3, label: "critical" };
+  if (a.severity === "critical") return { stars: 3, label: "needs review" };
   if (a.severity === "notable") return { stars: 2, label: "notable" };
   return { stars: 1, label: "minor" };
 }

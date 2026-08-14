@@ -1,6 +1,7 @@
 import type { Briefing, ClassifiedAnnouncement } from "./types.js";
 import { deriveSignals, formatLevels, STANCE_GLYPH } from "./signals.js";
 import { environmentGauge, scoreAnnouncement, starBar, tierDot } from "./importance.js";
+import { humanWhy } from "./humanize.js";
 
 export interface BriefingOptions {
   /** Look-back window; announcements older than this are dropped. Default 24. */
@@ -14,6 +15,10 @@ export interface BriefingOptions {
  * Filter classified announcements to the briefing window and bucket by severity.
  * Announcements with unknown timestamps are kept (better noisy than silent on a delisting).
  */
+/** Bitget occasionally publishes literal test articles ("brandy test") — drop them. */
+const JUNK_RE = /\btest(ing)?\b/i;
+const isJunk = (a: ClassifiedAnnouncement): boolean => JUNK_RE.test(a.title) && a.title.length <= 32;
+
 export function buildBriefing(
   anns: ClassifiedAnnouncement[],
   opts: BriefingOptions = {},
@@ -21,7 +26,9 @@ export function buildBriefing(
   const now = opts.now ?? Date.now();
   const windowHours = opts.windowHours ?? 24;
   const cutoff = now - windowHours * 3_600_000;
-  const inWindow = anns.filter((a) => a.publishedAt === null || a.publishedAt >= cutoff);
+  const inWindow = anns.filter(
+    (a) => (a.publishedAt === null || a.publishedAt >= cutoff) && !isJunk(a),
+  );
   const bySeverity = (s: ClassifiedAnnouncement["severity"]) =>
     inWindow
       .filter((a) => a.severity === s)
@@ -48,7 +55,8 @@ function mdItem(a: ClassifiedAnnouncement): string {
   const link = a.url ? `[${a.title}](${a.url})` : a.title;
   const { stars, label } = scoreAnnouncement(a);
   const reasons = a.reasons.length ? ` · _${a.reasons.join(", ")}_` : "";
-  const why = a.reason?.excerpt ? `\n  ℹ️ _${a.reason.excerpt}_` : "";
+  const whyText = humanWhy(a);
+  const why = whyText ? `\n  ℹ️ _${whyText}_` : "";
   const security =
     a.reason?.cause === "security" ? `\n  🛡 **Security-related — treat as elevated risk**` : "";
   return `- **${link}**\n  ${tierDot(stars)} ${starBar(stars)} _${label}_ · ${fmtTime(a.publishedAt)}${reasons}${why}${security}`;

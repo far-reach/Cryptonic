@@ -75,6 +75,9 @@ export function extractAsset(title: string): string | undefined {
   // "RAREUSDT" style perp symbols; take the first if listed
   const perp = title.match(/\b([A-Z0-9]{2,12})USDT\b/);
   if (perp) return `${perp[1]}USDT perp`;
+  // "…the Polygon network…" — chains named without a ticker
+  const network = title.match(/\b(?:the\s+)?([A-Z][a-z]{2,15}) network\b/);
+  if (network) return network[1];
   return undefined;
 }
 
@@ -192,11 +195,19 @@ export function attachPriceLevels(
   });
 }
 
+/** Plain decimals, never scientific notation (4.459e-7 → "0.0000004459"). */
+export function fmtPrice(n: number): string {
+  if (!Number.isFinite(n) || n === 0) return String(n);
+  if (n >= 1) return String(Number(n.toPrecision(5)));
+  const leadingZeros = Math.max(0, -Math.floor(Math.log10(n)) - 1);
+  return n.toFixed(Math.min(14, leadingZeros + 4)).replace(/0+$/, "");
+}
+
 /** "Short @ 0.0432 · TP 0.0302 (−30%) · SL 0.0484 (+12%)" */
 export function formatLevels(l: PriceLevels): string {
   const pct = (n: number) => `${n > 0 ? "+" : "−"}${Math.abs(n)}%`;
   const side = l.side === "short" ? "Short" : "Long";
-  return `${side} @ ${l.entry} · TP ${l.tp} (${pct(l.pct.tp)}) · SL ${l.sl} (${pct(l.pct.sl)})`;
+  return `${side} @ ${fmtPrice(l.entry)} · TP ${fmtPrice(l.tp)} (${pct(l.pct.tp)}) · SL ${fmtPrice(l.sl)} (${pct(l.pct.sl)})`;
 }
 
 /** Derive up to `cap` prioritized trade angles from the day's announcements. */
