@@ -75,12 +75,19 @@ export function extractArticleText(html: string): string {
 const CHROME_RE =
   /support center|buy crypto|sign ?up|log ?in|trade smarter|futures earn|square more|copy trading|download (the )?app|announcement center|help center|customer support/i;
 
+/** Boilerplate filler that explains nothing — never worth quoting. */
+const BOILERPLATE_RE =
+  /if the (maintenance )?schedule|issue a further notice|we (sincerely )?apolog|thank you for|appreciate your|reach out|contact (us|support)|join bitget|follow us/i;
+
 /** Classify the cause and pick the single most explanatory sentence. */
 export function findReason(text: string): ArticleReason | null {
   if (!text) return null;
   const sentences = text
     .split(/(?<=[.!?])\s+/)
-    .filter((s) => s.length >= 25 && s.length <= 300 && !CHROME_RE.test(s) && !/\|/.test(s));
+    .filter(
+      (s) =>
+        s.length >= 25 && s.length <= 300 && !CHROME_RE.test(s) && !BOILERPLATE_RE.test(s) && !/\|/.test(s),
+    );
   let cause: ReasonCause = "other";
   for (const { cause: c, re } of CAUSE_PATTERNS) {
     if (re.test(text)) {

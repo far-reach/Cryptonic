@@ -127,28 +127,25 @@ function reasonLine(a: ClassifiedAnnouncement): string {
   return parts.join("");
 }
 
-/** "🟢 ★★☆☆☆ routine maintenance · Jul 18, 12:03 UTC" */
-function importanceLine(a: ClassifiedAnnouncement, timeText?: string): string {
-  const { stars, label } = scoreAnnouncement(a);
-  const time = timeText ? ` · <i>${escapeHtml(timeText)}</i>` : "";
-  return `\n      ${tierDot(stars)} ${starBar(stars)} <i>${escapeHtml(label)}</i>${time}`;
-}
-
 function renderPaired(p: PairedItem): string {
   if (p.kind === "resolved") {
-    // Subject from the resume title, verbs stripped: "USDC - APTOS withdrawals"
+    // Recoveries aren't tradeable — one line, no stars, no quotes.
     const subject = humanTitle(p.item);
     const to = fmtTime(p.item.publishedAt);
-    // Prefer the resume article's reason; fall back to the suspension's.
-    const item = p.item.reason ? p.item : { ...p.item, reason: p.counterpart?.reason };
     const journey = p.counterpart
-      ? `⏸ ${escapeHtml(fmtTime(p.counterpart.publishedAt))} → ✅ ${escapeHtml(to)} UTC — back to normal`
+      ? `⏸ ${escapeHtml(fmtTime(p.counterpart.publishedAt))} → ✅ ${escapeHtml(to)} UTC`
       : `resumed ${escapeHtml(to)} UTC`;
-    return `✅ ${link(p.item, subject)}${importanceLine(p.item, undefined)}\n      <i>${journey}</i>${reasonLine(item)}`;
+    return `✅ ${link(p.item, subject)}\n      <i>${journey}</i>`;
   }
   const a = p.item;
+  const { stars, label } = scoreAnnouncement(a);
   const when = fmtTime(a.publishedAt);
-  return `${glyphFor(a)} ${link(a, humanTitle(a))}${importanceLine(a, when ? `${when} UTC` : undefined)}${reasonLine(a)}`;
+  if (stars <= 2) {
+    // Routine news: one compact line, no card.
+    return `${glyphFor(a)} ${link(a, humanTitle(a))}\n      ${tierDot(stars)} <i>★${stars} ${escapeHtml(label)}${when ? ` · ${escapeHtml(when)} UTC` : ""}</i>`;
+  }
+  // Tradeable news (★3+): full card with the why.
+  return `${glyphFor(a)} ${link(a, humanTitle(a))}\n      ${tierDot(stars)} ${starBar(stars)} <i>${escapeHtml(label)}${when ? ` · ${escapeHtml(when)} UTC` : ""}</i>${reasonLine(a)}`;
 }
 
 /**
@@ -348,11 +345,13 @@ export function renderTelegramHtml(
     );
     sections.push(`🟡 <b>Worth a look</b>\n\n${notableSorted.map((a) => renderPaired({ kind: "single", item: a })).join("\n\n")}`);
   }
-  if (b.signals.length) {
-    const sorted = [...b.signals].sort(
-      (x, y) => scoreAnnouncement(y.source).stars - scoreAnnouncement(x.source).stars,
-    );
-    const lines = sorted.map((s) => {
+  // Tradeable angles only: a signal without an identifiable asset isn't actionable.
+  const tradeable = b.signals
+    .filter((s) => s.asset)
+    .sort((x, y) => scoreAnnouncement(y.source).stars - scoreAnnouncement(x.source).stars)
+    .slice(0, 4);
+  if (tradeable.length) {
+    const lines = tradeable.map((s) => {
       const stars = scoreAnnouncement(s.source).stars;
       const chip = stars >= 4 ? `🔥 ` : "";
       const asset = s.asset ? `<b>${escapeHtml(s.asset)}</b> <i>(★${stars})</i> — ` : "";

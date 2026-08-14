@@ -280,6 +280,60 @@ describe("summary chart & photo delivery", () => {
   });
 });
 
+describe("reader elevation (from live-run analysis)", () => {
+  it("drops Bitget test articles entirely", () => {
+    const b = buildBriefing(
+      classifyAll([ann({ id: "j", title: "brandy test", section: "maintenance_system_updates" })]),
+      { windowHours: 24, now: NOW },
+    );
+    expect([...b.critical, ...b.notable, ...b.info]).toHaveLength(0);
+  });
+
+  it("scores spot-pair maintenance as routine, not critical", async () => {
+    const { scoreAnnouncement } = await import("../src/importance.js");
+    const a = classify(ann({ title: "Bitget Announcement on Maintenance of GHO/USDT Spot Trading Pair", section: "maintenance_system_updates" }));
+    expect(scoreAnnouncement(a)).toMatchObject({ stars: 2, label: "scheduled maintenance" });
+  });
+
+  it("never quotes schedule-change boilerplate", async () => {
+    const { findReason } = await import("../src/article.js");
+    const r = findReason(
+      "If the maintenance schedule changes due to market volatility or other factors, we will issue a further notice. Some other text here that is long enough to matter.",
+    );
+    expect(r).toBeNull();
+  });
+
+  it("formats tiny prices without scientific notation", async () => {
+    const { fmtPrice, formatLevels, computeLevels } = await import("../src/signals.js");
+    expect(fmtPrice(4.459e-7)).toBe("0.0000004459");
+    expect(fmtPrice(2.43)).toBe("2.43");
+    const levels = computeLevels({ stance: "exit-risk", note: "", source: classify(ann({ title: "Delisting X" })) } as never, 4.459e-7)!;
+    expect(formatLevels(levels)).not.toContain("e-");
+  });
+
+  it("extracts chain-only names like 'the Polygon network' as assets", async () => {
+    const { extractAsset } = await import("../src/signals.js");
+    expect(extractAsset("Announcement on resuming Polygon network deposit and withdrawal services")).toBe("Polygon");
+  });
+
+  it("omits assetless trade angles and heavy recovery cards", async () => {
+    const { renderTelegramHtml } = await import("../src/telegram.js");
+    const items = classifyAll([
+      ann({ id: "1", title: "Announcement on resuming deposit and withdrawal services", section: "maintenance_system_updates", url: "https://x/1" }),
+      ann({ id: "2", title: "Bitget announcement on resuming QUBIC - QUBIC deposits and withdrawals", section: "maintenance_system_updates", url: "https://x/2" }),
+    ]);
+    items[1].reason = { cause: "other", excerpt: "Bitget has now opened the QUBIC - QUBIC deposit and withdrawal services." };
+    const html = renderTelegramHtml(buildBriefing(items, { windowHours: 24, now: NOW }));
+    // recovery card: one line + time, no star bar, no quote
+    expect(html).not.toContain("★☆☆☆☆");
+    expect(html).not.toContain("Bitget says");
+    // the assetless resume signal is dropped from trade angles
+    const angles = html.slice(html.indexOf("Trade angles"));
+    expect(angles).toContain("QUBIC");
+    expect(angles.split("🔁").length - 1).toBe(1);
+  });
+});
+
 describe("weekly review", () => {
   const wk = (id: string, title: string, hoursAgo: number): Announcement => ({
     id,
@@ -407,8 +461,9 @@ describe("importance stars & environment gauge", () => {
     items[0].reason = { cause: "maintenance", excerpt: "Due to wallet maintenance, deposits pause." };
     const b = buildBriefing(items, { windowHours: 24, now: NOW });
     const html = renderTelegramHtml(b);
-    expect(html).toContain("🟢 ★★☆☆☆ <i>routine maintenance</i>");
-    expect(html).toContain("🔴 ★★★★★ <i>forced-seller event</i>");
+    // ★2 routine news collapses to a compact line; ★3+ keeps the full star bar
+    expect(html).toContain("🟢 <i>★2 routine maintenance ·");
+    expect(html).toContain("🔴 ★★★★★ <i>forced-seller event");
     expect(html).toContain("<b>Environment:</b>");
     // delisting (5★) sorts above routine maintenance (2★) despite being older
     expect(html.indexOf("XYZ/USDT — being delisted")).toBeLessThan(
