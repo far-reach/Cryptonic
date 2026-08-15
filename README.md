@@ -26,6 +26,11 @@ alternatives.
 | [`packages/solana`](packages/solana) | Solana Token-2022 confidential-transfer prototype + CLI runbook. |
 | [`packages/bitget-briefing`](packages/bitget-briefing) | Bot that reads the Bitget announcement center and produces a critical daily briefing (scheduled via GitHub Actions). |
 
+Unrelated products live in their own repositories, not in this monorepo — e.g.
+[**WebNotary**](https://github.com/far-reach/webnotary) (evidence-grade web-capture extension,
+originally developed here in PR #25) and [**Honest Web**](https://github.com/far-reach/honestweb)
+(de-clickbait extension).
+
 ## How it works (one paragraph)
 
 Deposits are public: you shield `value` tokens under a commitment
