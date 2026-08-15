@@ -64,6 +64,11 @@ function setChip(name, value) {
 /* ------------------------------------------------------------------ router */
 
 async function route() {
+  // Re-read the profile on every navigation: another tab or the popup may have
+  // moved the wallet or unlocked a level since this page loaded, and a view
+  // rendered from a stale snapshot would show the wrong progress.
+  if (app.state) await app.refresh();
+
   const name = (location.hash.slice(1) || 'arcade').split('?')[0];
   const game = GAME_BY_ID.get(name);
   const render = game ? (root) => game.mount(root, app) : (VIEWS[name] ?? VIEWS.arcade);
