@@ -11,6 +11,7 @@ import { sfx, setSoundEnabled } from '../../common/audio.js';
 import { el, clear, stars, rewardModal, toast } from '../../app/ui.js';
 import { starsFor } from '../../store/catalog.js';
 import { initialState, isSolved, parseLevel, solve, step } from './engine.js';
+import { drawThumb } from './thumb.js';
 
 const FREE_UNDOS = 5;
 const HINT_MOVES = 3;
@@ -65,9 +66,13 @@ function renderList(root, app, onPick) {
   );
 
   const grid = el('div', { class: 'level-grid' });
+  const thumbs = [];
+
   levels.forEach((level, index) => {
     const record = records[level.id];
     const locked = index + 1 > profile.sokoban.unlocked;
+    const canvas = el('canvas');
+
     grid.append(
       el(
         'button',
@@ -77,17 +82,24 @@ function renderList(root, app, onPick) {
           title: locked ? 'Clear the previous level to unlock' : `Par ${level.par} moves`,
           onclick: () => onPick(index),
         },
-        el('div', null,
-          el('div', { class: 'num', text: `Level ${index + 1}${locked ? ' 🔒' : ''}` }),
-          el('div', { class: 'nm', text: level.name })),
-        el('div', null,
-          el('div', { class: 'stars', text: record?.solved ? stars(record.stars ?? 0) : '' }),
-          el('div', { class: 'num', text: record?.bestMoves ? `best ${record.bestMoves} · par ${level.par}` : `par ${level.par}` })),
+        canvas,
+        el('span', { class: 'badge-n', text: locked ? '🔒' : String(index + 1) }),
+        el('div', { class: 'meta' },
+          el('div', { class: 'nm', text: level.name }),
+          el('div', { class: 'sub-line' },
+            el('span', { text: record?.bestMoves ? `best ${record.bestMoves} · par ${level.par}` : `par ${level.par}` }),
+            el('span', { class: 'stars', text: record?.solved ? stars(record.stars ?? 0) : '' }))),
       ),
     );
+
+    if (!locked) thumbs.push(() => drawThumb(canvas, level.rows, { solved: Boolean(record?.solved) }));
   });
 
   root.append(grid);
+  // Draw after layout so each canvas knows its final CSS size.
+  requestAnimationFrame(() => {
+    for (const draw of thumbs) draw();
+  });
 }
 
 /* ---------------------------------------------------------------- gameplay */

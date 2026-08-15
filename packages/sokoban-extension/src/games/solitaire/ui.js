@@ -10,7 +10,8 @@
 import { MSG, send } from '../../common/messages.js';
 import { sfx, setSoundEnabled } from '../../common/audio.js';
 import { clear, el, rewardModal, toast } from '../../app/ui.js';
-import { RANK_LABEL, SUITS, SUIT_GLYPH, isRed, randomSeed } from '../cards/deck.js';
+import { SUITS, SUIT_GLYPH, randomSeed } from '../cards/deck.js';
+import { cardNode, slotNode } from '../cards/render.js';
 import {
   apply,
   autoCompleteMoves,
@@ -212,24 +213,28 @@ export function mountSolitaire(root, app) {
 
     // Stock
     const stock = game.stock.length
-      ? cardNode({ back: true, onclick: () => doMove({ type: 'draw' }) })
-      : el('button', {
-          class: 'slot',
-          text: game.waste.length ? '↻' : '',
+      ? cardNode({
+          back: true,
+          title: `${game.stock.length} left`,
+          onclick: () => doMove({ type: 'draw' }),
+        })
+      : slotNode({
+          label: game.waste.length ? '↻' : '',
+          title: 'Recycle the waste',
           onclick: () => doMove({ type: 'recycle' }),
         });
     top.append(stock);
 
     // Waste — show up to three, the top one selectable.
-    const wasteWrap = el('div', { class: 'pile-stack', style: 'width:110px' });
+    const wasteWrap = el('div', { class: 'pile-stack' });
     const visible = game.waste.slice(-3);
-    if (!visible.length) wasteWrap.append(el('div', { class: 'slot' }));
+    if (!visible.length) wasteWrap.append(slotNode({}));
     visible.forEach((card, i) => {
       const isTop = i === visible.length - 1;
       wasteWrap.append(
         cardNode({
           card,
-          style: `position:absolute;left:${i * 16}px`,
+          style: `left:${i * 17}px`,
           selected: isTop && selection?.zone === 'waste',
           onclick: () => isTop && pick({ zone: 'waste' }),
           ondblclick: () => isTop && auto({ zone: 'waste' }),
@@ -244,11 +249,7 @@ export function mountSolitaire(root, app) {
       const card = pile[pile.length - 1];
       const target = card
         ? cardNode({ card, onclick: () => drop({ type: 'foundation', suit }) })
-        : el('button', {
-            class: 'slot',
-            text: SUIT_GLYPH[suit],
-            onclick: () => drop({ type: 'foundation', suit }),
-          });
+        : slotNode({ label: SUIT_GLYPH[suit], onclick: () => drop({ type: 'foundation', suit }) });
       if (selection && wouldAccept({ type: 'foundation', suit })) target.classList.add('drop');
       top.append(target);
     }
@@ -263,16 +264,14 @@ export function mountSolitaire(root, app) {
           if (event.target === event.currentTarget) drop({ type: 'tableau', to: index });
         },
       });
-      column.style.minHeight = `${Math.max(112, 24 * pile.length + 90)}px`;
+      column.style.minHeight = `${Math.max(118, 26 * pile.length + 96)}px`;
 
       if (!pile.length) {
-        column.append(
-          el('button', { class: 'slot', text: 'K', onclick: () => drop({ type: 'tableau', to: index }) }),
-        );
+        column.append(slotNode({ label: 'K', onclick: () => drop({ type: 'tableau', to: index }) }));
       }
 
       pile.forEach((entry, cardIndex) => {
-        const offset = pile.slice(0, cardIndex).reduce((sum, e) => sum + (e.faceUp ? 24 : 12), 0);
+        const offset = pile.slice(0, cardIndex).reduce((sum, e) => sum + (e.faceUp ? 26 : 13), 0);
         const selected =
           selection?.zone === 'tableau' &&
           selection.pile === index &&
@@ -382,22 +381,4 @@ export function mountSolitaire(root, app) {
     // Bank silently so progress isn't lost when navigating away mid-deal.
     if (!banked && foundationCount(game) > 0 && !isWon(game)) bank(true);
   };
-}
-
-/* ------------------------------------------------------------------- cards */
-
-export function cardNode({ card, back = false, selected = false, style, onclick, ondblclick }) {
-  const node = el('button', {
-    class: `card ${back ? 'back' : ''} ${card && isRed(card) ? 'red' : ''} ${selected ? 'selected' : ''}`,
-    style,
-    onclick,
-    ondblclick,
-  });
-  if (!back && card) {
-    node.append(
-      el('span', { class: 'corner', html: `${RANK_LABEL[card.rank]}<br>${SUIT_GLYPH[card.suit]}` }),
-      el('span', { class: 'pip', text: SUIT_GLYPH[card.suit] }),
-    );
-  }
-  return node;
 }

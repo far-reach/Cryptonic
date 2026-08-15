@@ -32,6 +32,23 @@ export const REWARDS = {
     noUndoBonus: 25,
     dailyDealBonus: 40,
   },
+  freecell: {
+    win: 90, // every card is visible, so a win is calculation rather than luck
+    perFoundationCard: 2,
+    noUndoBonus: 40,
+  },
+  pairs: {
+    win: 35,
+    perfectBonus: 45,
+    comboBonus: 5, // × longest run of consecutive matches
+    mistakePenalty: 2,
+    minimum: 10,
+  },
+  sweeper: {
+    win: { calm: 60, brisk: 120, fierce: 220 },
+    partial: 45, // × fraction of safe squares uncovered when you hit a mine
+    flawlessGems: { fierce: 2 },
+  },
   duel: {
     win: 45,
     draw: 10,
@@ -295,5 +312,9 @@ export const ACHIEVEMENTS = [
   { id: 'first_patience', name: 'Patience', blurb: 'Win a game of Solitaire.', gems: 2 },
   { id: 'card_sharp', name: 'Card Sharp', blurb: 'Win 10 duels.', gems: 5 },
   { id: 'flawless', name: 'Flawless', blurb: 'Win a duel 5–0.', gems: 3 },
+  { id: 'calculator', name: 'Calculator', blurb: 'Win a FreeCell deal.', gems: 3 },
+  { id: 'total_recall', name: 'Total Recall', blurb: 'Clear Pairs without a single mistake.', gems: 4 },
+  { id: 'demolitionist', name: 'Demolitionist', blurb: 'Clear a Fierce minefield.', gems: 6 },
+  { id: 'all_rounder', name: 'All-Rounder', blurb: 'Win at least once in all six games.', gems: 10 },
   { id: 'week_streak', name: 'Regular', blurb: 'Claim 7 daily bonuses in a row.', gems: 5 },
 ];

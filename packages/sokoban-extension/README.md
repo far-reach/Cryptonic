@@ -1,11 +1,14 @@
 # Crate & Cards Arcade
 
-A Chrome extension (Manifest V3) with three games behind one wallet:
+A Chrome extension (Manifest V3) with six games behind one wallet:
 
 | Game | What it is |
 |---|---|
 | **Sokoban** | 24 hand-authored warehouses. Every level ships with a machine-proven move-optimal solution, which sets its par, its star thresholds and what the Hint item reveals. |
 | **Klondike Solitaire** | Draw-one or draw-three, click-to-move with double-click auto-place, unlimited undo, one-click finish once the board is open. |
+| **FreeCell** | Every card face up and four free cells to stage through. Runs move as a unit up to `(free cells + 1) × 2^empty columns`, and safe cards fly home automatically. |
+| **Pairs** | Memory match over three board sizes. Matching rank *and* colour makes a pair; consecutive hits build a combo that multiplies the payout, and a flawless board pays a bonus. |
+| **Sweeper** | Minesweeper with a first-click-safe board across three sizes, right-click flagging and chording. Hitting a mine still banks partial credit. |
 | **Cipher Duel** | An original two-player card game. Higher rank takes the round — unless your suit *counters* theirs (♠→♥→♦→♣→♠), which halves their card. Reading what the opponent has already spent is the edge. |
 
 Coins earned in any game spend in any other. Gems are the premium currency: earned
@@ -21,13 +24,17 @@ packages/sokoban-extension/
 │   ├── common/                message contract, WebAudio blips
 │   ├── store/                 catalog (prices/payouts), economy (wallet rules), payments
 │   ├── games/
-│   │   ├── sokoban/           engine.js (rules + solver), levels.js, solutions.js (generated), ui.js
+│   │   ├── registry.js        one entry per game: blurb, card art, progress line, mount fn
+│   │   ├── sokoban/           engine.js (rules + solver), levels.js, solutions.js (generated), thumb.js, ui.js
 │   │   ├── solitaire/         engine.js, ui.js
+│   │   ├── freecell/          engine.js, ui.js
+│   │   ├── pairs/             engine.js, ui.js
+│   │   ├── sweeper/           engine.js, ui.js
 │   │   ├── duel/              engine.js, ui.js
-│   │   └── cards/             deck, seeded shuffle
+│   │   └── cards/             deck + seeded shuffle, and the card renderer
 │   ├── app/                   arcade shell: router, store screen, wallet screen
 │   └── popup/                 toolbar popup
-├── test/                      node:test suites — 58 tests, no dependencies
+├── test/                      node:test suites — 81 tests, no dependencies
 └── tools/                     solve.mjs · make-icons.mjs · check.mjs · package.mjs
 ```
 
@@ -60,8 +67,15 @@ balance; it sends a *claim* and the worker re-derives the truth:
 
 * **Sokoban** — the page sends the move string it played. The worker replays it
   through the same engine and pays out only if the crates really end on the goals.
-* **Solitaire** — the page sends the deal's seed and its move list. The worker
-  re-deals from the seed and replays every move; an illegal move voids the claim.
+* **Solitaire / FreeCell** — the page sends the deal's seed and its move list. The
+  worker re-deals from the seed and replays every move; an illegal move voids the
+  claim.
+* **Pairs** — the page sends the seed and the flip order. The worker replays it and
+  *recounts the mistakes and the combo itself*, because those set the payout — the
+  page never gets to report its own score.
+* **Sweeper** — mines are laid from the seed plus the index of the first click, so
+  the whole board is reproducible from the action log. Replaying the same actions
+  against a different seed does not validate.
 * **Duel** — the worker issues the seed (and charges the ticket) *before* the duel
   starts, and only accepts a result for a seed it issued. The opponent's policy is
   deterministic, so the whole duel replays exactly.
@@ -79,15 +93,18 @@ call at all unless you configure a payment provider.
 
 Balancing lives in one file — `src/store/catalog.js`:
 
-* **Payouts** `REWARDS` — first clear 40 coins + up to 60 for stars, a gem for a
-  move-optimal clear; solitaire 60 (85 with no undo) or 2/card for a part-finished
-  deal; duel 45 + 4/round + a streak bonus that caps at 5×.
+* **Payouts** `REWARDS` — Sokoban pays 40 on a first clear plus up to 60 for stars,
+  and a gem for a move-optimal one; Solitaire 60 (85 with no undo); FreeCell 90
+  (130 with no undo); Pairs scales with board size, combo and a flawless bonus;
+  Sweeper 60/120/220 by difficulty with 2 gems for a Fierce clear; Duel 45 + 4 per
+  round plus a streak bonus that caps at 5×. Losing or abandoning still banks
+  partial credit everywhere it makes sense.
 * **Sinks** `STORE_ITEMS` — consumables (undos, hints, skips, duel peeks,
   insurance, hand swaps), permanent upgrades (Coin Doubler, Deep Undo, Rapid
   Tickets) and cosmetics (three themes, two card backs).
-* **Tickets** — Duel costs one of five tickets, regenerating every 20 minutes.
-  Sokoban and Solitaire are never gated, so nothing behind a paywall blocks
-  progress: gems buy convenience and cosmetics, never levels.
+* **Tickets** — Duel costs one of five tickets, regenerating every 20 minutes. It is
+  the only gated game: the other five are always free to play, so nothing behind a
+  paywall blocks progress. Gems buy convenience and cosmetics, never levels.
 
 ## Wiring up real payments
 
@@ -128,9 +145,16 @@ Two things to know before submitting to the Chrome Web Store:
    it, and the checkout flow has to be honest about what is charged and when.
 2. **This is deliberately not a casino.** Purchasable chips wagered on chance-based
    outcomes fall under the gambling policy (and real-money gambling law in many
-   places). Both card games here are skill-based, and gems buy items and cosmetics
+   places). Every card game here is skill-based, and gems buy items and cosmetics
    rather than bets, which keeps the extension outside that category. If you fork
    this into a wagering game, that is a very different compliance problem.
+
+## Adding a game
+
+`src/games/registry.js` is the table of contents: one entry gives the hub its card,
+the popup its row, the router its route and the wallet its progress line. A new game
+needs that entry, a `ui.js` exporting `mount<Name>(root, app)`, and — if it pays out
+— a pure engine with a `replay(seed, actions)` the service worker can verify against.
 
 ## Adding a level
 

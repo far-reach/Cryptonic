@@ -10,7 +10,7 @@ import { MSG, send } from '../../common/messages.js';
 import { sfx, setSoundEnabled } from '../../common/audio.js';
 import { clear, el, rewardModal, toast } from '../../app/ui.js';
 import { SUIT_GLYPH, cardLabel } from '../cards/deck.js';
-import { cardNode } from '../solitaire/ui.js';
+import { cardNode, slotNode } from '../cards/render.js';
 import {
   MAX_ROUNDS,
   ROUNDS_TO_WIN,
@@ -117,15 +117,15 @@ export function mountDuel(root, app) {
     arena.append(
       el('div', null,
         el('div', { class: 'slot-label', text: 'Your card' }),
-        reveal ? cardNode({ card: reveal.playerCard }) : el('div', { class: 'slot', text: '?' })),
+        reveal ? cardNode({ card: reveal.playerCard, size: 'lg' }) : slotNode({ label: '?', size: 'lg' })),
       el('div', { class: 'vs', text: 'VS' }),
       el('div', null,
         el('div', { class: 'slot-label', text: 'Opponent' }),
         reveal
-          ? cardNode({ card: reveal.aiCard })
+          ? cardNode({ card: reveal.aiCard, size: 'lg' })
           : duel.peeked
-            ? cardNode({ card: duel.peeked })
-            : cardNode({ back: true })),
+            ? cardNode({ card: duel.peeked, size: 'lg' })
+            : cardNode({ back: true, size: 'lg' })),
     );
     board.append(arena);
 
@@ -140,12 +140,13 @@ export function mountDuel(root, app) {
         : null;
       const node = cardNode({
         card,
+        size: 'lg',
+        dimmed: preview?.startsWith('Lose'),
+        title: preview ?? undefined,
         onclick: () => commit(index),
       });
       node.disabled = busy || duel.over;
-      if (preview) node.title = preview;
-      if (preview?.startsWith('Win')) node.style.outline = '2px solid var(--good)';
-      if (preview?.startsWith('Lose')) node.style.opacity = '0.65';
+      if (preview?.startsWith('Win')) node.classList.add('win-hint');
       hand.append(node);
     });
     board.append(hand);

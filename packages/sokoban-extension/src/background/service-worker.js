@@ -20,15 +20,28 @@ import { SOLUTIONS } from '../games/sokoban/solutions.js';
 import { parseLevel, replay as replaySokoban } from '../games/sokoban/engine.js';
 import { replay as replaySolitaire } from '../games/solitaire/engine.js';
 import { replay as replayDuel } from '../games/duel/engine.js';
+import { replay as replayFreecell } from '../games/freecell/engine.js';
+import { replay as replayPairs } from '../games/pairs/engine.js';
+import { replay as replaySweeper } from '../games/sweeper/engine.js';
+import { BOARDS } from '../games/pairs/engine.js';
+import { DIFFICULTIES } from '../games/sweeper/engine.js';
 
 const STORAGE_KEY = 'arcade.profile';
 
 /** Serialises every read-modify-write against the profile. */
 let writeChain = Promise.resolve();
 
-/** Per-level payout throttle, in memory — resets when the worker restarts. */
+/** Per-deal payout throttle, in memory — resets when the worker restarts. */
 const lastPayoutAt = new Map();
 const PAYOUT_COOLDOWN_MS = 15_000;
+
+/** True when this exact deal already paid out moments ago. Records either way. */
+function throttled(key, now) {
+  const recent = now - (lastPayoutAt.get(key) ?? 0) < PAYOUT_COOLDOWN_MS;
+  lastPayoutAt.set(key, now);
+  if (lastPayoutAt.size > 500) lastPayoutAt.clear();
+  return recent;
+}
 
 /** Duels the worker has issued a seed (and charged a ticket) for. */
 const openDuels = new Map();
@@ -149,17 +162,13 @@ const handlers = {
     const result = replaySokoban(parseLevel(level.rows), msg.moves);
     if (!result.ok || !result.solved) return { error: 'invalid_claim' };
 
-    const key = `sokoban:${msg.levelId}`;
-    const previous = lastPayoutAt.get(key) ?? 0;
-    const throttled = now - previous < PAYOUT_COOLDOWN_MS;
-    lastPayoutAt.set(key, now);
-
+    const cooling = throttled(`sokoban:${msg.levelId}`, now);
     const par = SOLUTIONS[msg.levelId]?.par ?? result.moves;
-    const award = throttled
+    const award = cooling
       ? { coins: 0, gems: 0, stars: 0, first: false, throttled: true }
       : economy.awardSokoban(profile, { levelId: msg.levelId, moves: result.moves, par }, now);
 
-    if (throttled) {
+    if (cooling) {
       // Still record the result — only the payout is rate limited.
       const record = profile.sokoban.levels[msg.levelId] ?? {};
       profile.sokoban.levels[msg.levelId] = {
@@ -204,11 +213,7 @@ const handlers = {
     if (!result.ok) return { error: 'invalid_claim' };
     if (msg.won && !result.won) return { error: 'invalid_claim' };
 
-    const key = `solitaire:${msg.seed}`;
-    if (now - (lastPayoutAt.get(key) ?? 0) < PAYOUT_COOLDOWN_MS) {
-      return { error: 'too_soon' };
-    }
-    lastPayoutAt.set(key, now);
+    if (throttled(`solitaire:${msg.seed}`, now)) return { error: 'too_soon' };
 
     const award = economy.awardSolitaire(
       profile,
@@ -217,6 +222,84 @@ const handlers = {
     );
     const achievements = economy.checkAchievements(profile, { levelCount: LEVELS.length }, now);
     return { ...award, foundation: result.foundation, achievements };
+  },
+
+  /** Same contract as solitaire: seed plus the move list, replayed here. */
+  async [MSG.FREECELL_RESULT](msg, profile, now) {
+    if (!Number.isInteger(msg.seed)) return { error: 'invalid_claim' };
+    if (!Array.isArray(msg.moves) || msg.moves.length > 20_000) return { error: 'invalid_claim' };
+
+    const result = replayFreecell(msg.seed, msg.moves);
+    if (!result.ok) return { error: 'invalid_claim' };
+    if (msg.won && !result.won) return { error: 'invalid_claim' };
+
+    if (throttled(`freecell:${msg.seed}`, now)) return { error: 'too_soon' };
+
+    const award = economy.awardFreecell(
+      profile,
+      { won: result.won, foundation: result.foundation, usedUndo: Boolean(msg.usedUndo) },
+      now,
+    );
+    return {
+      ...award,
+      foundation: result.foundation,
+      achievements: economy.checkAchievements(profile, { levelCount: LEVELS.length }, now),
+    };
+  },
+
+  /** Claim: "here are the tiles I flipped, in order." */
+  async [MSG.PAIRS_RESULT](msg, profile, now) {
+    if (!Number.isInteger(msg.seed)) return { error: 'invalid_claim' };
+    if (!BOARDS[msg.board]) return { error: 'invalid_claim' };
+    if (!Array.isArray(msg.flips) || msg.flips.length > 5_000) return { error: 'invalid_claim' };
+
+    const result = replayPairs(msg.seed, msg.board, msg.flips);
+    if (!result.ok || !result.won) return { error: 'invalid_claim' };
+
+    if (throttled(`pairs:${msg.seed}`, now)) return { error: 'too_soon' };
+
+    // Mistakes and combo come from the replay, never from the page — they set
+    // the payout, so the page does not get to report them.
+    const award = economy.awardPairs(
+      profile,
+      {
+        won: true,
+        mistakes: result.mistakes,
+        bestCombo: result.bestCombo,
+        board: msg.board,
+      },
+      now,
+    );
+    return {
+      ...award,
+      mistakes: result.mistakes,
+      bestCombo: result.bestCombo,
+      achievements: economy.checkAchievements(profile, { levelCount: LEVELS.length }, now),
+    };
+  },
+
+  /** Claim: "here is every reveal, flag and chord I made on this board." */
+  async [MSG.SWEEPER_RESULT](msg, profile, now) {
+    if (!Number.isInteger(msg.seed)) return { error: 'invalid_claim' };
+    if (!DIFFICULTIES[msg.difficulty]) return { error: 'invalid_claim' };
+    if (!Array.isArray(msg.actions) || msg.actions.length > 5_000) return { error: 'invalid_claim' };
+
+    const result = replaySweeper(msg.seed, msg.difficulty, msg.actions);
+    if (!result.ok) return { error: 'invalid_claim' };
+    if (msg.won && !result.won) return { error: 'invalid_claim' };
+
+    if (throttled(`sweeper:${msg.seed}`, now)) return { error: 'too_soon' };
+
+    const award = economy.awardSweeper(
+      profile,
+      { won: result.won, difficulty: msg.difficulty, progress: result.progress },
+      now,
+    );
+    return {
+      ...award,
+      revealed: result.revealed,
+      achievements: economy.checkAchievements(profile, { levelCount: LEVELS.length }, now),
+    };
   },
 
   /** Charges a ticket and issues the seed the duel will be played on. */

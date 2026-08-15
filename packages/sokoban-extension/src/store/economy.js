@@ -41,6 +41,9 @@ export function createProfile(now = Date.now()) {
     sokoban: { levels: {}, unlocked: 1 },
     solitaire: { wins: 0, played: 0, bestMoves: null, streak: 0 },
     duel: { wins: 0, losses: 0, draws: 0, streak: 0, bestStreak: 0 },
+    freecell: { wins: 0, played: 0, bestMoves: null },
+    pairs: { wins: 0, played: 0, perfects: 0, bestCombo: 0 },
+    sweeper: { wins: 0, played: 0, byDifficulty: {} },
     daily: { lastClaimDay: null, streak: 0 },
     achievements: [],
     ledger: [],
@@ -66,6 +69,9 @@ export function migrate(profile) {
   merged.sokoban = { ...base.sokoban, ...(profile.sokoban ?? {}) };
   merged.solitaire = { ...base.solitaire, ...(profile.solitaire ?? {}) };
   merged.duel = { ...base.duel, ...(profile.duel ?? {}) };
+  merged.freecell = { ...base.freecell, ...(profile.freecell ?? {}) };
+  merged.pairs = { ...base.pairs, ...(profile.pairs ?? {}) };
+  merged.sweeper = { ...base.sweeper, ...(profile.sweeper ?? {}) };
   merged.daily = { ...base.daily, ...(profile.daily ?? {}) };
   merged.settings = { ...base.settings, ...(profile.settings ?? {}) };
   merged.stats = { ...base.stats, ...(profile.stats ?? {}) };
@@ -297,6 +303,60 @@ export function awardSolitaire(profile, { won, foundation, usedUndo }, now = Dat
   return { coins: earned, won };
 }
 
+export function awardFreecell(profile, { won, foundation, usedUndo }, now = Date.now()) {
+  const table = REWARDS.freecell;
+  profile.freecell.played++;
+
+  let coins;
+  if (won) {
+    profile.freecell.wins++;
+    coins = table.win + (usedUndo ? 0 : table.noUndoBonus);
+  } else {
+    coins = foundation * table.perFoundationCard;
+  }
+
+  return { coins: payout(profile, coins, won ? 'FreeCell won' : 'FreeCell progress', now), won };
+}
+
+export function awardPairs(profile, { won, mistakes, bestCombo, board }, now = Date.now()) {
+  const table = REWARDS.pairs;
+  profile.pairs.played++;
+  if (!won) return { coins: 0, won: false };
+
+  profile.pairs.wins++;
+  profile.pairs.bestCombo = Math.max(profile.pairs.bestCombo, bestCombo);
+  if (mistakes === 0) profile.pairs.perfects++;
+
+  const size = board === 'hard' ? 1.6 : board === 'small' ? 0.6 : 1;
+  const raw =
+    table.win * size +
+    (mistakes === 0 ? table.perfectBonus : 0) +
+    bestCombo * table.comboBonus -
+    mistakes * table.mistakePenalty;
+
+  const coins = Math.max(table.minimum, Math.round(raw));
+  return { coins: payout(profile, coins, 'Pairs cleared', now), won: true, perfect: mistakes === 0 };
+}
+
+export function awardSweeper(profile, { won, difficulty, progress }, now = Date.now()) {
+  const table = REWARDS.sweeper;
+  profile.sweeper.played++;
+
+  let gems = 0;
+  let coins;
+  if (won) {
+    profile.sweeper.wins++;
+    profile.sweeper.byDifficulty[difficulty] = (profile.sweeper.byDifficulty[difficulty] ?? 0) + 1;
+    coins = table.win[difficulty] ?? table.win.calm;
+    const bonusGems = table.flawlessGems[difficulty] ?? 0;
+    if (bonusGems) gems = credit(profile, CURRENCY.GEMS, bonusGems, 'Fierce minefield cleared', { now });
+  } else {
+    coins = Math.round(table.partial * progress);
+  }
+
+  return { coins: payout(profile, coins, won ? 'Minefield cleared' : 'Sweeper progress', now), gems, won };
+}
+
 export function awardDuel(profile, { result, roundsWon }, now = Date.now()) {
   const table = REWARDS.duel;
   let coins = table.perRoundWon * roundsWon;
@@ -374,6 +434,16 @@ const ACHIEVEMENT_TESTS = {
   first_patience: (p) => p.solitaire.wins >= 1,
   card_sharp: (p) => p.duel.wins >= 10,
   flawless: (p) => p.stats.flawless === true,
+  calculator: (p) => p.freecell.wins >= 1,
+  total_recall: (p) => p.pairs.perfects >= 1,
+  demolitionist: (p) => (p.sweeper.byDifficulty?.fierce ?? 0) >= 1,
+  all_rounder: (p) =>
+    solvedCount(p) >= 1 &&
+    p.solitaire.wins >= 1 &&
+    p.duel.wins >= 1 &&
+    p.freecell.wins >= 1 &&
+    p.pairs.wins >= 1 &&
+    p.sweeper.wins >= 1,
   week_streak: (p) => p.daily.streak >= 7,
 };
 

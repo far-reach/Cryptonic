@@ -1,10 +1,11 @@
 /**
- * Arcade shell: hash router, wallet header, and the Store / Wallet screens.
- * Each game mounts itself into `#view` and returns a teardown function.
+ * Arcade shell: hash router, wallet header, and the Arcade / Store / Wallet
+ * screens. Games come from `games/registry.js` — each mounts itself into
+ * `#view` and returns a teardown function.
  */
 
 import { MSG, EVENT_WALLET_CHANGED, send } from '../common/messages.js';
-import { CONFIG, IS_SANDBOX } from '../config.js';
+import { IS_SANDBOX } from '../config.js';
 import {
   ACHIEVEMENTS,
   CARD_BACKS,
@@ -14,10 +15,8 @@ import {
   TICKETS,
 } from '../store/catalog.js';
 import { ownsItem } from '../store/economy.js';
-import { mountSokoban } from '../games/sokoban/ui.js';
-import { mountSolitaire } from '../games/solitaire/ui.js';
-import { mountDuel } from '../games/duel/ui.js';
-import { clear, el, formatDuration, formatTime, stars, toast } from './ui.js';
+import { GAMES, GAME_BY_ID } from '../games/registry.js';
+import { clear, el, formatDuration, formatTime, toast } from './ui.js';
 
 const viewRoot = document.getElementById('view');
 
@@ -35,15 +34,6 @@ export const app = {
 
 let teardown = null;
 
-const VIEWS = {
-  arcade: renderArcade,
-  sokoban: (root) => mountSokoban(root, app),
-  solitaire: (root) => mountSolitaire(root, app),
-  duel: (root) => mountDuel(root, app),
-  store: renderStore,
-  wallet: renderWallet,
-};
-
 /* ------------------------------------------------------------------ chrome */
 
 function applyCosmetics(profile) {
@@ -52,13 +42,10 @@ function applyCosmetics(profile) {
 }
 
 function paintChips(profile) {
-  setChip('coins', profile.coins);
-  setChip('gems', profile.gems);
+  setChip('coins', profile.coins.toLocaleString());
+  setChip('gems', profile.gems.toLocaleString());
   setChip('tickets', `${profile.tickets}/${TICKETS.max}`);
-
-  const daily = app.state?.daily;
-  const chip = document.getElementById('daily-chip');
-  chip.hidden = !daily?.available;
+  document.getElementById('daily-chip').hidden = !app.state?.daily?.available;
 }
 
 function setChip(name, value) {
@@ -78,71 +65,109 @@ function setChip(name, value) {
 
 async function route() {
   const name = (location.hash.slice(1) || 'arcade').split('?')[0];
-  const render = VIEWS[name] ?? VIEWS.arcade;
+  const game = GAME_BY_ID.get(name);
+  const render = game ? (root) => game.mount(root, app) : (VIEWS[name] ?? VIEWS.arcade);
+  if (!game && !VIEWS[name]) location.replace('#arcade');
 
   if (teardown) {
     teardown();
     teardown = null;
   }
 
+  const section = game ? 'arcade' : VIEWS[name] ? name : 'arcade';
   for (const tab of document.querySelectorAll('.tab')) {
-    tab.toggleAttribute('aria-current', tab.dataset.view === name);
-    if (tab.dataset.view === name) tab.setAttribute('aria-current', 'page');
+    if (tab.dataset.view === section) tab.setAttribute('aria-current', 'page');
+    else tab.removeAttribute('aria-current');
   }
 
   clear(viewRoot);
-  teardown = (await render(viewRoot)) ?? null;
+
+  // Games mount into their own host: several of them clear their root as they
+  // switch screens, which would otherwise take the switcher with it.
+  let host = viewRoot;
+  if (game) {
+    viewRoot.append(gameSwitcher(game.id));
+    host = el('div');
+    viewRoot.append(host);
+  }
+
+  teardown = (await render(host)) ?? null;
   viewRoot.focus({ preventScroll: true });
+  window.scrollTo({ top: 0 });
+}
+
+/** Quick jump between games without going back to the hub first. */
+function gameSwitcher(activeId) {
+  const bar = el('div', { class: 'row', style: 'margin-bottom:18px' });
+  bar.append(
+    el('button', {
+      class: 'btn btn-sm btn-ghost',
+      text: '← Arcade',
+      onclick: () => { location.hash = 'arcade'; },
+    }),
+    el(
+      'div',
+      { class: 'seg' },
+      ...GAMES.map((game) =>
+        el('button', {
+          text: game.name,
+          'aria-pressed': game.id === activeId,
+          onclick: () => { location.hash = game.id; },
+        }),
+      ),
+    ),
+  );
+  return bar;
 }
 
 /* ------------------------------------------------------------------ arcade */
 
 function renderArcade(root) {
   const { profile } = app.state;
-  const levels = app.state.levels;
+  const daily = app.state.daily;
   const solved = Object.values(profile.sokoban.levels).filter((l) => l.solved).length;
-  const totalStars = Object.values(profile.sokoban.levels).reduce(
-    (sum, l) => sum + (l.stars ?? 0),
-    0,
-  );
+  const totalStars = Object.values(profile.sokoban.levels).reduce((sum, l) => sum + (l.stars ?? 0), 0);
+  const wins =
+    profile.solitaire.wins +
+    profile.freecell.wins +
+    profile.pairs.wins +
+    profile.sweeper.wins +
+    profile.duel.wins;
 
   root.append(
-    el('h1', { text: 'Pick a game' }),
-    el('p', {
-      class: 'sub',
-      text: 'Three games, one wallet. Coins you earn here spend anywhere.',
-    }),
     el(
-      'div',
-      { class: 'game-cards' },
-      gameCard({
-        art: '📦',
-        title: 'Sokoban',
-        blurb: 'Twenty-four hand-built warehouses. Every level has a proven optimal solution — match it for three stars and a gem.',
-        meta: [`${solved}/${levels.length} cleared`, `${totalStars}★ collected`],
-        view: 'sokoban',
-      }),
-      gameCard({
-        art: '🂡',
-        title: 'Klondike Solitaire',
-        blurb: 'Classic patience with draw-one or draw-three, unlimited undo and a one-click finish once the board is open.',
-        meta: [
-          `${profile.solitaire.wins} won`,
-          profile.solitaire.streak ? `${profile.solitaire.streak} win streak` : 'no streak yet',
-        ],
-        view: 'solitaire',
-      }),
-      gameCard({
-        art: '⚔️',
-        title: 'Cipher Duel',
-        blurb: 'Rank beats rank — unless your suit counters theirs and halves it. Read the opponent, spend your kings wisely.',
-        meta: [
-          `${profile.duel.wins}W · ${profile.duel.losses}L`,
-          `🎟 ${profile.tickets}/${TICKETS.max}`,
-        ],
-        view: 'duel',
-      }),
+      'section',
+      { class: 'hero' },
+      el('div', null,
+        el('h1', { text: 'Six games. One wallet.' }),
+        el('p', { class: 'sub', style: 'margin-bottom:14px', text:
+          'Coins you earn anywhere spend everywhere. Nothing purchasable blocks progress — gems buy convenience and cosmetics.' }),
+        el('div', { class: 'row' },
+          el('button', {
+            class: 'btn btn-primary',
+            text: daily.available ? `Claim day ${daily.nextStreak} bonus` : 'Store',
+            onclick: () => (daily.available ? claimDaily() : (location.hash = 'store')),
+          }),
+          el('span', { class: 'pill', text: `${profile.achievements.length}/${ACHIEVEMENTS.length} achievements` }),
+          profile.upgrades.includes('coinDoubler') ? el('span', { class: 'pill hot', text: '✨ Coin Doubler active' }) : null)),
+      el(
+        'div',
+        { class: 'hero-stats' },
+        el('div', { class: 'hero-stat' },
+          el('div', { class: 'v num', text: String(wins) }),
+          el('div', { class: 'k', text: 'Wins' })),
+        el('div', { class: 'hero-stat' },
+          el('div', { class: 'v num', text: `${solved}/${app.state.levels.length}` }),
+          el('div', { class: 'k', text: 'Levels' })),
+        el('div', { class: 'hero-stat' },
+          el('div', { class: 'v num', text: `${totalStars}★` }),
+          el('div', { class: 'k', text: 'Stars' })),
+        el('div', { class: 'hero-stat' },
+          streakRing(profile.daily.streak),
+          el('div', { class: 'k', style: 'text-align:center;margin-top:4px', text: 'Streak' })),
+      ),
     ),
+    el('div', { class: 'game-cards' }, ...GAMES.map((game) => gameCard(game, profile))),
     el('h2', { text: 'Achievements' }),
     el(
       'div',
@@ -151,24 +176,42 @@ function renderArcade(root) {
         const earned = profile.achievements.includes(achievement.id);
         return el(
           'div',
-          { class: 'panel' },
-          el('div', { class: 'spread' }, el('strong', { text: achievement.name }),
-            el('span', { class: earned ? 'owned' : 'muted', text: earned ? '✓ earned' : `💎 ${achievement.gems}` })),
-          el('div', { class: 'muted', text: achievement.blurb }),
+          { class: `achievement ${earned ? 'earned' : ''}` },
+          el('span', { class: 'medal', text: earned ? '★' : '·' }),
+          el('div', { style: 'flex:1' },
+            el('div', { style: 'font-weight:650;font-size:14px', text: achievement.name }),
+            el('div', { class: 'muted tiny', text: achievement.blurb })),
+          el('span', { class: earned ? 'owned' : 'muted', text: earned ? '✓' : `💎 ${achievement.gems}` }),
         );
       }),
     ),
   );
 }
 
-function gameCard({ art, title, blurb, meta, view }) {
+function streakRing(streak) {
+  const ring = el('div', { class: 'ring' }, el('span', { text: String(streak) }));
+  ring.style.setProperty('--pct', String(Math.min(100, (streak / 7) * 100)));
+  return ring;
+}
+
+function gameCard(game, profile) {
+  const art = el('div', { class: 'game-art' });
+  game.art(art);
+
   return el(
     'button',
-    { class: 'game-card', onclick: () => { location.hash = view; } },
-    el('div', { class: 'art', text: art }),
-    el('h3', { text: title }),
-    el('p', { text: blurb }),
-    el('div', { class: 'meta' }, ...meta.map((m) => el('span', { class: 'pill', text: m }))),
+    { class: 'game-card', onclick: () => { location.hash = game.id; } },
+    art,
+    el(
+      'div',
+      { class: 'game-body' },
+      el('div', { class: 'game-meta' }, ...game.tags.map((tag) => el('span', { class: 'tag', text: tag }))),
+      el('h3', { text: game.name }),
+      el('p', { text: game.blurb }),
+      el('div', { class: 'spread' },
+        el('span', { class: 'muted tiny', text: game.stat(profile) }),
+        el('span', { class: 'tiny', style: 'color:var(--accent);font-weight:650', text: 'Play →' })),
+    ),
   );
 }
 
@@ -179,10 +222,7 @@ function renderStore(root) {
 
   root.append(
     el('h1', { text: 'Store' }),
-    el('p', {
-      class: 'sub',
-      text: 'Coins come from playing. Gems come from the daily streak, achievements, or the packs below.',
-    }),
+    el('p', { class: 'sub', text: 'Coins come from playing. Gems come from the daily streak, achievements, or the packs below.' }),
   );
 
   if (IS_SANDBOX) {
@@ -196,31 +236,16 @@ function renderStore(root) {
     );
   }
 
-  root.append(el('h2', { text: 'Gem packs' }));
   root.append(
+    el('h2', { text: 'Gem packs' }),
+    el('div', { class: 'grid' }, ...IAP_PACKS.map((pack) => packCard(pack, profile))),
     el(
       'div',
-      { class: 'grid' },
-      ...IAP_PACKS.map((pack) => packCard(pack, profile)),
-    ),
-  );
-
-  root.append(
-    el(
-      'div',
-      { class: 'row', style: 'margin-top:12px' },
-      el('button', {
-        class: 'btn btn-ghost btn-sm',
-        text: 'Restore purchases',
-        onclick: restorePurchases,
-      }),
-      el('span', {
-        class: 'muted',
-        style: 'font-size:13px',
-        text: IS_SANDBOX
-          ? 'Sandbox purchases stay on this device.'
-          : 'Re-checks your entitlements with the payment server.',
-      }),
+      { class: 'row', style: 'margin-top:14px' },
+      el('button', { class: 'btn btn-ghost btn-sm', text: 'Restore purchases', onclick: restorePurchases }),
+      el('span', { class: 'muted tiny', text: IS_SANDBOX
+        ? 'Sandbox purchases stay on this device.'
+        : 'Re-checks your entitlements with the payment server.' }),
     ),
   );
 
@@ -229,9 +254,14 @@ function renderStore(root) {
     ['upgrade', 'Permanent upgrades'],
     ['cosmetic', 'Cosmetics'],
   ]) {
-    const items = STORE_ITEMS.filter((item) => item.kind === kind);
-    root.append(el('h2', { text: heading }));
-    root.append(el('div', { class: 'grid' }, ...items.map((item) => storeCard(item, profile))));
+    root.append(
+      el('h2', { text: heading }),
+      el(
+        'div',
+        { class: 'grid' },
+        ...STORE_ITEMS.filter((item) => item.kind === kind).map((item) => storeCard(item, profile)),
+      ),
+    );
   }
 }
 
@@ -246,7 +276,7 @@ function storeCard(item, profile) {
     el('div', { class: 'icon', text: item.icon }),
     el('h3', { text: item.name }),
     el('p', { text: item.blurb }),
-    held !== null ? el('div', { class: 'muted', style: 'font-size:12px', text: `You hold ${held}` }) : null,
+    held !== null ? el('div', { class: 'muted tiny', text: `You hold ${held}` }) : null,
     el(
       'div',
       { class: 'spread' },
@@ -277,7 +307,7 @@ function packCard(pack, profile) {
     'div',
     { class: `pack ${pack.popular ? 'popular' : ''}` },
     pack.popular ? el('span', { class: 'badge', text: 'Most popular' }) : null,
-    el('div', { style: 'font-size:28px', text: pack.icon }),
+    el('div', { style: 'font-size:26px', text: pack.icon }),
     el('div', { class: 'amount', text: pack.gems.toLocaleString() }),
     pack.bonus ? el('div', { class: 'bonus', text: `${pack.bonus} bonus` }) : null,
     el('div', { style: 'font-weight:650;margin-top:4px', text: pack.name }),
@@ -311,10 +341,7 @@ async function buyPack(pack) {
       await app.refresh();
       route();
     } else {
-      toast(
-        'Checkout opened',
-        'Finish payment in the new tab, then press Restore purchases.',
-      );
+      toast('Checkout opened', 'Finish payment in the new tab, then press Restore purchases.');
     }
   } catch (err) {
     toast('Purchase failed', explain(err.code), 'bad');
@@ -368,7 +395,7 @@ function renderWallet(root) {
       kpi('Gems', profile.gems.toLocaleString()),
       kpi('Earned all-time', profile.stats.coinsEarned.toLocaleString()),
       kpi('Spent all-time', profile.stats.coinsSpent.toLocaleString()),
-      kpi('Daily streak', `${profile.daily.streak} day${profile.daily.streak === 1 ? '' : 's'}`),
+      kpi('Daily streak', `${profile.daily.streak}d`),
       kpi('Tickets', `${profile.tickets}/${TICKETS.max}`),
     ),
     el(
@@ -379,18 +406,20 @@ function renderWallet(root) {
         { class: 'spread' },
         el('div', null,
           el('strong', { text: daily.available ? 'Daily bonus ready' : 'Daily bonus claimed' }),
-          el('div', {
-            class: 'muted',
-            text: daily.available
-              ? `Day ${daily.nextStreak} of your streak — 🪙 ${daily.coins}${daily.gems ? ` + 💎 ${daily.gems}` : ''}`
-              : `Next one in ${formatDuration(daily.msUntilNext)}`,
-          })),
-        el('button', {
-          class: 'btn btn-primary',
-          text: 'Claim',
-          disabled: !daily.available,
-          onclick: claimDaily,
-        }),
+          el('div', { class: 'muted tiny', text: daily.available
+            ? `Day ${daily.nextStreak} of your streak — 🪙 ${daily.coins}${daily.gems ? ` + 💎 ${daily.gems}` : ''}`
+            : `Next one in ${formatDuration(daily.msUntilNext)}` })),
+        el('button', { class: 'btn btn-primary', text: 'Claim', disabled: !daily.available, onclick: claimDaily }),
+      ),
+    ),
+    el('h2', { text: 'Records' }),
+    el(
+      'div',
+      { class: 'grid' },
+      ...GAMES.map((game) =>
+        el('div', { class: 'panel spread' },
+          el('span', { text: game.name }),
+          el('strong', { class: 'tiny', text: game.stat(profile) })),
       ),
     ),
     el('h2', { text: 'Inventory' }),
@@ -412,12 +441,10 @@ function renderWallet(root) {
     el(
       'div',
       { class: 'panel' },
-      el('div', { class: 'row' },
-        el('span', { class: 'muted', text: 'Theme' }),
-        ...THEMES.map((theme) => cosmeticButton(theme, profile.themes, profile.active.theme, 'theme'))),
-      el('div', { class: 'row', style: 'margin-top:10px' },
-        el('span', { class: 'muted', text: 'Card back' }),
-        ...CARD_BACKS.map((back) => cosmeticButton(back, profile.cardBacks, profile.active.cardBack, 'cardBack'))),
+      el('div', { class: 'side-title', text: 'Theme' }),
+      el('div', { class: 'row' }, ...THEMES.map((theme) => cosmeticButton(theme, profile.themes, profile.active.theme, 'theme'))),
+      el('div', { class: 'side-title', style: 'margin-top:14px', text: 'Card back' }),
+      el('div', { class: 'row' }, ...CARD_BACKS.map((back) => cosmeticButton(back, profile.cardBacks, profile.active.cardBack, 'cardBack'))),
     ),
     el('h2', { text: 'Settings' }),
     el(
@@ -427,12 +454,8 @@ function renderWallet(root) {
       toggle('reducedMotion', 'Reduce animation', profile.settings.reducedMotion),
       toggle('drawThree', 'Solitaire: draw three', profile.settings.drawThree),
       el('div', { class: 'row', style: 'margin-top:12px' },
-        el('button', {
-          class: 'btn btn-ghost btn-sm',
-          text: 'Reset progress',
-          onclick: resetProgress,
-        }),
-        el('span', { class: 'muted', style: 'font-size:12px', text: 'Purchases are kept.' })),
+        el('button', { class: 'btn btn-ghost btn-sm', text: 'Reset progress', onclick: resetProgress }),
+        el('span', { class: 'muted tiny', text: 'Purchases are kept.' })),
     ),
     el('h2', { text: 'Transactions' }),
     profile.ledger.length
@@ -509,15 +532,13 @@ function ledgerTable(ledger) {
           el('td', { class: 'muted', text: formatTime(entry.ts) }),
           el('td', { text: entry.label }),
           el('td', { class: 'muted', text: entry.kind }),
-          el('td', {
-            class: `amt ${entry.delta > 0 ? 'pos' : 'neg'}`,
-            text: `${entry.delta > 0 ? '+' : ''}${entry.delta} ${symbol(entry.currency)}`,
-          }),
+          el('td', { class: `amt ${entry.delta > 0 ? 'pos' : 'neg'}`,
+            text: `${entry.delta > 0 ? '+' : ''}${entry.delta} ${symbol(entry.currency)}` }),
           el('td', { class: 'amt muted', text: String(entry.balance) })),
       ),
     ),
   );
-  return el('div', { class: 'panel', style: 'padding:6px' }, table);
+  return el('div', { class: 'panel panel-flush' }, table);
 }
 
 function symbol(currency) {
@@ -527,11 +548,7 @@ function symbol(currency) {
 async function claimDaily() {
   try {
     const result = await send(MSG.CLAIM_DAILY);
-    toast(
-      `Day ${result.streak} bonus`,
-      `🪙 +${result.coins}${result.gems ? ` · 💎 +${result.gems}` : ''}`,
-      'good',
-    );
+    toast(`Day ${result.streak} bonus`, `🪙 +${result.coins}${result.gems ? ` · 💎 +${result.gems}` : ''}`, 'good');
     await app.refresh();
     route();
   } catch (err) {
@@ -547,11 +564,21 @@ async function resetProgress() {
   route();
 }
 
+const VIEWS = {
+  arcade: renderArcade,
+  store: renderStore,
+  wallet: renderWallet,
+};
+
 /* ------------------------------------------------------------------- start */
 
 document.getElementById('tabs').addEventListener('click', (event) => {
   const tab = event.target.closest('.tab');
   if (tab) location.hash = tab.dataset.view;
+});
+
+document.getElementById('home').addEventListener('click', () => {
+  location.hash = 'arcade';
 });
 
 document.getElementById('daily-chip').addEventListener('click', claimDaily);

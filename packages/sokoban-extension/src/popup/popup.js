@@ -5,10 +5,20 @@
 
 import { MSG, send } from '../common/messages.js';
 import { TICKETS } from '../store/catalog.js';
+import { GAMES } from '../games/registry.js';
 import { el, clear, formatDuration } from '../app/ui.js';
 
 const games = document.getElementById('games');
 const dailyBtn = document.getElementById('daily');
+
+const ICONS = {
+  sokoban: '📦',
+  solitaire: '🂡',
+  freecell: '🃏',
+  pairs: '🎴',
+  sweeper: '💣',
+  duel: '⚔️',
+};
 
 function set(name, value) {
   const node = document.querySelector(`[data-count='${name}']`);
@@ -30,8 +40,14 @@ function render(state) {
   set('tickets', `${profile.tickets}/${TICKETS.max}`);
 
   const solved = Object.values(profile.sokoban.levels).filter((l) => l.solved).length;
+  const wins =
+    profile.solitaire.wins +
+    profile.freecell.wins +
+    profile.pairs.wins +
+    profile.sweeper.wins +
+    profile.duel.wins;
   document.getElementById('pop-sub').textContent =
-    `${solved}/${levels.length} levels · ${profile.solitaire.wins} deals · ${profile.duel.wins} duels`;
+    `${solved}/${levels.length} levels · ${wins} wins · ${profile.achievements.length} achievements`;
 
   dailyBtn.hidden = !daily.available;
   dailyBtn.textContent = daily.available
@@ -39,23 +55,21 @@ function render(state) {
     : '';
 
   clear(games).append(
-    gameRow('📦', 'Sokoban', `${solved}/${levels.length} cleared`, 'sokoban'),
-    gameRow('🂡', 'Solitaire', `${profile.solitaire.wins} deals solved`, 'solitaire'),
-    gameRow(
-      '⚔️',
-      'Cipher Duel',
-      profile.tickets > 0
-        ? `${profile.tickets} tickets ready`
-        : `next ticket in ${formatDuration(nextTicketMs(profile))}`,
-      'duel',
+    ...GAMES.map((game) =>
+      gameRow(
+        ICONS[game.id] ?? '🎮',
+        game.name,
+        game.id === 'duel' && profile.tickets === 0
+          ? `next ticket in ${formatDuration(nextTicketMs(profile))}`
+          : game.stat(profile),
+        game.id,
+      ),
     ),
   );
 }
 
 function nextTicketMs(profile) {
-  const regen = profile.upgrades.includes('fastTickets')
-    ? TICKETS.regenMs / 2
-    : TICKETS.regenMs;
+  const regen = profile.upgrades.includes('fastTickets') ? TICKETS.regenMs / 2 : TICKETS.regenMs;
   return Math.max(0, regen - (Date.now() - profile.ticketsUpdatedAt));
 }
 

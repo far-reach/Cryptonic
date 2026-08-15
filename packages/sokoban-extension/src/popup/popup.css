@@ -1,7 +1,7 @@
 /* The popup reuses app.css tokens; only layout differs. */
 
 body.popup {
-  width: 320px;
+  width: 348px;
   padding: 14px;
   display: block;
   background: var(--bg);
@@ -47,14 +47,15 @@ body.popup {
 
 .pop-games {
   display: grid;
-  gap: 8px;
+  gap: 6px;
+  grid-template-columns: 1fr 1fr;
 }
 
 .pop-game {
   display: flex;
   align-items: center;
-  gap: 11px;
-  padding: 11px 12px;
+  gap: 9px;
+  padding: 9px 10px;
   border-radius: 11px;
   border: 1px solid var(--line);
   background: var(--panel);
@@ -74,12 +75,16 @@ body.popup {
 
 .pop-game .nm {
   font-weight: 650;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .pop-game .dt {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 110px;
 }
 
 .pop-foot {

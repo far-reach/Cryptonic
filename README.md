@@ -25,7 +25,7 @@ alternatives.
 | [`packages/web`](packages/web) | Local dashboard at `localhost:3000` that runs & visualizes a real confidential payment. |
 | [`packages/solana`](packages/solana) | Solana Token-2022 confidential-transfer prototype + CLI runbook. |
 | [`packages/bitget-briefing`](packages/bitget-briefing) | Bot that reads the Bitget announcement center and produces a critical daily briefing (scheduled via GitHub Actions). |
-| [`packages/sokoban-extension`](packages/sokoban-extension) | Standalone Chrome extension (unrelated to the protocol): a Sokoban + card-game arcade with a coin/gem wallet and in-app purchases. |
+| [`packages/sokoban-extension`](packages/sokoban-extension) | Standalone Chrome extension (unrelated to the protocol): a six-game arcade (Sokoban, Klondike, FreeCell, Pairs, Sweeper, Cipher Duel) with a shared coin/gem wallet and in-app purchases. |
 
 ## How it works (one paragraph)
 
