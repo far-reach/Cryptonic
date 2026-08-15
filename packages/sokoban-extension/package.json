@@ -1,0 +1,16 @@
+{
+  "name": "@arcade/crate-and-cards",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Chrome extension: Sokoban, Klondike solitaire and a strategy card duel on a shared coin-and-gem wallet.",
+  "license": "MIT",
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "levels": "node tools/solve.mjs",
+    "icons": "node tools/make-icons.mjs",
+    "check": "node tools/check.mjs",
+    "verify": "npm run check && npm test",
+    "package": "node tools/package.mjs"
+  }
+}
