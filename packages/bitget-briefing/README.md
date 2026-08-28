@@ -45,12 +45,32 @@ npm test --workspace @veil/bitget-briefing
 | `TELEGRAM_CHAT_ID` | auto | Optional: pin the chat. Without it, the chat is auto-discovered from the bot's most recent incoming message (Telegram keeps updates ~24h, so pinning is recommended for daily delivery — the first delivered message tells you the id to pin). |
 | `SLACK_WEBHOOK_URL` | — | Send to a Slack incoming webhook. |
 | `DISCORD_WEBHOOK_URL` | — | Send to a Discord webhook. |
+| `BRIEFING_LICENSE_KEY` | — | Pro/Desk license key; unset = free plan (see [Plans](#plans--pricing)). |
+| `BRIEFING_LICENSE_PUBLIC_KEY` | built-in | Override the license trust root (self-issued deployments). |
+| `BRIEFING_NO_UPSELL` | — | Set to `1` to drop the free tier's footer line from the briefing. |
 
 ### Flags
 
 - `--demo` — render from bundled sample data (no network needed).
 - `--critical-only` — print nothing (and skip notifications) unless something critical
   happened; useful for alert-style scheduling.
+- `--weekly` — the Sunday weekly review (Pro).
+- `--plan` — print the active plan, license state, and entitlements.
+
+## Plans & pricing
+
+Freemium: **the free tier is the complete daily briefing** — every safety alert (delistings,
+freezes, security notices) is free forever, plus stars, the environment gauge, the
+plain-language "why", trade-angle stances, and one delivery channel. Paid unlocks the
+daily-reach-for depth:
+
+- **Pro — $9/mo · $79/yr:** live entry/TP/SL brackets on trade angles, the weekly review,
+  the 7-day trend chart, all delivery channels at once, custom look-back windows.
+- **Desk — $29/mo · $249/yr:** Pro for a team (5 seats, shared channels, commercial use).
+
+Activate with `BRIEFING_LICENSE_KEY` (keys are Ed25519-signed and verified fully offline — no
+license server, no telemetry; expired keys get a 7-day grace window and then degrade cleanly
+to free). Full model, rationale, and vendor tooling: [`docs/pricing.md`](docs/pricing.md).
 
 ### Telegram setup
 
