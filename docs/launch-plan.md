@@ -68,7 +68,7 @@ $1B. The model works at a fraction of a percent of the market. (Illustrative, no
 
 ## 4. Business model & unit economics
 
-**Three revenue lines** (diversified so profitability doesn't depend solely on protocol volume):
+**Four revenue lines** (diversified so profitability doesn't depend solely on protocol volume):
 
 1. **Protocol fee** — 5–15 bps on shielded withdrawals, in stablecoin, routed to
    buyback-and-burn (already implemented). Scales with volume; pure margin.
@@ -76,6 +76,13 @@ $1B. The model works at a fraction of a percent of the market. (Illustrative, no
    tooling, SLAs, and a hosted relayer: **$2k–$20k/mo** by size, plus implementation fees.
 3. **Infrastructure licensing / white-label** — fintechs, PSPs, and stablecoin issuers embed the
    rail under their brand: platform license + rev-share on volume.
+4. **Consumer freemium subscription** — the Bitget briefing product line (implemented, see
+   [`packages/bitget-briefing/docs/pricing.md`](../packages/bitget-briefing/docs/pricing.md)):
+   a genuinely good free daily briefing with the daily-reach-for depth paid — Pro **$9/mo /
+   $79/yr**, Desk **$29/mo / $249/yr** (annual at ~8–10× monthly, per the extension-monetization
+   research). Small next to the enterprise lines, but it's recurring cash from day one, a
+   top-of-funnel for the VEIL brand, and a live retention lab; safety alerts stay free forever
+   so the free tier drives daily habit, not uninstalls.
 
 **Illustrative unit economics (per mid-size business customer):**
 - SaaS: ~$8k/mo = ~$96k/yr.

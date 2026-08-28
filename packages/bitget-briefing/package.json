@@ -8,14 +8,17 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "bitget-briefing": "dist/cli.js"
+    "bitget-briefing": "dist/cli.js",
+    "bitget-briefing-license": "dist/license-cli.js"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
     "briefing": "npm run build && node dist/cli.js",
-    "briefing:demo": "npm run build && node dist/cli.js --demo"
+    "briefing:demo": "npm run build && node dist/cli.js --demo",
+    "plan": "npm run build && node dist/cli.js --plan",
+    "license": "npm run build && node dist/license-cli.js"
   },
   "devDependencies": {
     "typescript": "^5.6.3",

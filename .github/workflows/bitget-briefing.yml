@@ -65,6 +65,11 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN || '8947281899:AAEouclYL1PQ9p05jUVGK0r6H9vApS2yNgc' }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          # Freemium plan (docs/pricing.md). Unset = free tier: the run still
+          # works, weekly falls back to daily. Issue a key with `license-cli`
+          # (add BRIEFING_LICENSE_PUBLIC_KEY too if you self-generated the pair).
+          BRIEFING_LICENSE_KEY: ${{ secrets.BRIEFING_LICENSE_KEY }}
+          BRIEFING_LICENSE_PUBLIC_KEY: ${{ secrets.BRIEFING_LICENSE_PUBLIC_KEY }}
         run: npm run briefing --workspace @veil/bitget-briefing
         # The briefing is appended to the job summary automatically via GITHUB_STEP_SUMMARY.
 

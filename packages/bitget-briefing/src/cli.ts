@@ -12,10 +12,14 @@
  *   GITHUB_STEP_SUMMARY    (set by GitHub Actions) briefing is appended automatically
  *   TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID / SLACK_WEBHOOK_URL / DISCORD_WEBHOOK_URL
  *                          optional delivery channels
+ *   BRIEFING_LICENSE_KEY   Pro/Desk license key (unset = free plan; see docs/pricing.md)
+ *   BRIEFING_NO_UPSELL     drop the free tier's footer line
  *
  * Flags:
  *   --demo                 render from bundled sample data (no network)
  *   --critical-only        exit 0 and print nothing unless there are critical items
+ *   --weekly               Sunday weekly review (Pro)
+ *   --plan                 print the active plan, license state & entitlements
  */
 import { appendFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -32,13 +36,43 @@ import { renderWeeklyCaption, renderWeeklyMarkdown, renderWeeklyTelegramHtml } f
 import { existsSync } from "node:fs";
 import { sampleAnnouncements } from "./sample-data.js";
 import type { FetchLike } from "./types.js";
+import {
+  can,
+  clampWindowHours,
+  formatPlanStatus,
+  resolveSubscription,
+  selectChannels,
+  upsellFooter,
+  type SubscriptionEnv,
+} from "./subscription.js";
 
 async function main(): Promise<number> {
   const args = new Set(process.argv.slice(2));
   const demo = args.has("--demo");
   const criticalOnly = args.has("--critical-only");
-  const weekly = args.has("--weekly") || process.env.BRIEFING_MODE === "weekly";
-  const windowHours = Number(process.env.BRIEFING_WINDOW_HOURS) || (weekly ? 168 : 24);
+
+  // Freemium plan resolution (docs/pricing.md). Licensing never blocks the
+  // briefing — any problem resolves to the free tier with a stderr note.
+  const sub = resolveSubscription();
+  if (args.has("--plan")) {
+    console.log(formatPlanStatus(sub));
+    return 0;
+  }
+  let flushed = 0;
+  const flushNotices = () => {
+    for (; flushed < sub.notices.length; flushed++) console.error(`plan: ${sub.notices[flushed]}`);
+  };
+
+  let weekly = args.has("--weekly") || process.env.BRIEFING_MODE === "weekly";
+  if (weekly && !can(sub, "weekly-review")) {
+    sub.notices.push("the weekly review is a Pro feature — running the daily briefing instead");
+    weekly = false;
+  }
+  const requestedWindow = Number(process.env.BRIEFING_WINDOW_HOURS) || (weekly ? 168 : 24);
+  const clamped = clampWindowHours(sub, requestedWindow);
+  if (clamped.notice) sub.notices.push(clamped.notice);
+  const windowHours = clamped.hours;
+  flushNotices();
   const now = Date.now();
 
   let announcements;
@@ -62,7 +96,8 @@ async function main(): Promise<number> {
   const briefing = buildBriefing(classifyAll(announcements), { windowHours, now, fetchErrors });
 
   // Live prices turn signals into concrete entry/TP/SL brackets (best-effort).
-  if (!demo && briefing.signals.some((s) => s.coin)) {
+  // Price brackets are a Pro feature; the free tier keeps the angles themselves.
+  if (!demo && can(sub, "price-levels") && briefing.signals.some((s) => s.coin)) {
     briefing.signals = attachPriceLevels(briefing.signals, await fetchSpotPrices());
   }
 
@@ -76,7 +111,9 @@ async function main(): Promise<number> {
     return 0;
   }
 
-  const markdown = weekly ? renderWeeklyMarkdown(briefing) : renderMarkdown(briefing);
+  const markdown =
+    (weekly ? renderWeeklyMarkdown(briefing) : renderMarkdown(briefing)) +
+    upsellFooter(sub, process.env as SubscriptionEnv);
   console.log(markdown);
 
   if (process.env.BRIEFING_OUTPUT) writeFileSync(process.env.BRIEFING_OUTPUT, markdown);
@@ -89,7 +126,8 @@ async function main(): Promise<number> {
     (existsSync("briefings") ? "briefings" : existsSync("../../briefings") ? "../../briefings" : undefined);
   // In weekly mode the briefing counts span 7 days — for the chart's "today"
   // point, prefer the committed daily file so the trend stays a daily series.
-  const history = briefingsDir ? loadHistory(briefingsDir) : [];
+  // The 7-day trend is a Pro feature; the free tier charts today's counts.
+  const history = briefingsDir && can(sub, "trend-chart") ? loadHistory(briefingsDir) : [];
   const todayIso = new Date(now).toISOString().slice(0, 10);
   const todayFromHistory = history.find((h) => h.date === todayIso);
   const todayCounts =
@@ -101,19 +139,26 @@ async function main(): Promise<number> {
   const historyUrl = process.env.GITHUB_REPOSITORY
     ? `${process.env.GITHUB_SERVER_URL ?? "https://github.com"}/${process.env.GITHUB_REPOSITORY}/blob/${process.env.GITHUB_REF_NAME ?? "main"}/briefings/latest.md`
     : undefined;
-  const notifyErrors = await notifyAll({
-    text: renderText(briefing),
-    telegramHtml: weekly
-      ? renderWeeklyTelegramHtml(briefing, { historyUrl })
-      : renderTelegramHtml(briefing, { historyUrl }),
-    telegramHtmlCompact: weekly
-      ? renderWeeklyTelegramHtml(briefing, { historyUrl, compact: true })
-      : renderTelegramHtml(briefing, { historyUrl, compact: true }),
-    telegramPhoto: {
-      url: buildSummaryChartUrl(briefing, trend),
-      caption: weekly ? renderWeeklyCaption(briefing) : renderTelegramCaption(briefing),
+  // Free tier: one delivery channel (Telegram → Slack → Discord); Pro: all.
+  const channels = selectChannels(sub, process.env as SubscriptionEnv);
+  if (channels.notice) sub.notices.push(channels.notice);
+  flushNotices();
+  const notifyErrors = await notifyAll(
+    {
+      text: renderText(briefing),
+      telegramHtml: weekly
+        ? renderWeeklyTelegramHtml(briefing, { historyUrl })
+        : renderTelegramHtml(briefing, { historyUrl }),
+      telegramHtmlCompact: weekly
+        ? renderWeeklyTelegramHtml(briefing, { historyUrl, compact: true })
+        : renderTelegramHtml(briefing, { historyUrl, compact: true }),
+      telegramPhoto: {
+        url: buildSummaryChartUrl(briefing, trend),
+        caption: weekly ? renderWeeklyCaption(briefing) : renderTelegramCaption(briefing),
+      },
     },
-  });
+    channels.env,
+  );
 
   // After a successful auto-discovered delivery, record the chat id so the
   // workflow can pin it (delivery then no longer depends on recent messages).
