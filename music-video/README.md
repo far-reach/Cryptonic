@@ -28,18 +28,31 @@ engineered is everything repeatable about videos that did get there:
 5. **A 3:00 master for YouTube + native 9:16 cutdowns** of shots 5, 7, 17–19 for TikTok/Reels/
    Shorts — long-form is where the view count lives, short-form is where it's lit.
 
-## Render pipeline (blocked on one thing: Higgsfield re-auth)
+## How this cut was produced (fully self-contained, no external AI services)
 
-The Higgsfield connector session is expired; every step below is ready to run the moment it's
-re-authorized (remove and re-add the connector if reconnecting alone doesn't trigger login).
+The generative-media connector was unavailable, so this version is produced end-to-end in
+`src/` with local tools — procedural audio, generative canvas visuals, frame-exact sync:
 
-1. **Song** — Higgsfield has no standalone music model (speech only), so generate the track from
-   `music-spec.md` + `lyrics.md` in Suno/Udio (or supply any 3:00 track), then `media_upload` it.
-2. **Character lock** — run the character-sheet workflow → one reference image of the VEIL dancer.
-3. **Footage** — `generate_video_batch` the 23 storyboard shots (two batches of ≤12,
-   `seedance_2_5` with the character reference; `kling3_0` for the marked crowd/multi-shot scenes),
-   16:9, 8s each; `jobs_wait` → one `show_generation_by_ids`.
-4. **Edit** — video-editing (higgsedit) workflow in `sandbox_exec`: assemble on the 120 BPM beat
-   grid per `storyboard.md`'s sync rules, marry the track, render the 3:00 MP4.
-5. **Finish** — `upscale_video` the master to 4K; `reframe` shots 5, 7, 17–19 to 9:16 cutdowns.
-6. **Optional** — `virality_predictor` on the master and each cutdown before anything ships.
+1. **`src/synth_veil.py`** — synthesizes the whole 3:00 track with numpy/scipy: drums,
+   side-chained bass, supersaw pads, Karplus-Strong arps, lead hook, formant "oh" choir,
+   risers/impacts, and espeak-ng vocals (whispered intro/bridge, spoken-word verses, chanted
+   "veil on / gone" stabs — a deliberate robotic aesthetic that fits the surveillance theme).
+   Every section sits on the 120 BPM / 2s-bar grid; THE PAUSE is a hard master mute before
+   each "gone". Output: `veil.wav`.
+2. **`src/veil_video.html`** — a deterministic canvas renderer: every scene is a pure function
+   of time, mirroring `storyboard.md` in a neon-minimal style (the Glass City, floating money
+   tickers, THE MOVE face-dissolve, the light-moth murmuration palm, the amber room, the
+   aurora transform, the title wipe) plus the full kinetic-typography lyric track.
+   Open it in a browser to watch it play in real time.
+3. **`src/capture.mjs`** — drives headless Chromium frame-by-frame at 24fps, pipes 4,320
+   JPEG frames into ffmpeg, muxes `veil.wav` → `veil_master.mp4` (1080p, H.264 CRF 19, AAC).
+
+Audio and video share one clock, so every cut lands on a downbeat and the blackout/"GONE."
+slam is sample-accurate by construction.
+
+### Upgrade path (when a media connector is available)
+
+`storyboard.md` doubles as a ready-to-run generation plan: character-sheet → 23 shots via
+`generate_video_batch` (seedance/kling), a sung vocal track from a music generator per
+`music-spec.md`, then the same beat-grid assembly. The 9:16 cutdown targets are shots 5, 7,
+17–19 (32–40s, 48–56s, and 120–136s of this master).
