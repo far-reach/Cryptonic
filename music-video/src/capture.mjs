@@ -8,11 +8,14 @@ import { dirname, join } from 'node:path';
 const SRC = dirname(fileURLToPath(import.meta.url));
 const FPS = 24, TOTAL = 180.0, FRAMES = Math.round(TOTAL * FPS);
 const FFMPEG = process.env.FFMPEG || '/usr/local/lib/python3.11/dist-packages/imageio_ffmpeg/binaries/ffmpeg-linux-x86_64-v7.0.2';
-const OUT = join(SRC, '..', 'veil_master.mp4');
+// usage: node capture.mjs [renderer.html] [audio.wav] [out.mp4] — defaults to the VEIL video
+const HTML = process.argv[2] || 'veil_video.html';
+const WAV = process.argv[3] || join(SRC, '..', 'veil.wav');
+const OUT = process.argv[4] || join(SRC, '..', 'veil_master.mp4');
 
 const ff = spawn(FFMPEG, [
   '-y', '-f', 'image2pipe', '-framerate', String(FPS), '-c:v', 'mjpeg', '-i', '-',
-  '-i', join(SRC, '..', 'veil.wav'),
+  '-i', WAV,
   '-c:v', 'libx264', '-preset', 'medium', '-crf', '19', '-pix_fmt', 'yuv420p',
   '-c:a', 'aac', '-b:a', '192k', '-movflags', '+faststart', '-shortest', OUT,
 ], { stdio: ['pipe', 'inherit', 'pipe'] });
@@ -21,7 +24,7 @@ ff.stderr.on('data', d => { ffErr = (ffErr + d.toString()).slice(-4000); });
 
 const browser = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell' });
 const page = await browser.newPage({ viewport: { width: 1920, height: 1080 } });
-await page.goto('file://' + join(SRC, 'veil_video.html') + '?capture=1');
+await page.goto('file://' + join(SRC, HTML) + '?capture=1');
 await page.evaluate(() => window.ready);
 
 const t0 = Date.now();

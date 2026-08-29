@@ -1,0 +1,804 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>NEON HEART — renderer</title>
+<style>
+  html,body{margin:0;background:#000;height:100%;overflow:hidden}
+  canvas{display:block}
+</style>
+<canvas id="c" width="1920" height="1080"></canvas>
+<script>
+'use strict';
+/* NEON HEART — deterministic cyberpunk music-video renderer.
+   Pure function of t; mirrors synth_neon_heart.py: 120 BPM, bar=2s, 180s. */
+
+const W = 1920, H = 1080;
+const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+const BEAT = 0.5, BAR = 2.0, TOTAL = 180.0;
+
+const PAL = {
+  bg:'#05020d', bg2:'#0d0520', mag:'#ff2e88', cyan:'#00e5ff', purp:'#8f4dff',
+  warm:'#ffb45e', white:'#fdf6ff', red:'#ff3355', steel:'#8899bb', dark:'#0a0616'
+};
+const PAUSES = [[42.4,42.95],[90.4,90.95],[146.4,146.95],[162.4,162.95]];
+const BEATS_AT = [43.0, 91.0, 147.0, 163.0];
+const FLATLINE = [133.0, 135.85];
+
+function hash1(n){ let x=Math.sin(n*127.1+311.7)*43758.5453; return x-Math.floor(x); }
+function hash2(a,b){ return hash1(a*57.31+b*7.77); }
+const clamp=(x,a,b)=>Math.min(b,Math.max(a,x));
+const lerp=(a,b,u)=>a+(b-a)*u;
+const smooth=u=>{u=clamp(u,0,1);return u*u*(3-2*u);};
+const ease=(t,t0,t1)=>smooth((t-t0)/(t1-t0));
+function beatPulse(t,decay=7){ return Math.exp(-((t/BEAT)%1)*decay); }
+function noise1(t,seed){ const i=Math.floor(t),f=t-i; return lerp(hash2(i,seed),hash2(i+1,seed),smooth(f))*2-1; }
+function inPause(t){ return PAUSES.some(([a,b])=>t>=a&&t<b); }
+function inFlatline(t){ return t>=FLATLINE[0]&&t<FLATLINE[1]; }
+function nearBeat(t){ for(const g of BEATS_AT){ if(t>=g&&t<g+0.7) return 1-(t-g)/0.7; } return 0; }
+
+// ---------- utils ----------
+function bgFill(c0,c1){ const g=ctx.createLinearGradient(0,0,0,H); g.addColorStop(0,c0); g.addColorStop(1,c1);
+  ctx.fillStyle=g; ctx.fillRect(0,0,W,H); }
+function vignette(a=0.6){ const g=ctx.createRadialGradient(W/2,H/2,H*0.35,W/2,H/2,H*0.9);
+  g.addColorStop(0,'rgba(0,0,0,0)'); g.addColorStop(1,`rgba(0,0,0,${a})`);
+  ctx.fillStyle=g; ctx.fillRect(0,0,W,H); }
+function glowText(txt,x,y,size,color,{weight=800,blur=26,alpha=1,tracking=0}={}){
+  ctx.save(); ctx.globalAlpha=alpha; ctx.fillStyle=color; ctx.shadowColor=color; ctx.shadowBlur=blur;
+  ctx.font=`${weight} ${size}px Montserrat, sans-serif`; ctx.textAlign='center'; ctx.textBaseline='middle';
+  if(tracking>0){ let tot=0; for(const ch of txt) tot+=ctx.measureText(ch).width+tracking;
+    let cx=x-tot/2+tracking/2;
+    for(const ch of txt){ const w=ctx.measureText(ch).width; ctx.fillText(ch,cx+w/2,y); cx+=w+tracking; } }
+  else ctx.fillText(txt,x,y);
+  ctx.restore();
+}
+function glitchText(txt,x,y,size,{weight=800,alpha=1,amt=1}={}){
+  // chromatic-aberration triple print with jitter
+  const j=(hash1(Math.floor((x+y)+performanceSeed))*2-1)*3*amt;
+  ctx.save(); ctx.globalAlpha=alpha*0.85; ctx.font=`${weight} ${size}px Montserrat, sans-serif`;
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillStyle=PAL.cyan; ctx.fillText(txt,x-3*amt+j,y);
+  ctx.fillStyle=PAL.mag; ctx.fillText(txt,x+3*amt-j,y+1.5*amt);
+  ctx.globalAlpha=alpha; ctx.fillStyle=PAL.white; ctx.shadowColor=PAL.white; ctx.shadowBlur=18;
+  ctx.fillText(txt,x,y); ctx.restore();
+}
+let performanceSeed=0;
+function typeOn(txt,t,t0,cps=26){ return txt.slice(0,clamp(Math.floor((t-t0)*cps),0,txt.length)); }
+
+function rain(t,density=140,speed=900,slant=0.18,alpha=0.35){
+  ctx.save(); ctx.strokeStyle=`rgba(160,200,255,${alpha})`; ctx.lineWidth=1.4;
+  for(let i=0;i<density;i++){
+    const sx=hash1(i*3.7)*W*1.2-W*0.1;
+    const len=18+hash1(i*1.3)*26;
+    const y=((hash1(i*7.1)*H)+t*speed*(0.7+hash1(i)*0.6))%(H+60)-30;
+    const x=sx+ (y*slant) + noise1(t*0.5+i,4)*6;
+    ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x-len*slant,y-len); ctx.stroke();
+  }
+  ctx.restore();
+}
+const SIGNS=[['NOODLE','#ff2e88'],['HOTEL','#00e5ff'],['大丈夫','#ffb45e'],['SYNTH','#8f4dff'],
+             ['ネオン','#ff2e88'],['24H','#00e5ff'],['ゲーム','#ff5533'],['BAR','#00ffaa']];
+function neonCity(t,depth,litUp=1,dawn=0){
+  const speed=8*depth, offs=(t*speed)%300;
+  const n=Math.ceil(W/220)+3;
+  for(let i=-1;i<n;i++){
+    const seed=i*17.3+depth*77;
+    const bw=140+hash1(seed)*130, bh=(0.30+hash1(seed+1)*0.55)*H*depth*1.3;
+    const x=i*300-offs, y=H*0.86-bh;
+    ctx.fillStyle=dawn>0?`rgba(60,35,55,${0.25+0.3*depth})`:`rgba(14,8,30,${0.5+0.3*depth})`;
+    ctx.strokeStyle=`rgba(120,90,200,${0.15+0.2*depth})`; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.rect(x,y,bw,bh); ctx.fill(); ctx.stroke();
+    ctx.fillStyle=dawn>0?`rgba(255,190,140,${0.3*depth*litUp})`:`rgba(140,220,255,${0.28*depth*litUp})`;
+    for(let wx=x+10;wx<x+bw-12;wx+=24) for(let wy=y+10;wy<y+bh-8;wy+=30)
+      if(hash2(wx*0.13,wy*0.11+seed)>0.6) ctx.fillRect(wx,wy,9,14);
+    // neon sign
+    if(depth>0.7&&hash1(seed+2)>0.35&&litUp>0.05){
+      const [txt,col]=SIGNS[Math.floor(hash1(seed+3)*SIGNS.length)];
+      const flick=hash2(Math.floor(t*7),seed)>0.06?1:0.25;
+      ctx.save(); ctx.translate(x+bw/2,y+40+hash1(seed+4)*bh*0.4);
+      glowText(txt,0,0,26+hash1(seed+5)*18,col,{weight:800,blur:22,alpha:0.9*flick*litUp});
+      ctx.restore();
+    }
+  }
+}
+function puddles(t,alpha=0.25){
+  ctx.save(); ctx.globalAlpha=alpha;
+  for(let i=0;i<7;i++){
+    const x=hash1(i*9.1)*W, w=120+hash1(i*3.3)*260;
+    const g=ctx.createLinearGradient(x,H*0.86,x,H);
+    g.addColorStop(0,hash1(i)>0.5?'rgba(255,46,136,0.5)':'rgba(0,229,255,0.5)');
+    g.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=g; ctx.fillRect(x-w/2,H*0.86,w,H*0.14);
+  }
+  ctx.restore();
+}
+function ecgTrace(t,y,amp,color,progress=1,spikeAt=-1){
+  // scrolling ECG line; spikeAt: x-fraction where a huge revive spike sits
+  ctx.save(); ctx.strokeStyle=color; ctx.lineWidth=3.5; ctx.shadowColor=color; ctx.shadowBlur=16;
+  ctx.beginPath();
+  const nseg=240;
+  for(let i=0;i<=nseg*progress;i++){
+    const u=i/nseg, x=u*W;
+    const ph=(u*6+t*1.5)%1;
+    let v=0;
+    if(ph<0.06) v=-0.25*Math.sin(ph/0.06*Math.PI);
+    else if(ph<0.14) v=Math.sin((ph-0.06)/0.08*Math.PI)*1.0;
+    else if(ph<0.2) v=-0.35*Math.sin((ph-0.14)/0.06*Math.PI);
+    else if(ph<0.4) v=0.12*Math.sin((ph-0.2)/0.2*Math.PI);
+    if(spikeAt>=0 && Math.abs(u-spikeAt)<0.02) v=2.2*(1-Math.abs(u-spikeAt)/0.02);
+    i?ctx.lineTo(x,y-v*amp):ctx.moveTo(x,y-v*amp);
+  }
+  ctx.stroke(); ctx.restore();
+}
+function circuitHeart(cx,cy,s,t,ignite){
+  // heart outline drawn as circuit traces with node dots; ignite 0..1
+  ctx.save(); ctx.translate(cx,cy); ctx.scale(s,s);
+  const pts=[];
+  for(let i=0;i<=60;i++){
+    const a=i/60*Math.PI*2;
+    const x=16*Math.pow(Math.sin(a),3);
+    const y=-(13*Math.cos(a)-5*Math.cos(2*a)-2*Math.cos(3*a)-Math.cos(4*a));
+    pts.push([x*7,y*7]);
+  }
+  const show=Math.floor(pts.length*clamp(ignite*1.4,0,1));
+  ctx.strokeStyle=PAL.mag; ctx.lineWidth=5; ctx.shadowColor=PAL.mag; ctx.shadowBlur=30*(0.5+ignite);
+  ctx.beginPath();
+  for(let i=0;i<show;i++){ const[p,q]=pts[i]; i?ctx.lineTo(p,q):ctx.moveTo(p,q); }
+  ctx.stroke();
+  // circuit stubs + nodes
+  for(let i=0;i<show;i+=6){
+    const [p,q]=pts[i];
+    const dx=p*0.28, dy=q*0.28;
+    ctx.strokeStyle=PAL.cyan; ctx.lineWidth=2.5; ctx.shadowColor=PAL.cyan; ctx.shadowBlur=12;
+    ctx.beginPath(); ctx.moveTo(p,q); ctx.lineTo(p+dx,q+dy);
+    ctx.lineTo(p+dx+ (dx>0?18:-18), q+dy); ctx.stroke();
+    ctx.fillStyle=PAL.cyan; ctx.beginPath(); ctx.arc(p+dx+(dx>0?18:-18),q+dy,4,0,7); ctx.fill();
+  }
+  if(ignite>0.6){ // inner glow pulse on the beat
+    const k=beatPulse(t)*(ignite-0.6)/0.4;
+    const g=ctx.createRadialGradient(0,10,5,0,10,120);
+    g.addColorStop(0,`rgba(255,46,136,${0.55*k+0.15})`); g.addColorStop(1,'rgba(255,46,136,0)');
+    ctx.fillStyle=g; ctx.fillRect(-140,-130,280,280);
+  }
+  ctx.restore();
+}
+// ---------- figures ----------
+function drawFigure(x,y,s,pose,{color=PAL.white,glow=20,alpha=1,circuits=0,coat=0,t=0}={}){
+  ctx.save(); ctx.translate(x,y); ctx.scale(s,s); ctx.rotate(pose.lean||0);
+  ctx.globalAlpha=alpha; ctx.lineCap='round'; ctx.lineJoin='round';
+  ctx.shadowColor=color; ctx.shadowBlur=glow;
+  if(coat>0){ // long coat silhouette behind
+    ctx.fillStyle='rgba(20,14,36,0.85)';
+    ctx.beginPath(); ctx.moveTo(-14,-66); ctx.quadraticCurveTo(-26+6*Math.sin(t*3),-10,-20,58);
+    ctx.lineTo(20,58); ctx.quadraticCurveTo(26+6*Math.cos(t*3),-10,14,-66); ctx.closePath(); ctx.fill();
+  }
+  ctx.strokeStyle=color; ctx.lineWidth=9;
+  const seg=(x0,y0,a,len)=>[x0+Math.sin(a)*len,y0+Math.cos(a)*len];
+  ctx.beginPath(); ctx.moveTo(0,-70); ctx.lineTo(0,-10); ctx.stroke();
+  ctx.beginPath(); ctx.arc(Math.sin(pose.headTilt||0)*10,-92,16,0,7); ctx.stroke();
+  for(let i=0;i<2;i++){
+    const [a1,a2]=pose.arms[i], sx=i?10:-10;
+    const [ex,ey]=seg(sx,-64,a1,34); const [hx,hy]=seg(ex,ey,a2,32);
+    ctx.beginPath(); ctx.moveTo(sx,-64); ctx.lineTo(ex,ey); ctx.lineTo(hx,hy); ctx.stroke();
+  }
+  for(let i=0;i<2;i++){
+    const [a1,a2]=pose.legs[i], sx=i?6:-6;
+    const [kx,ky]=seg(sx,-10,a1,42); const [fx,fy]=seg(kx,ky,a2,42);
+    ctx.beginPath(); ctx.moveTo(sx,-10); ctx.lineTo(kx,ky); ctx.lineTo(fx,fy); ctx.stroke();
+  }
+  if(circuits>0){ // glowing trace lines across the body + chest node
+    ctx.strokeStyle=PAL.cyan; ctx.lineWidth=2.5; ctx.shadowColor=PAL.cyan; ctx.shadowBlur=14;
+    ctx.globalAlpha=alpha*circuits*(0.7+0.3*beatPulse(t));
+    ctx.beginPath(); ctx.moveTo(0,-88); ctx.lineTo(0,-40); ctx.lineTo(8,-32); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(-10,-64); ctx.lineTo(-22,-46); ctx.lineTo(-22,-30); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0,-10); ctx.lineTo(-6,20); ctx.stroke();
+    ctx.fillStyle=PAL.mag; ctx.shadowColor=PAL.mag;
+    ctx.beginPath(); ctx.arc(0,-48,5+2*beatPulse(t),0,7); ctx.fill();
+  }
+  ctx.restore();
+}
+function walkPose(ph){ const sw=Math.sin(ph*Math.PI*2);
+  return {lean:0.03,headTilt:0,
+    arms:[[2.6+sw*0.5,2.9+sw*0.4],[2.6-sw*0.5,2.9-sw*0.4]],
+    legs:[[0.35*sw,0.15+0.3*Math.max(0,-sw)],[-0.35*sw,0.15+0.3*Math.max(0,sw)]]}; }
+function runPose(ph){ const sw=Math.sin(ph*Math.PI*2);
+  return {lean:0.22,headTilt:0.1,
+    arms:[[2.2+sw*0.9,2.0+sw*0.5],[2.2-sw*0.9,2.0-sw*0.5]],
+    legs:[[0.7*sw,0.3+0.5*Math.max(0,-sw)],[-0.7*sw,0.3+0.5*Math.max(0,sw)]]}; }
+function headbangPose(t){ const b=(t/BEAT)%1;
+  const dip=Math.sin(Math.min(b*2,1)*Math.PI);
+  return {lean:0.05*dip,headTilt:-0.7*dip,
+    arms:[[2.0,1.2],[4.2,5.0]],legs:[[0.25,0.15],[-0.25,0.15]]}; }
+function reachPose(side,u){ // side=+1: figure on the LEFT reaching right; -1: on the RIGHT reaching left
+  const a=lerp(2.6,side>0?1.45:4.85,u); // arm swings to horizontal toward center
+  return {lean:side*0.12*u,headTilt:side*0.1,
+    arms: side>0?[[2.7,2.9],[a,a+(side>0?0.25:-0.25)]]:[[a,a-0.25],[2.7,2.9]],
+    legs:[[0.2*u,0.1],[-0.3*u,0.35*u]]}; }
+function dancePose(t){ const b=Math.floor(t/BEAT)%4,u=smooth((t/BEAT)%1);
+  const P=[{lean:-0.1,headTilt:-.2,arms:[[1.2,0.5],[4.4,5.2]],legs:[[0.3,0.1],[-0.4,0.5]]},
+           {lean:0.1,headTilt:.2,arms:[[4.6,5.6],[1.4,0.8]],legs:[[-0.3,0.4],[0.4,0.1]]},
+           {lean:0,headTilt:0,arms:[[2.2,1.2],[3.9,4.9]],legs:[[0.5,0.2],[-0.5,0.6]]},
+           {lean:0,headTilt:.1,arms:[[0.6,0.2],[5.6,6.0]],legs:[[-0.2,0.3],[0.2,0.2]]}];
+  const a=P[b],b2=P[(b+1)%4];
+  const mixArr=(p,q)=>p.map((v,i)=>v.map((w,j)=>lerp(w,q[i][j],u)));
+  return {lean:lerp(a.lean,b2.lean,u),headTilt:lerp(a.headTilt,b2.headTilt,u),
+          arms:mixArr(a.arms,b2.arms),legs:mixArr(a.legs,b2.legs)}; }
+
+// ---------- captions ----------
+const CAP=[];
+function cap(t0,dur,text,style){ CAP.push({t0,t1:t0+dur,text,style}); }
+cap(0.9,3.2,"they say she's just circuits…",'wh');
+cap(4.4,3.4,"they've never heard her laugh",'wh');
+cap(8.2,3.7,"chrome towers weeping acid rain",'v');
+cap(12.2,3.7,"they stamped a serial on her name",'v');
+cap(16.2,3.7,"the corporation owns her code",'v');
+cap(20.2,3.6,"but nobody owns the way she glows",'v');
+cap(24.2,3.7,"they scheduled the wipe for the break of day",'p');
+cap(28.2,3.6,"like hell I'm gonna let them take her away",'p');
+// chorus 1
+cap(32.0,1.9,"NEON HEART",'C'); cap(34.0,1.9,"still beating in the dark",'c2');
+cap(36.2,3.6,"half machine, all mine — every volt a spark",'c2');
+cap(40.2,2.1,"they can't delete this part, and it won't stop —",'c2');
+cap(43.0,1.5,"BEAT!",'B');
+cap(44.2,1.8,"see the spark, not the steel",'c2'); cap(46.2,1.6,"NEON HEART",'C');
+for(const s of [48,52,96,100]){ cap(s+0.0,1.4,"STAY!",'ch'); cap(s+1.5,1.4,"STAY!",'ch'); cap(s+3.0,1.6,"she stays.",'c2'); }
+cap(56.2,3.7,"down where the wires tangle underground",'v');
+cap(60.2,3.7,"her pulse hums a synthesizer sound",'v');
+cap(64.2,3.7,"they call love a glitch in the neural net",'v');
+cap(68.2,3.6,"you can't copyright a heartbeat — and they haven't patched us yet",'G2');
+cap(72.2,3.7,"run with me before the dawn comes down",'p');
+cap(76.2,3.6,"two hearts — one stolen, both of them drums",'p');
+// chorus 2
+cap(80.0,1.9,"NEON HEART",'C'); cap(82.0,1.9,"still beating in the dark",'c2');
+cap(84.2,3.6,"half machine, all mine — every volt a spark",'c2');
+cap(88.2,2.1,"they can't delete this part, and it won't stop —",'c2');
+cap(91.0,1.5,"BEAT!",'B');
+cap(92.2,1.8,"see the spark, not the steel",'c2'); cap(94.2,1.6,"NEON HEART",'C');
+// bridge
+cap(104.5,3.8,"if they burn your memory, I'll be your memory",'b');
+cap(108.5,3.8,"I'll tell you who you are, every morning",'b');
+cap(112.5,3.2,"her hand in mine. warm.",'wh');
+cap(116.0,3.4,"machines aren't supposed to be warm",'wh');
+// breakdown
+for(const s of [120,122,124,128,130]){ cap(s,0.9,"DELETE THIS",'D'); }
+cap(126.0,1.8,"DE—LETE—THIS",'D');
+cap(131.5,1.2,"you can't delete us",'D');
+cap(133.4,2.3,"NV-7 · CONNECTION LOST",'fl');
+cap(135.85,1.6,"ALIVE!",'B');
+// final choruses
+cap(137.0,1.6,"NEON HEART",'C'); cap(138.0,1.9,"still beating in the dark",'c2');
+cap(140.2,3.6,"half machine, all mine — every volt a spark",'c2');
+cap(144.2,2.0,"they can't delete this part, and it won't stop —",'c2');
+cap(147.0,1.5,"BEAT!",'B');
+cap(148.2,1.8,"see the spark, not the steel",'c2'); cap(150.2,1.6,"NEON HEART",'C');
+cap(152.2,3.6,"neon heart — for the boy with the borrowed blood",'c2');
+cap(156.2,3.6,"neon heart — for the girl they called a ghost",'c2');
+cap(160.2,2.0,"they can cut the power — we run on something else —",'c2');
+cap(163.0,1.5,"BEAT!",'B');
+cap(164.2,3.2,"see the spark, not the steel — neon heart",'c2');
+cap(169.0,3.4,"she woke up at dawn…",'wh');
+cap(172.6,3.6,"she remembered my name",'wh');
+
+function drawCaptions(t){
+  for(const c of CAP){
+    if(t<c.t0||t>c.t1) continue;
+    const life=ease(t,c.t0,c.t0+0.12)*(1-ease(t,c.t1-0.22,c.t1));
+    const s=c.style;
+    if(s==='wh') glowText(typeOn(c.text,t,c.t0,24),W/2,H*0.86,44,PAL.white,{weight:300,blur:14,alpha:0.85*life,tracking:9});
+    else if(s==='v') glowText(c.text,W/2,H*0.885,42,PAL.mag,{weight:600,blur:16,alpha:0.92*life});
+    else if(s==='p') glowText(c.text,W/2,H*0.885,42,PAL.cyan,{weight:600,blur:16,alpha:0.92*life});
+    else if(s==='c2') glowText(c.text,W/2,H*0.885,44,PAL.white,{weight:600,blur:16,alpha:0.95*life});
+    else if(s==='b') glowText(c.text,W/2,H*0.52,52,PAL.warm,{weight:300,blur:18,alpha:0.9*life,tracking:5});
+    else if(s==='C'){ const inHands=t>=32&&t<40;
+      glitchText(c.text,W/2,inHands?H*0.85:H*0.42,(inHands?100:170)*(1+0.15*beatPulse(t)),{alpha:life,amt:1.6}); }
+    else if(s==='B'){ const k=1+0.5*Math.exp(-(t-c.t0)*5);
+      glitchText(c.text,W/2,H*0.5,250*k,{alpha:life,amt:2.4}); }
+    else if(s==='ch'){ const k=1+0.2*beatPulse(t);
+      glitchText(c.text,W/2,H*0.44,150*k,{alpha:life,amt:1.2}); }
+    else if(s==='D'){ const j=(hash1(Math.floor(t*22))-0.5)*36;
+      glitchText(c.text,W/2+j,H*0.44+j*0.5,130,{alpha:0.95*life,amt:2.6}); }
+    else if(s==='fl') glowText(c.text,W/2,H*0.38,54,PAL.red,{weight:600,blur:20,alpha:0.9*life,tracking:8});
+    else if(s==='G2') glowText(c.text,W/2,H*0.885,40,PAL.warm,{weight:600,blur:18,alpha:0.95*life});
+  }
+}
+
+// ---------- scenes ----------
+function scWindow(t,u,rev=false){
+  bgFill('#04020c','#0c0620');
+  // neon bokeh behind glass
+  for(let i=0;i<26;i++){
+    const x=hash1(i*3.1)*W, y=hash1(i*7.7)*H*0.7+H*0.06;
+    const r=18+hash1(i*1.9)*46;
+    const col=[PAL.mag,PAL.cyan,PAL.purp,PAL.warm][i%4];
+    const g=ctx.createRadialGradient(x,y,2,x,y,r);
+    g.addColorStop(0,col+'88'); g.addColorStop(1,col+'00');
+    ctx.fillStyle=g; ctx.globalAlpha=0.5+0.3*Math.sin(t*0.8+i);
+    ctx.beginPath(); ctx.arc(x,y,r,0,7); ctx.fill();
+  }
+  ctx.globalAlpha=1;
+  // window rain drips
+  rain(t*0.35,90,140,0.03,0.5);
+  for(let i=0;i<14;i++){ // slow drips
+    const x=hash1(i*5.3)*W, y=((t*40*(0.4+hash1(i)))%(H*1.1));
+    ctx.fillStyle='rgba(190,220,255,0.5)'; ctx.beginPath(); ctx.arc(x,y,3,0,7); ctx.fill();
+  }
+  // ECG monitor strip
+  const dawn=rev?ease(t,170,178)*0.4:0;
+  if(dawn>0){ ctx.fillStyle=`rgba(255,160,90,${dawn*0.25})`; ctx.fillRect(0,0,W,H); }
+  ctx.fillStyle='rgba(3,6,10,0.75)'; ctx.fillRect(0,H*0.62,W,H*0.2);
+  ctx.strokeStyle='rgba(0,229,255,0.35)'; ctx.strokeRect(-4,H*0.62,W+8,H*0.2);
+  ecgTrace(t,H*0.72,58,PAL.cyan);
+  glowText(rev?'NV-7 · STATUS: ALIVE':'NV-7 · MEMORY WIPE SCHEDULED · 06:00',W/2,H*0.585,26,rev?PAL.cyan:PAL.red,
+    {weight:600,blur:12,alpha:0.8,tracking:6});
+  vignette(0.66);
+}
+function scStreet(t,u){
+  bgFill(PAL.bg,PAL.bg2);
+  neonCity(t,0.4); neonCity(t,0.7); neonCity(t,1.0);
+  ctx.fillStyle='rgba(6,4,14,0.95)'; ctx.fillRect(0,H*0.86,W,H*0.14);
+  puddles(t);
+  rain(t,150,950,0.2,0.35);
+  // RAI walks with umbrella-less coat
+  const hx=W*0.32+u*W*0.1;
+  drawFigure(hx,H*0.875,1.5,walkPose((t*1.6)%1),{color:PAL.warm,glow:22,coat:1,t});
+  // hologram billboard of NOVA above
+  const bb=Math.sin(t*1.1)*4;
+  ctx.save(); ctx.translate(W*0.72,H*0.30+bb); ctx.globalAlpha=0.85;
+  ctx.strokeStyle=PAL.cyan; ctx.lineWidth=2; ctx.setLineDash([8,5]);
+  ctx.strokeRect(-190,-150,380,300); ctx.setLineDash([]);
+  drawFigure(0,120,1.35,{lean:0,headTilt:0.1,arms:[[2.6,2.9],[2.6,2.9]],legs:[[0.05,0],[-0.05,0]]},
+    {color:PAL.cyan,glow:24,circuits:1,t});
+  glowText('MODEL NV-7 · RECALL NOTICE',0,-118,24,PAL.red,{weight:600,blur:12,alpha:0.85,tracking:4});
+  ctx.restore();
+  vignette(0.6);
+}
+function scNova(t,u){
+  bgFill('#060314','#12082a');
+  neonCity(t*0.2,0.5); neonCity(t*0.2,0.85);
+  ctx.fillStyle='rgba(6,4,14,0.95)'; ctx.fillRect(0,H*0.86,W,H*0.14);
+  rain(t,110,900,0.15,0.3); puddles(t,0.3);
+  // NOVA center, circuits pulsing; serial floats
+  drawFigure(W/2,H*0.87,2.1,
+    {lean:0,headTilt:0.15+0.05*Math.sin(t),arms:[[2.5,2.4],[3.7,4.3]],legs:[[0.06,0.03],[-0.06,0.03]]},
+    {color:PAL.white,glow:26,circuits:1,t});
+  glowText('NV-7',W/2+180,H*0.32,54,PAL.cyan,{weight:800,blur:26,alpha:0.5+0.3*Math.sin(t*2),tracking:10});
+  glowText('PROPERTY OF HALCYON CORP',W/2+180,H*0.38,20,PAL.steel,{weight:600,blur:8,alpha:0.7,tracking:4});
+  vignette(0.62);
+}
+function scFacility(t,u){
+  bgFill('#050310','#0e0522');
+  // brutalist tower
+  ctx.fillStyle='#0b0a1c'; ctx.strokeStyle='rgba(140,120,220,0.4)'; ctx.lineWidth=3;
+  ctx.beginPath(); ctx.rect(W*0.36,H*0.08,W*0.28,H*0.78); ctx.fill(); ctx.stroke();
+  for(let fy=H*0.12;fy<H*0.82;fy+=44){ ctx.strokeStyle='rgba(90,80,160,0.25)';
+    ctx.beginPath(); ctx.moveTo(W*0.36,fy); ctx.lineTo(W*0.64,fy); ctx.stroke(); }
+  // countdown projection
+  const secs=Math.max(0,7200-Math.floor(t*60));
+  const hh=String(Math.floor(secs/3600)).padStart(2,'0'), mm=String(Math.floor(secs%3600/60)).padStart(2,'0'),
+        ss=String(secs%60).padStart(2,'0');
+  glitchText(`WIPE IN ${hh}:${mm}:${ss}`,W/2,H*0.22,86,{alpha:0.95,amt:1.4});
+  glowText('HALCYON MEMORY SERVICES',W/2,H*0.31,26,PAL.steel,{weight:600,blur:10,alpha:0.75,tracking:8});
+  rain(t,130,1000,0.22,0.3);
+  ctx.fillStyle='rgba(5,4,12,0.95)'; ctx.fillRect(0,H*0.86,W,H*0.14);
+  puddles(t,0.2);
+  // RAI sprints toward it
+  drawFigure(W*(0.14+u*0.5),H*0.875,1.45,runPose((t*2.6)%1),{color:PAL.warm,glow:22,coat:1,t});
+  vignette(0.6);
+}
+function scHands(t,u,cs){
+  bgFill('#08031a','#150838');
+  rain(t,80,850,0.12,0.22);
+  const local=t-cs;
+  const reachU=smooth(clamp(local/2.0,0,1));
+  const ignite=clamp((local-1.6)/2.4,0,1);
+  // two figures reaching from the sides
+  drawFigure(W*0.30-40*reachU,H*0.80,1.9,reachPose(+1,reachU),{color:PAL.warm,glow:24,coat:1,t});
+  drawFigure(W*0.70+40*reachU,H*0.80,1.9,reachPose(-1,reachU),{color:PAL.white,glow:24,circuits:1,t});
+  // interlocking hands spark point
+  if(reachU>0.9){
+    const k=beatPulse(t);
+    const g=ctx.createRadialGradient(W/2,H*0.62,4,W/2,H*0.62,90+50*k);
+    g.addColorStop(0,'rgba(255,255,255,0.95)'); g.addColorStop(0.4,'rgba(255,46,136,0.5)');
+    g.addColorStop(1,'rgba(0,229,255,0)');
+    ctx.fillStyle=g; ctx.beginPath(); ctx.arc(W/2,H*0.62,140,0,7); ctx.fill();
+  }
+  // the circuit heart ignites above their hands
+  circuitHeart(W/2,H*0.36,1.5,t,ignite);
+  vignette(0.55);
+}
+function scRainDance(t,u){
+  bgFill(PAL.bg,'#120827');
+  neonCity(t*0.3,0.5); neonCity(t*0.3,0.85);
+  ctx.fillStyle='rgba(6,4,14,0.95)'; ctx.fillRect(0,H*0.86,W,H*0.14);
+  puddles(t,0.35); rain(t,160,1000,0.18,0.4);
+  drawFigure(W*0.42,H*0.87,1.6,dancePose(t),{color:PAL.warm,glow:26,coat:1,t});
+  drawFigure(W*0.58,H*0.87,1.6,dancePose(t+BEAT),{color:PAL.white,glow:26,circuits:1,t});
+  circuitHeart(W/2,H*0.30,0.8,t,1);
+  vignette(0.55);
+}
+function scStayCrowd(t,u){
+  bgFill('#070315','#140930');
+  neonCity(t*0.1,0.45); neonCity(t*0.1,0.8);
+  ctx.fillStyle='rgba(6,4,14,0.95)'; ctx.fillRect(0,H*0.80,W,H*0.20);
+  rain(t,100,900,0.15,0.25);
+  // android crowd, fists on beat
+  for(let row=0;row<3;row++){
+    const y=H*(0.72+row*0.07), s=0.85+row*0.25;
+    for(let i=0;i<12;i++){
+      const x=W*(0.06+i*0.082)+row*26;
+      const fist=beatPulse(t-((i%3)*0.05));
+      const p={lean:0,headTilt:-0.2*fist,
+        arms:[[2.7,2.9],[lerp(2.6,0.35,fist),lerp(2.8,0.15,fist)]],
+        legs:[[0.1,0.05],[-0.1,0.05]]};
+      drawFigure(x,y,s*0.9,p,{color:i%3?'rgba(180,200,255,0.85)':PAL.white,glow:12,circuits:i%2,t});
+    }
+  }
+  vignette(0.5);
+}
+function scWireDen(t,u){
+  bgFill('#040208','#0b0616');
+  // hanging cables
+  for(let i=0;i<14;i++){
+    const x0=hash1(i*3.3)*W, sag=120+hash1(i*7.7)*160;
+    ctx.strokeStyle=`rgba(${i%2?'0,229,255':'255,46,136'},0.30)`; ctx.lineWidth=3;
+    ctx.beginPath(); ctx.moveTo(x0-200,0);
+    ctx.quadraticCurveTo(x0,sag+8*Math.sin(t+i),x0+240,0); ctx.stroke();
+  }
+  // CRT monitors with her memories
+  for(let i=0;i<4;i++){
+    const x=W*(0.16+i*0.22), y=H*0.48+((i%2)*70), flick=0.7+0.3*hash2(Math.floor(t*9),i);
+    ctx.fillStyle='#0a0f18'; ctx.strokeStyle='rgba(120,160,220,0.5)'; ctx.lineWidth=3;
+    ctx.fillRect(x-110,y-80,220,160); ctx.strokeRect(x-110,y-80,220,160);
+    ctx.save(); ctx.beginPath(); ctx.rect(x-100,y-70,200,140); ctx.clip();
+    ctx.globalAlpha=flick*0.8;
+    if(i===1){ circuitHeart(x,y,0.35,t,1); }
+    else if(i===2){ drawFigure(x,y+56,0.7,dancePose(t*0.7),{color:PAL.cyan,glow:8,t}); }
+    else { for(let l=0;l<7;l++){ ctx.strokeStyle=`rgba(0,229,255,${0.25+0.2*hash2(l,Math.floor(t*8))})`;
+      ctx.beginPath(); ctx.moveTo(x-100,y-60+l*20); ctx.lineTo(x+100,y-60+l*20+noise1(t*3+l,i)*8); ctx.stroke(); } }
+    ctx.restore();
+  }
+  // the two, small, among the wires
+  drawFigure(W*0.44,H*0.88,1.3,walkPose(0.2),{color:PAL.warm,glow:16,coat:1,t});
+  drawFigure(W*0.56,H*0.88,1.3,{lean:-0.05,headTilt:-0.1,arms:[[2.4,2.2],[3.8,4.4]],legs:[[0.05,0],[-0.05,0]]},
+    {color:PAL.white,glow:16,circuits:1,t});
+  vignette(0.68);
+}
+function scKiss(t,u){
+  bgFill('#05020e','#100522');
+  // glitch static wall
+  for(let i=0;i<40;i++){
+    const y=hash1(i*3.1)*H, h=2+hash1(i*7.7)*8;
+    ctx.fillStyle=`rgba(${i%2?'0,229,255':'255,46,136'},${0.05+0.12*hash2(Math.floor(t*10),i)})`;
+    ctx.fillRect(0,y,W,h);
+  }
+  // two silhouettes leaning into a kiss (profile heads close)
+  const cx=W/2, cy=H*0.52, lean=smooth(clamp(u*1.6,0,1))*0.15;
+  drawFigure(cx-60,cy+230,2.2,{lean:lean,headTilt:0.55,arms:[[2.5,2.2],[1.5,1.1]],legs:[[0.08,0.02],[-0.05,0.02]]},
+    {color:PAL.warm,glow:24,coat:1,t});
+  drawFigure(cx+60,cy+230,2.2,{lean:-lean,headTilt:-0.55,arms:[[4.8,5.2],[3.9,4.2]],legs:[[0.05,0.02],[-0.08,0.02]]},
+    {color:PAL.white,glow:24,circuits:1,t});
+  // spark where the faces nearly meet
+  const k=beatPulse(t);
+  const g=ctx.createRadialGradient(cx,cy+15,2,cx,cy+15,55+28*k);
+  g.addColorStop(0,'rgba(255,255,255,0.9)'); g.addColorStop(1,'rgba(255,46,136,0)');
+  ctx.fillStyle=g; ctx.beginPath(); ctx.arc(cx,cy+15,100,0,7); ctx.fill();
+  vignette(0.6);
+}
+function scScan(t,u){
+  bgFill('#060312','#0d0524');
+  neonCity(t*0.1,0.5,0.6); neonCity(t*0.1,0.85,0.6);
+  ctx.fillStyle='rgba(6,4,14,0.95)'; ctx.fillRect(0,H*0.86,W,H*0.14);
+  // drone searchlights
+  for(let i=0;i<4;i++){
+    const a=Math.sin(t*1.6+i*1.9)*0.8, x=W*(0.15+i*0.23);
+    ctx.save(); ctx.translate(x,H*0.06); ctx.rotate(a);
+    const g=ctx.createLinearGradient(0,0,0,H*0.85);
+    g.addColorStop(0,'rgba(255,51,85,0.4)'); g.addColorStop(1,'rgba(255,51,85,0)');
+    ctx.fillStyle=g; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(-100,H*0.85); ctx.lineTo(100,H*0.85);
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle=PAL.red; ctx.shadowColor=PAL.red; ctx.shadowBlur=16;
+    ctx.beginPath(); ctx.arc(0,0,10,0,7); ctx.fill(); ctx.shadowBlur=0;
+    ctx.restore();
+  }
+  rain(t,120,950,0.18,0.3); puddles(t,0.25);
+  // back to back
+  drawFigure(W/2-34,H*0.875,1.6,{lean:0.06,headTilt:0.1,arms:[[2.3,1.6],[3.2,3.4]],legs:[[0.25,0.1],[-0.1,0.05]]},
+    {color:PAL.warm,glow:24,coat:1,t});
+  drawFigure(W/2+34,H*0.875,1.6,{lean:-0.06,headTilt:-0.1,arms:[[3.1,2.9],[4.0,4.7]],legs:[[0.1,0.05],[-0.25,0.1]]},
+    {color:PAL.white,glow:24,circuits:1,t});
+  vignette(0.55);
+}
+function scRooftopHearts(t,u){
+  bgFill('#080323','#150a38');
+  neonCity(t*0.04,0.4); neonCity(t*0.04,0.7);
+  // holographic heart constellations blooming
+  for(let i=0;i<9;i++){
+    const bx=W*(0.1+hash1(i*3.7)*0.8), by=H*(0.12+hash1(i*8.3)*0.34);
+    const born=hash1(i*5.1)*6, age=clamp((t-80-born)/2.5,0,1);
+    if(age>0) circuitHeart(bx,by,0.24+0.3*hash1(i)*age,t,age);
+  }
+  // rooftop
+  ctx.fillStyle='#0a0618'; ctx.beginPath();
+  ctx.moveTo(0,H*0.80); ctx.lineTo(W*0.25,H*0.74); ctx.lineTo(W*0.75,H*0.74); ctx.lineTo(W,H*0.80);
+  ctx.lineTo(W,H); ctx.lineTo(0,H); ctx.closePath(); ctx.fill();
+  rain(t,90,850,0.12,0.25);
+  drawFigure(W*0.44,H*0.765,1.5,headbangPose(t),{color:PAL.warm,glow:24,coat:1,t});
+  drawFigure(W*0.56,H*0.765,1.5,headbangPose(t+0.25),{color:PAL.white,glow:24,circuits:1,t});
+  vignette(0.55);
+}
+function scMarch(t,u){
+  bgFill('#070315','#120728');
+  neonCity(t*0.06,0.45,0.8); neonCity(t*0.06,0.8,0.8);
+  ctx.fillStyle='rgba(6,4,14,0.95)'; ctx.fillRect(0,H*0.84,W,H*0.16);
+  rain(t,110,900,0.16,0.3);
+  // marching android rows with glowing chest hearts
+  for(let row=0;row<3;row++){
+    const y=H*(0.76+row*0.055), s=0.9+row*0.22;
+    for(let i=0;i<10;i++){
+      const x=((i*210+t*60)%(W+240))-120+row*40;
+      drawFigure(x,y,s*0.85,walkPose((t*1.8+i*0.13)%1),{color:'rgba(200,215,255,0.85)',glow:10,circuits:1,t});
+    }
+  }
+  circuitHeart(W/2,H*0.30,0.9,t,1);
+  vignette(0.5);
+}
+function scUmbrella(t,u){
+  bgFill('#0a0512','#191024');
+  // warm window light
+  const g=ctx.createRadialGradient(W*0.70,H*0.34,10,W*0.70,H*0.34,460);
+  g.addColorStop(0,'rgba(255,180,110,0.4)'); g.addColorStop(1,'rgba(255,180,110,0)');
+  ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+  neonCity(t*0.02,0.4,0.35);
+  ctx.fillStyle='rgba(8,5,14,0.95)'; ctx.fillRect(0,H*0.86,W,H*0.14);
+  rain(t,90,520,0.06,0.28); puddles(t,0.2);
+  const cx=W*0.46, cy=H*0.875;
+  // the two, close, under one umbrella
+  drawFigure(cx-30,cy,1.55,{lean:0.05,headTilt:0.18,arms:[[2.6,2.8],[1.2,0.5]],legs:[[0.06,0.02],[-0.06,0.02]]},
+    {color:PAL.warm,glow:18,coat:1,t});
+  drawFigure(cx+34,cy,1.5,{lean:-0.06,headTilt:-0.2,arms:[[3.4,3.7],[3.0,3.2]],legs:[[0.05,0.02],[-0.05,0.02]]},
+    {color:PAL.white,glow:18,circuits:0.8,t});
+  // umbrella held by RAI's raised arm
+  ctx.strokeStyle='rgba(240,230,255,0.9)'; ctx.lineWidth=6; ctx.lineCap='round';
+  ctx.shadowColor=PAL.mag; ctx.shadowBlur=14;
+  ctx.beginPath(); ctx.moveTo(cx-2,cy-260); ctx.lineTo(cx-2,cy-180); ctx.stroke();
+  ctx.beginPath(); ctx.arc(cx-2,cy-255,150,Math.PI,0,false); ctx.stroke();
+  for(let k=-2;k<=2;k++){ ctx.beginPath(); ctx.moveTo(cx-2,cy-255);
+    ctx.quadraticCurveTo(cx-2+k*60,cy-290, cx-2+k*74,cy-255); ctx.stroke(); }
+  ctx.shadowBlur=0;
+  // rain bouncing off the umbrella
+  for(let i=0;i<16;i++){
+    const a=hash1(i*3.3)*Math.PI, r=150+((t*160+i*23)%60);
+    ctx.fillStyle='rgba(180,210,255,0.5)';
+    ctx.fillRect(cx-2+Math.cos(a)*-r*0.9, cy-255-Math.abs(Math.sin(a))*r*0.4, 2.5,2.5);
+  }
+  vignette(0.62);
+}
+function scHandsClose(t,u){
+  bgFill('#070310','#120820');
+  // giant interlaced hands: two rounded palm shapes overlapping + laced finger bars
+  const cx=W/2, cy=H*0.5;
+  ctx.save();
+  ctx.lineCap='round';
+  // warm hand
+  ctx.strokeStyle=PAL.warm; ctx.lineWidth=13; ctx.shadowColor=PAL.warm; ctx.shadowBlur=26;
+  ctx.beginPath(); ctx.moveTo(cx-430,cy+180); ctx.quadraticCurveTo(cx-260,cy+60,cx-60,cy+10); ctx.stroke();
+  // android hand
+  ctx.strokeStyle=PAL.cyan; ctx.lineWidth=13; ctx.shadowColor=PAL.cyan; ctx.shadowBlur=26;
+  ctx.beginPath(); ctx.moveTo(cx+430,cy+180); ctx.quadraticCurveTo(cx+260,cy+60,cx+60,cy+10); ctx.stroke();
+  // interlaced fingers
+  for(let i=0;i<8;i++){
+    const fx=cx-140+i*40;
+    const up=i%2===0;
+    ctx.strokeStyle=up?PAL.warm:PAL.cyan; ctx.shadowColor=up?PAL.warm:PAL.cyan;
+    ctx.lineWidth=17; ctx.shadowBlur=22;
+    ctx.beginPath(); ctx.moveTo(fx,cy+(up?40:36));
+    ctx.quadraticCurveTo(fx+6,cy-(up?66:44),fx+12,cy-(up?90:60)); ctx.stroke();
+  }
+  ctx.restore();
+  // pulse traveling from her hand to his on the beat
+  const k=(t/BEAT)%1;
+  const px=cx+lerp(240,-240,smooth(k));
+  const g=ctx.createRadialGradient(px,cy+30,2,px,cy+30,60);
+  g.addColorStop(0,'rgba(255,255,255,0.85)'); g.addColorStop(1,'rgba(255,46,136,0)');
+  ctx.fillStyle=g; ctx.beginPath(); ctx.arc(px,cy+30,60,0,7); ctx.fill();
+  ecgTrace(t,H*0.83,30,'rgba(0,229,255,0.55)');
+  vignette(0.66);
+}
+function scAssault(t,u){
+  const strobe=beatPulse(t,9);
+  bgFill(strobe>0.5?'#20103c':'#08040f','#0d0620');
+  if(strobe>0.65){ ctx.fillStyle=`rgba(255,46,136,${(strobe-0.65)*0.5})`; ctx.fillRect(0,0,W,H); }
+  const sh=8*strobe;
+  ctx.save(); ctx.translate(noise1(t*32,21)*sh,noise1(t*33,22)*sh);
+  // facility interior: corridor
+  for(let i=0;i<9;i++){
+    const d=i/9;
+    ctx.strokeStyle=`rgba(255,51,85,${0.12+0.3*d})`; ctx.lineWidth=2;
+    ctx.strokeRect(W/2-(1-d)*W*0.5,H*0.10+d*H*0.32,(1-d)*W,H*0.72-d*H*0.4);
+  }
+  // glitch bars (sparse, dark corridor must stay readable)
+  for(let i=0;i<8;i++){
+    const y=hash2(Math.floor(t*12),i)*H, h=3+hash1(i)*10;
+    ctx.fillStyle=`rgba(${i%2?'0,229,255':'255,46,136'},${0.05+0.09*hash2(i,Math.floor(t*9))})`;
+    ctx.fillRect(0,y,W,h);
+  }
+  ctx.fillStyle='rgba(5,3,12,0.35)'; ctx.fillRect(0,0,W,H);
+  // RAI charging down corridor
+  drawFigure(W/2,H*0.85,1.9+0.4*u,runPose((t*2.8)%1),{color:PAL.warm,glow:30,coat:1,t});
+  ctx.restore();
+  vignette(0.5);
+}
+function scSlab(t,u){
+  bgFill('#030208','#0a0414');
+  // wipe chamber: NOVA on a tilted slab, cables to her head
+  const cx=W/2, cy=H*0.52;
+  ctx.save(); ctx.translate(cx,cy); ctx.rotate(-0.22);
+  ctx.fillStyle='#0d0a20'; ctx.strokeStyle='rgba(140,150,220,0.5)'; ctx.lineWidth=3;
+  ctx.fillRect(-70,-190,140,400); ctx.strokeRect(-70,-190,140,400);
+  drawFigure(0,178,1.7,{lean:0,headTilt:0,arms:[[2.9,3.05],[3.35,3.2]],legs:[[0.03,0.01],[-0.03,0.01]]},
+    {color:PAL.white,glow:18,circuits:1,t});
+  ctx.restore();
+  // cables
+  for(let i=0;i<5;i++){
+    ctx.strokeStyle='rgba(0,229,255,0.4)'; ctx.lineWidth=3;
+    ctx.beginPath(); ctx.moveTo(cx+60*Math.sin(i),H*0.06);
+    ctx.quadraticCurveTo(cx+i*40-80,H*0.3,cx-40+i*20,cy-160); ctx.stroke();
+  }
+  // ECG slowing then flat
+  const flat=t>=FLATLINE[0];
+  const slowing=ease(t,128,133);
+  if(!flat){
+    ecgTrace(t*(1-slowing*0.75),H*0.82,50*(1-slowing*0.5),PAL.cyan);
+    glowText('WIPE IN PROGRESS',W/2,H*0.12,40,PAL.red,{weight:800,blur:20,alpha:0.6+0.4*Math.sin(t*6),tracking:10});
+  } else {
+    ctx.strokeStyle=PAL.red; ctx.lineWidth=4; ctx.shadowColor=PAL.red; ctx.shadowBlur=18;
+    ctx.beginPath(); ctx.moveTo(0,H*0.82); ctx.lineTo(W,H*0.82); ctx.stroke(); ctx.shadowBlur=0;
+  }
+  // ALIVE spike: the revive
+  if(t>=135.85){
+    const k=1-clamp((t-135.85)/0.5,0,1);
+    ecgTrace(t,H*0.82,60,PAL.mag,1,0.62);
+    ctx.fillStyle=`rgba(255,255,255,${k*0.5})`; ctx.fillRect(0,0,W,H);
+  }
+  vignette(0.7);
+}
+function scRise(t,u){
+  bgFill('#0c0322','#1c0940');
+  // burst rays
+  for(let i=0;i<24;i++){
+    const a=i/24*Math.PI*2+t*0.15;
+    ctx.strokeStyle=i%2?'rgba(255,46,136,0.25)':'rgba(0,229,255,0.22)';
+    ctx.lineWidth=26; ctx.beginPath(); ctx.moveTo(W/2,H*0.5);
+    ctx.lineTo(W/2+Math.cos(a)*W*0.7,H*0.5+Math.sin(a)*W*0.7); ctx.stroke();
+  }
+  ctx.fillStyle='rgba(6,2,16,0.55)'; ctx.fillRect(0,0,W,H);
+  // NOVA rises, arms opening
+  const rise=smooth(u);
+  drawFigure(W/2,H*(0.86-rise*0.16),1.9+0.3*rise,
+    {lean:0,headTilt:-0.15*rise,arms:[[lerp(2.8,1.0,rise),lerp(3.0,0.4,rise)],[lerp(2.4,5.3,rise),lerp(2.7,5.9,rise)]],
+     legs:[[0.05,0.02],[-0.05,0.02]]},
+    {color:PAL.white,glow:30,circuits:1,t});
+  circuitHeart(W/2,H*0.24,1.1+0.2*beatPulse(t),t,1);
+  rain(t,70,700,0.1,0.2);
+  vignette(0.5);
+}
+function scSpin(t,u){
+  bgFill(PAL.bg,'#160a30');
+  neonCity(t*0.2,0.5); neonCity(t*0.2,0.85);
+  ctx.fillStyle='rgba(6,4,14,0.95)'; ctx.fillRect(0,H*0.86,W,H*0.14);
+  puddles(t,0.35); rain(t,150,950,0.16,0.35);
+  // the two spin around center — positions orbit
+  const a=t*2.4;
+  const r=110;
+  drawFigure(W/2+Math.cos(a)*r,H*0.87,1.55,dancePose(t),{color:PAL.warm,glow:26,coat:1,t});
+  drawFigure(W/2-Math.cos(a)*r,H*0.87,1.55,dancePose(t+BEAT*2),{color:PAL.white,glow:26,circuits:1,t});
+  circuitHeart(W/2,H*0.30,0.85+0.12*beatPulse(t),t,1);
+  vignette(0.55);
+}
+function scDawn(t,u){
+  // neon dims into sunrise
+  const dawn=smooth(u);
+  bgFill(`rgb(${12+60*dawn},${6+30*dawn},${30+20*dawn})`,`rgb(${30+120*dawn},${14+70*dawn},${40+30*dawn})`);
+  const g=ctx.createRadialGradient(W/2,H*0.78,20,W/2,H*0.78,700);
+  g.addColorStop(0,`rgba(255,190,120,${0.5*dawn})`); g.addColorStop(1,'rgba(255,190,120,0)');
+  ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+  neonCity(t*0.03,0.4,1-dawn*0.8,dawn); neonCity(t*0.03,0.75,1-dawn*0.8,dawn);
+  ctx.fillStyle=`rgba(${10+30*dawn},${6+16*dawn},20,0.95)`; ctx.fillRect(0,H*0.86,W,H*0.14);
+  rain(t,60*(1-dawn),700,0.1,0.25*(1-dawn)+0.02);
+  // walking away together, hand in hand
+  const wx=W*0.5, wy=H*0.875, s=1.5-0.5*dawn;
+  drawFigure(wx-26*s,wy,s,walkPose((t*1.4)%1),{color:PAL.warm,glow:20,coat:1,t});
+  drawFigure(wx+26*s,wy,s,walkPose((t*1.4+0.5)%1),{color:PAL.white,glow:20,circuits:0.7,t});
+  ctx.strokeStyle='rgba(255,220,200,0.9)'; ctx.lineWidth=5; ctx.shadowColor=PAL.mag; ctx.shadowBlur=12;
+  ctx.beginPath(); ctx.moveTo(wx-14*s,wy-40*s); ctx.lineTo(wx+14*s,wy-40*s); ctx.stroke(); ctx.shadowBlur=0;
+  vignette(0.5);
+}
+function scTitle(t,u){
+  bgFill('#03020a','#0b0518');
+  const fin=ease(t,176.0,177.0);
+  const wipe=smooth(clamp((t-178.4)/1.4,0,1));
+  circuitHeart(W/2,H*0.30,0.9,t,fin*(1-wipe));
+  glitchText('NEON HEART',W/2,H*0.55,170,{alpha:fin*(1-wipe*0.9),amt:1.8});
+  glowText('a love song they tried to delete',W/2,H*0.68,34,PAL.cyan,{weight:300,blur:14,alpha:0.85*fin*(1-wipe),tracking:8});
+  if(wipe>0){
+    const y=wipe*H*1.2;
+    ctx.fillStyle='rgba(2,2,6,1)'; ctx.fillRect(0,0,W,y);
+    ctx.strokeStyle=PAL.mag; ctx.shadowColor=PAL.mag; ctx.shadowBlur=40; ctx.lineWidth=4;
+    ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); ctx.shadowBlur=0;
+  }
+  vignette(0.6);
+}
+
+// ---------- timeline ----------
+const SCENES=[
+  [0,8,   (t,u)=>scWindow(t,u,false)],
+  [8,16,  scStreet],
+  [16,24, scNova],
+  [24,32, scFacility],
+  [32,40, (t,u)=>scHands(t,u,32)],
+  [40,48, scRainDance],
+  [48,56, scStayCrowd],
+  [56,64, scWireDen],
+  [64,72, scKiss],
+  [72,80, scScan],
+  [80,88, scRooftopHearts],
+  [88,96, scSpin],
+  [96,104,scMarch],
+  [104,112,scUmbrella],
+  [112,120,scHandsClose],
+  [120,128,scAssault],
+  [128,136,scSlab],
+  [136,144,scRise],
+  [144,152,scSpin],
+  [152,160,scStayCrowd],
+  [160,168,scDawn],
+  [168,176,(t,u)=>scWindow(t,u,true)],
+  [176,180,scTitle],
+];
+
+function render(t){
+  t=clamp(t,0,TOTAL-0.001);
+  performanceSeed=Math.floor(t*24);
+  ctx.save(); ctx.setTransform(1,0,0,1,0,0); ctx.clearRect(0,0,W,H);
+  for(const [t0,t1,fn] of SCENES){ if(t>=t0&&t<t1){ fn(t,(t-t0)/(t1-t0)); break; } }
+  // flatline blips: near-black + flat red ECG line
+  if(inPause(t)){
+    ctx.fillStyle='rgba(2,2,5,0.93)'; ctx.fillRect(0,0,W,H);
+    ctx.strokeStyle=PAL.red; ctx.lineWidth=3; ctx.shadowColor=PAL.red; ctx.shadowBlur=14;
+    ctx.beginPath(); ctx.moveTo(0,H*0.5); ctx.lineTo(W,H*0.5); ctx.stroke(); ctx.shadowBlur=0;
+  }
+  const bf=nearBeat(t);
+  if(bf>0){ // BEAT: white flash + ECG spike sweep
+    ctx.fillStyle=`rgba(253,246,255,${bf*0.30})`; ctx.fillRect(0,0,W,H);
+    ecgTrace(t,H*0.5,120*bf,PAL.mag,1,0.5);
+  }
+  if(inFlatline(t)){ // long flatline overlays scSlab (already dark)
+    const uu=(t-FLATLINE[0])/(FLATLINE[1]-FLATLINE[0]);
+    ctx.fillStyle=`rgba(2,1,4,${0.55+0.25*uu})`; ctx.fillRect(0,0,W,H);
+    ctx.strokeStyle=PAL.red; ctx.lineWidth=4; ctx.shadowColor=PAL.red; ctx.shadowBlur=20;
+    ctx.beginPath(); ctx.moveTo(0,H*0.5); ctx.lineTo(W,H*0.5); ctx.stroke(); ctx.shadowBlur=0;
+  }
+  drawCaptions(t);
+  ctx.globalAlpha=0.05;
+  for(let i=0;i<160;i++){ const s=Math.floor(t*24)*161+i;
+    ctx.fillStyle=hash1(s)>0.5?'#fff':'#000';
+    ctx.fillRect(hash1(s+0.3)*W,hash1(s+0.7)*H,2,2); }
+  ctx.globalAlpha=1;
+  // scanlines for the cyberpunk feel
+  ctx.globalAlpha=0.05; ctx.fillStyle='#000';
+  for(let y=0;y<H;y+=4) ctx.fillRect(0,y,W,1.4);
+  ctx.globalAlpha=1;
+  ctx.fillStyle='rgba(0,0,0,0.9)'; ctx.fillRect(0,0,W,26); ctx.fillRect(0,H-26,W,26);
+  ctx.restore();
+}
+
+const FPS=24;
+window.renderFrame=async(i)=>{ render(i/FPS); return true; };
+window.ready=document.fonts.load('800 100px Montserrat')
+  .then(()=>document.fonts.load('300 100px Montserrat'))
+  .then(()=>document.fonts.load('600 100px Montserrat')).then(()=>true);
+const q=new URLSearchParams(location.search);
+if(q.has('t')){ window.ready.then(()=>render(parseFloat(q.get('t')))); }
+else if(!q.has('capture')){
+  window.ready.then(()=>{ const s=performance.now();
+    (function loop(){ render(((performance.now()-s)/1000)%TOTAL); requestAnimationFrame(loop); })(); });
+}
+</script>
