@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en" data-theme="midnight">
+  <head>
+    <meta charset="utf-8" />
+    <title>Crate &amp; Cards</title>
+    <link rel="stylesheet" href="../app/app.css" />
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body class="popup">
+    <div class="pop-head">
+      <span class="brand-mark" aria-hidden="true">◧</span>
+      <div>
+        <div class="pop-title">Crate &amp; Cards</div>
+        <div class="pop-sub" id="pop-sub">Loading…</div>
+      </div>
+    </div>
+
+    <div class="pop-wallet">
+      <span class="chip chip-coins">🪙 <span data-count="coins">–</span></span>
+      <span class="chip chip-gems">💎 <span data-count="gems">–</span></span>
+      <span class="chip">🎟 <span data-count="tickets">–</span></span>
+    </div>
+
+    <button class="btn btn-primary pop-daily" id="daily" hidden></button>
+
+    <div class="pop-games" id="games"></div>
+
+    <div class="pop-foot">
+      <button class="btn btn-ghost btn-sm" data-view="store">Store</button>
+      <button class="btn btn-ghost btn-sm" data-view="wallet">Wallet</button>
+    </div>
+
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>
