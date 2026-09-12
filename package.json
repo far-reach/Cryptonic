@@ -1,0 +1,30 @@
+{
+  "name": "veil",
+  "version": "0.1.0",
+  "private": true,
+  "description": "VEIL — a neutral, multi-chain confidential-payments network for stablecoins",
+  "license": "MIT",
+  "workspaces": [
+    "packages/contracts",
+    "packages/sdk",
+    "packages/services",
+    "packages/app",
+    "packages/web",
+    "packages/solana",
+    "packages/bitget-briefing"
+  ],
+  "scripts": {
+    "test": "npm run test --workspace @veil/contracts && npm run test --workspace @veil/sdk",
+    "test:contracts": "npm run test --workspace @veil/contracts",
+    "test:sdk": "npm run test --workspace @veil/sdk",
+    "build:sdk": "npm run build --workspace @veil/sdk",
+    "build:services": "npm run build --workspace @veil/services",
+    "build:app": "npm run build --workspace @veil/app",
+    "typecheck:services": "npm run typecheck --workspace @veil/services",
+    "typecheck:app": "npm run typecheck --workspace @veil/app",
+    "typecheck:solana": "npm run typecheck --workspace @veil/solana",
+    "briefing": "npm run briefing --workspace @veil/bitget-briefing",
+    "test:briefing": "npm run test --workspace @veil/bitget-briefing",
+    "typecheck:briefing": "npm run typecheck --workspace @veil/bitget-briefing"
+  }
+}
