@@ -1,0 +1,197 @@
+<title>VEIL — Launch Plan & Path to Profit</title>
+<style>
+  :root{
+    --bg:#F3F5F9;--surface:#fff;--surface2:#EDF0F6;--border:#DCE1EC;
+    --ink:#131822;--muted:#5A6479;--faint:#8A93A6;
+    --accent:#0E9488;--accent-ink:#0A6B62;--accent-bg:#DCF1EE;
+    --gold:#8A6410;--gold-bg:#F6ECD3;--good:#1F8F5F;--good-bg:#DCF0E5;--amber:#A66B12;--amber-bg:#F7EFD9;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --shadow:0 1px 2px rgba(16,22,34,.05),0 8px 24px rgba(16,22,34,.07);--r:14px;--maxw:1080px;
+  }
+  @media (prefers-color-scheme:dark){:root{
+    --bg:#090D15;--surface:#121826;--surface2:#0E1420;--border:#232D42;--ink:#E7ECF5;--muted:#95A1B8;--faint:#6C778E;
+    --accent:#34C9BD;--accent-ink:#6FE0D6;--accent-bg:#0E2A2A;--gold:#D9B45C;--gold-bg:#2A2312;
+    --good:#4FC58A;--good-bg:#10281D;--amber:#D79A3F;--amber-bg:#2A2011;--shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.4);}}
+  :root[data-theme="dark"]{--bg:#090D15;--surface:#121826;--surface2:#0E1420;--border:#232D42;--ink:#E7ECF5;--muted:#95A1B8;--faint:#6C778E;--accent:#34C9BD;--accent-ink:#6FE0D6;--accent-bg:#0E2A2A;--gold:#D9B45C;--gold-bg:#2A2312;--good:#4FC58A;--good-bg:#10281D;--amber:#D79A3F;--amber-bg:#2A2011;--shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.4);}
+  :root[data-theme="light"]{--bg:#F3F5F9;--surface:#fff;--surface2:#EDF0F6;--border:#DCE1EC;--ink:#131822;--muted:#5A6479;--faint:#8A93A6;--accent:#0E9488;--accent-ink:#0A6B62;--accent-bg:#DCF1EE;--gold:#8A6410;--gold-bg:#F6ECD3;--good:#1F8F5F;--good-bg:#DCF0E5;--amber:#A66B12;--amber-bg:#F7EFD9;--shadow:0 1px 2px rgba(16,22,34,.05),0 8px 24px rgba(16,22,34,.07);}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.55;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  section{padding:42px 0;border-top:1px solid var(--border)}
+  section:first-of-type{border-top:0}
+  .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-ink);font-weight:600;display:inline-flex;align-items:center;gap:8px;margin:0 0 12px}
+  .eyebrow::before{content:"";width:22px;height:2px;background:var(--accent);border-radius:2px}
+  h1{font-size:clamp(2.2rem,5vw,3.2rem);letter-spacing:-.03em;margin:0;font-weight:800;text-wrap:balance}
+  h2{font-size:clamp(1.4rem,3vw,1.9rem);letter-spacing:-.02em;margin:0 0 6px;font-weight:750;text-wrap:balance}
+  h3{font-size:1rem;margin:0 0 6px;font-weight:700}
+  p{margin:0 0 12px}.muted{color:var(--muted)}
+  .lead{font-size:1.15rem;max-width:64ch}
+  .sec-intro{color:var(--muted);max-width:66ch;margin-bottom:22px}
+  .grid{display:grid;gap:16px}.c3{grid-template-columns:repeat(3,1fr)}.c4{grid-template-columns:repeat(4,1fr)}.c2{grid-template-columns:1fr 1fr}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px;box-shadow:var(--shadow)}
+  .card .k{font-family:var(--mono);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-ink);display:block;margin-bottom:8px}
+  .card p{font-size:.9rem;color:var(--muted);margin:0}
+  .phase .k{color:var(--gold)}
+  .num{font-family:var(--mono);font-size:1.9rem;font-weight:800;letter-spacing:-.02em}
+  .num.g{color:var(--gold)} .num.t{color:var(--accent-ink)} .num.gd{color:var(--good)}
+  .stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px;box-shadow:var(--shadow)}
+  .stat .lbl{font-size:.8rem;color:var(--muted);margin-top:4px}
+  /* timeline */
+  .tl{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+  .tl .q{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;box-shadow:var(--shadow)}
+  .tl .q .when{font-family:var(--mono);font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+  .tl .q h3{font-size:.9rem;margin:6px 0 4px}
+  .tl .q p{font-size:.78rem;color:var(--muted);margin:0}
+  .tl .q.mark{border-color:color-mix(in srgb,var(--accent) 50%,transparent);background:var(--accent-bg)}
+  .tl .q.profit{border-color:color-mix(in srgb,var(--good) 50%,transparent);background:var(--good-bg)}
+  /* fin chart */
+  .fin{display:flex;align-items:flex-end;gap:26px;height:230px;padding:16px 8px 0;border-bottom:1px solid var(--border);overflow-x:auto}
+  .yr{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:120px;flex:1}
+  .bars{display:flex;align-items:flex-end;gap:10px;height:180px}
+  .bar{width:34px;border-radius:6px 6px 0 0;position:relative}
+  .bar.op{background:color-mix(in srgb,var(--amber) 55%,var(--surface))}
+  .bar.rev{background:var(--accent)}
+  .bar .v{position:absolute;top:-20px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:.66rem;color:var(--muted);white-space:nowrap}
+  .yr .yl{font-family:var(--mono);font-size:.8rem;color:var(--faint)}
+  .legend{display:flex;gap:18px;margin-top:12px;font-size:.8rem;color:var(--muted)}
+  .sw{display:inline-block;width:11px;height:11px;border-radius:3px;vertical-align:middle;margin-right:6px}
+  table{width:100%;border-collapse:collapse;font-size:.9rem}
+  th,td{padding:9px 10px;border-bottom:1px solid var(--border);text-align:right}
+  th:first-child,td:first-child{text-align:left}
+  thead th{font-family:var(--mono);font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);font-weight:600}
+  td.gold{color:var(--gold);font-weight:600}
+  .tablewrap{overflow-x:auto}
+  .fund{display:flex;flex-direction:column;gap:8px}
+  .frow{display:flex;align-items:center;gap:12px}
+  .frow .bar2{height:16px;border-radius:5px;background:var(--accent)}
+  .frow .flabel{flex:1;font-size:.86rem}.frow .fpct{font-family:var(--mono);font-size:.8rem;color:var(--muted);width:44px;text-align:right}
+  ul.tight{margin:6px 0 0;padding-left:18px;color:var(--muted);font-size:.9rem}ul.tight li{margin:5px 0}
+  .foot{color:var(--faint);font-size:.82rem;padding:28px 0 60px;text-align:center}
+  .pill{display:inline-block;font-family:var(--mono);font-size:.66rem;letter-spacing:.05em;text-transform:uppercase;padding:4px 9px;border-radius:999px;background:var(--accent-bg);color:var(--accent-ink);font-weight:600}
+  @media (max-width:860px){.c3,.c4,.c2,.tl{grid-template-columns:1fr 1fr}}
+  @media (max-width:560px){.c3,.c4,.c2,.tl{grid-template-columns:1fr}}
+</style>
+
+<div class="wrap">
+  <section>
+    <div class="eyebrow">Launch plan · path to profit</div>
+    <h1>VEIL — from working prototype to profitable business</h1>
+    <p class="lead muted">A private mode for stablecoins — confidentiality with compliance built in.
+      The hard technology is built and demonstrated; what follows is the plan to turn it into revenue.</p>
+    <div class="grid c4" style="margin-top:22px">
+      <div class="stat"><div class="num t">$112T</div><div class="lbl">annual stablecoin volume (the market)</div></div>
+      <div class="stat"><div class="num g">0.10%</div><div class="lbl">protocol fee → buyback &amp; burn</div></div>
+      <div class="stat"><div class="num">$4–6M</div><div class="lbl">seed to audited mainnet + revenue</div></div>
+      <div class="stat"><div class="num gd">Yr 3–4</div><div class="lbl">plausible break-even</div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="eyebrow">Go-to-market wedge</div>
+    <h2>Land where the pain is sharpest, then expand</h2>
+    <p class="sec-intro">Sell to the buyer who already holds stablecoins and feels the transparency
+      pain most — then leverage into platforms and institutions.</p>
+    <div class="grid c3">
+      <div class="card phase"><span class="k">Phase A · months 0–9</span><h3>Crypto-native companies</h3>
+        <p>Funds, trading firms, DAOs, crypto startups paying salaries, contractors, OTC in stablecoins. Fast buyers, sharp pain, tolerant of early tooling. 5–10 design partners → 20–40 paying.</p></div>
+      <div class="card phase"><span class="k">Phase B · months 9–24</span><h3>Fintechs &amp; PSPs (SDK / white-label)</h3>
+        <p>They embed VEIL to offer confidential stablecoin rails to their own users. One integration → many end-users. B2B2C leverage.</p></div>
+      <div class="card phase"><span class="k">Phase C · year 2+</span><h3>Regulated institutions</h3>
+        <p>Lead with compliance — proof of innocence + auditor view keys. Longer cycles, larger contracts, cross-border B2B.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="eyebrow">Revenue model</div>
+    <h2>Three lines, so profit doesn't wait on volume alone</h2>
+    <div class="grid c3">
+      <div class="card"><span class="k">Predictable</span><h3>Enterprise SaaS</h3><p>$2k–$20k/mo per business for the app, dashboards, audit tooling, SLAs + implementation fees.</p></div>
+      <div class="card"><span class="k">Scales with usage</span><h3>Protocol fee</h3><p>5–15 bps on shielded volume, in stablecoin, routed to on-chain buyback-and-burn (already built).</p></div>
+      <div class="card"><span class="k">Leverage</span><h3>Infra licensing</h3><p>White-label the rail to fintechs &amp; issuers: platform license + volume rev-share.</p></div>
+    </div>
+    <p class="muted" style="margin-top:16px;font-size:.92rem">Blended ≈ <b>$150k/yr per mid-size customer</b> (SaaS + protocol). ~70–120 customers, or ~$10B/yr shielded volume, reaches the break-even zone — the blended model gets there years before protocol fees alone.</p>
+  </section>
+
+  <section>
+    <div class="eyebrow">Financial path</div>
+    <h2>Revenue vs. burn, years 1–3</h2>
+    <p class="sec-intro">Illustrative planning figures, not forecasts. Fixed R&amp;D / security / compliance dominate costs, so margins expand sharply with scale.</p>
+    <div class="fin">
+      <div class="yr"><div class="bars">
+        <div class="bar op" style="height:52%"><span class="v">$5M</span></div>
+        <div class="bar rev" style="height:5%"><span class="v">&lt;$0.5M</span></div>
+      </div><div class="yl">Year 1</div></div>
+      <div class="yr"><div class="bars">
+        <div class="bar op" style="height:90%"><span class="v">$9M</span></div>
+        <div class="bar rev" style="height:90%"><span class="v">$6–12M</span></div>
+      </div><div class="yl">Year 2</div></div>
+      <div class="yr"><div class="bars">
+        <div class="bar op" style="height:100%"><span class="v">$13M</span></div>
+        <div class="bar rev" style="height:100%;background:var(--good)"><span class="v">$20–40M</span></div>
+      </div><div class="yl">Year 3</div></div>
+    </div>
+    <div class="legend"><span><span class="sw" style="background:color-mix(in srgb,var(--amber) 55%,var(--surface))"></span>Opex (burn)</span><span><span class="sw" style="background:var(--accent)"></span>Revenue</span><span><span class="sw" style="background:var(--good)"></span>Profitable trajectory</span></div>
+
+    <div class="tablewrap" style="margin-top:22px">
+      <table>
+        <thead><tr><th>Metric</th><th>Year 1</th><th>Year 2</th><th>Year 3</th></tr></thead>
+        <tbody>
+          <tr><td>Team</td><td>8</td><td>14</td><td>22</td></tr>
+          <tr><td>Customers</td><td>5–20</td><td>40–80</td><td>120–250</td></tr>
+          <tr><td>Shielded volume</td><td>pilot</td><td>$1–5B</td><td>$10–30B</td></tr>
+          <tr><td>Revenue</td><td>&lt;$0.5M</td><td>$6–12M</td><td class="gold">$20–40M</td></tr>
+          <tr><td>Net</td><td>burn (seed)</td><td>~break-even</td><td class="gold">profitable</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="eyebrow">Use of seed ($4–6M)</div>
+    <h2>Where the first round goes</h2>
+    <div class="c2 grid">
+      <div class="fund">
+        <div class="frow"><span class="flabel">Team (engineering, compliance, BD)</span><span class="bar2" style="width:50%"></span><span class="fpct">50%</span></div>
+        <div class="frow"><span class="flabel">Audits + trusted-setup ceremony</span><span class="bar2" style="width:20%;background:var(--gold)"></span><span class="fpct">20%</span></div>
+        <div class="frow"><span class="flabel">Legal / regulatory</span><span class="bar2" style="width:15%"></span><span class="fpct">15%</span></div>
+        <div class="frow"><span class="flabel">Go-to-market / BD</span><span class="bar2" style="width:10%;background:var(--gold)"></span><span class="fpct">10%</span></div>
+        <div class="frow"><span class="flabel">Infrastructure</span><span class="bar2" style="width:5%"></span><span class="fpct">5%</span></div>
+      </div>
+      <div class="card">
+        <span class="k">On the token</span>
+        <h3>Equity first — token later, if ever</h3>
+        <p>No token at seed. Build on equity + stablecoin revenue; the 2026 market punishes tokens and
+        rewards revenue. Introduce VEIL only once there's real usage and regulatory clarity — via a
+        foundation, as staking/fee utility, never as the fundraising mechanism.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="eyebrow">24-month timeline</div>
+    <h2>Seed → audited mainnet → Series A → profit trajectory</h2>
+    <div class="tl">
+      <div class="q"><div class="when">Q1 · 0–3mo</div><h3>Fund &amp; harden</h3><p>Close seed; entity + legal opinions; audits engaged; trusted-setup ceremony; 5–10 design partners; public testnet.</p></div>
+      <div class="q"><div class="when">Q2 · 3–6mo</div><h3>Audit &amp; pilot</h3><p>Audits complete; testnet pilots; real cross-chain oracle; ASP wired to a screening provider; SOC 2 kickoff.</p></div>
+      <div class="q mark"><div class="when">Q3 · 6–9mo</div><h3>Mainnet launch</h3><p>Capped launch on one EVM L2 + Solana; first paying customers; begin SDK / white-label.</p></div>
+      <div class="q"><div class="when">Q4 · 9–12mo</div><h3>Scale &amp; measure</h3><p>Cross-chain live; grow customers; prove PMF (volume + retention); prep Series A.</p></div>
+      <div class="q profit"><div class="when">Year 2</div><h3>Series A → break-even</h3><p>Raise; expand chains; institutions; decentralize operators; evaluate token; drive to break-even.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="eyebrow">The honest picture</div>
+    <h2>Biggest risks — and why they're survivable</h2>
+    <div class="grid c3">
+      <div class="card"><span class="k" style="color:var(--amber)">Risk 1</span><h3>Regulatory / dev liability</h3>
+        <ul class="tight"><li>Stay strictly non-custodial</li><li>Compliance-native (proof of innocence + view keys)</li><li>Legal opinions; engage regulators early</li></ul></div>
+      <div class="card"><span class="k" style="color:var(--amber)">Risk 2</span><h3>Adoption too slow</h3>
+        <ul class="tight"><li>Blended SaaS revenue cuts volume dependence</li><li>Start at the sharpest-pain beachhead</li><li>B2B2C leverage via PSPs</li></ul></div>
+      <div class="card"><span class="k" style="color:var(--amber)">Risk 3</span><h3>Incumbent ships native privacy</h3>
+        <ul class="tight"><li>Neutrality: multi-issuer, multi-chain, un-switch-off-able</li><li>Move first; own the brand</li><li>Regulator + issuer relationships</li></ul></div>
+    </div>
+    <p class="muted" style="margin-top:18px;max-width:70ch">The technology risk is largely retired. What remains is <b>execution and timing</b> — pairing built technology with compliance-grade trust and enterprise distribution faster than incumbents bolt privacy on. That's the right kind of risk to carry.</p>
+  </section>
+</div>
+<p class="foot">VEIL launch plan — illustrative planning figures, not forecasts or investment advice. Full detail in <span class="pill">docs/launch-plan.md</span></p>
