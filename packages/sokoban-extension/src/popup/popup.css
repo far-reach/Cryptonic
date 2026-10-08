@@ -1,0 +1,98 @@
+/* The popup reuses app.css tokens; only layout differs. */
+
+body.popup {
+  width: 348px;
+  padding: 14px;
+  display: block;
+  background: var(--bg);
+}
+
+.pop-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.pop-title {
+  font-weight: 750;
+  font-size: 15px;
+}
+
+.pop-sub {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.pop-wallet {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.pop-wallet .chip {
+  flex: 1;
+  justify-content: center;
+  font-size: 13px;
+  padding: 5px 8px;
+}
+
+.pop-daily {
+  width: 100%;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, var(--coin), var(--warn));
+  color: var(--bg-deep);
+  border-color: transparent;
+}
+
+.pop-games {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: 1fr 1fr;
+}
+
+.pop-game {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 10px;
+  border-radius: 11px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.pop-game:hover {
+  border-color: var(--accent);
+}
+
+.pop-game .ico {
+  font-size: 21px;
+}
+
+.pop-game .nm {
+  font-weight: 650;
+  font-size: 13px;
+}
+
+.pop-game .dt {
+  color: var(--muted);
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 110px;
+}
+
+.pop-foot {
+  display: flex;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.pop-foot .btn {
+  flex: 1;
+}

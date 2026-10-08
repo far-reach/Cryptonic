@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en" data-theme="midnight">
+  <head>
+    <meta charset="utf-8" />
+    <title>Crate &amp; Cards Arcade</title>
+    <link rel="stylesheet" href="app.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <button class="brand" id="home" title="Back to the arcade">
+        <span class="brand-mark" aria-hidden="true">◧</span>
+        <span class="brand-text">Crate&nbsp;&amp;&nbsp;Cards</span>
+      </button>
+
+      <nav class="tabs" id="tabs" aria-label="Sections">
+        <button class="tab" data-view="arcade">Arcade</button>
+        <button class="tab" data-view="store">Store</button>
+        <button class="tab" data-view="wallet">Wallet</button>
+      </nav>
+
+      <span class="spacer"></span>
+
+      <div class="wallet-chips">
+        <button class="chip chip-daily" id="daily-chip" hidden>
+          <span aria-hidden="true">🎁</span> Daily
+        </button>
+        <span class="chip" id="chip-tickets" title="Duel tickets">
+          <span aria-hidden="true">🎟</span><span data-count="tickets">–</span>
+        </span>
+        <span class="chip chip-coins" title="Coins">
+          <span aria-hidden="true">🪙</span><span data-count="coins">–</span>
+        </span>
+        <span class="chip chip-gems" title="Gems">
+          <span aria-hidden="true">💎</span><span data-count="gems">–</span>
+        </span>
+      </div>
+    </header>
+
+    <main id="view" class="view" tabindex="-1"></main>
+
+    <div id="toasts" class="toasts" aria-live="polite"></div>
+
+    <dialog id="modal" class="modal">
+      <div class="modal-body" id="modal-body"></div>
+      <form method="dialog" class="modal-actions">
+        <button class="btn btn-ghost" value="close">Close</button>
+      </form>
+    </dialog>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
