@@ -1,0 +1,21 @@
+node_modules/
+dist/
+artifacts/
+cache/
+coverage/
+typechain-types/
+# circuit + snarkjs build outputs (ptau, zkey, wasm, r1cs, sym, witness calc)
+build/
+*.log
+.DS_Store
+.env
+.env.*
+# Solana / circuit build artifacts and local keypairs
+*.zkey
+*.r1cs
+*.wasm
+*-elgamal.json
+auditor-elgamal.json
+# local/ephemeral deployment outputs (testnet/mainnet deployments may be committed)
+deployments/localhost.json
+deployments/hardhat.json

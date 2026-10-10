@@ -1,0 +1,14 @@
+{
+  "name": "@veil/web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "VEIL local confidential-payment dashboard (http://localhost:3000)",
+  "license": "MIT",
+  "scripts": {
+    "start": "node server.mjs"
+  },
+  "dependencies": {
+    "ethers": "^6.13.4"
+  }
+}

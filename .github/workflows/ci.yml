@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install workspace dependencies
+        run: npm install
+
+      - name: Build SDK
+        run: npm run build:sdk
+
+      - name: Build services
+        run: npm run build:services
+
+      - name: Build app
+        run: npm run build:app
+
+      - name: Type-check services / app / solana
+        run: |
+          npm run typecheck:services
+          npm run typecheck:app
+          npm run typecheck:solana
+
+      - name: SDK tests
+        run: npm run test:sdk
+
+      # The real-proof / e2e tests self-skip without the circuit artifacts
+      # (build/*.wasm, *.zkey are gitignored); all other contract tests run.
+      - name: Contract tests
+        run: npm run test:contracts

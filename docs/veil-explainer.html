@@ -1,0 +1,469 @@
+<title>VEIL — What We're Building</title>
+<style>
+  :root {
+    --bg: #F3F5F9;
+    --surface: #FFFFFF;
+    --surface-2: #EDF0F6;
+    --border: #DCE1EC;
+    --ink: #131822;
+    --muted: #5A6479;
+    --faint: #8A93A6;
+    --accent: #0E9488;        /* teal = confidentiality */
+    --accent-ink: #0A6B62;
+    --accent-bg: #DCF1EE;
+    --gold: #8A6410;          /* gold = money / value accrual */
+    --gold-bg: #F6ECD3;
+    --good: #1F8F5F;          /* shipped */
+    --good-bg: #DCF0E5;
+    --amber: #A66B12;
+    --amber-bg: #F7EFD9;
+    --shadow: 0 1px 2px rgba(16,22,34,.04), 0 6px 20px rgba(16,22,34,.06);
+    --radius: 14px;
+    --maxw: 1060px;
+    --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #090D15;
+      --surface: #121826;
+      --surface-2: #0E1420;
+      --border: #232D42;
+      --ink: #E7ECF5;
+      --muted: #95A1B8;
+      --faint: #6C778E;
+      --accent: #34C9BD;
+      --accent-ink: #6FE0D6;
+      --accent-bg: #0E2A2A;
+      --gold: #D9B45C;
+      --gold-bg: #2A2312;
+      --good: #4FC58A;
+      --good-bg: #10281D;
+      --amber: #D79A3F;
+      --amber-bg: #2A2011;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 28px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #090D15; --surface: #121826; --surface-2: #0E1420; --border: #232D42;
+    --ink: #E7ECF5; --muted: #95A1B8; --faint: #6C778E;
+    --accent: #34C9BD; --accent-ink: #6FE0D6; --accent-bg: #0E2A2A;
+    --gold: #D9B45C; --gold-bg: #2A2312; --good: #4FC58A; --good-bg: #10281D;
+    --amber: #D79A3F; --amber-bg: #2A2011;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 28px rgba(0,0,0,.35);
+  }
+  :root[data-theme="light"] {
+    --bg: #F3F5F9; --surface: #FFFFFF; --surface-2: #EDF0F6; --border: #DCE1EC;
+    --ink: #131822; --muted: #5A6479; --faint: #8A93A6;
+    --accent: #0E9488; --accent-ink: #0A6B62; --accent-bg: #DCF1EE;
+    --gold: #8A6410; --gold-bg: #F6ECD3; --good: #1F8F5F; --good-bg: #DCF0E5;
+    --amber: #A66B12; --amber-bg: #F7EFD9;
+    --shadow: 0 1px 2px rgba(16,22,34,.04), 0 6px 20px rgba(16,22,34,.06);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: var(--sans);
+    line-height: 1.6; -webkit-font-smoothing: antialiased;
+    font-variant-numeric: tabular-nums;
+  }
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+  section { padding: 46px 0; border-top: 1px solid var(--border); }
+  section:first-of-type { border-top: 0; }
+
+  .eyebrow {
+    font-family: var(--mono); font-size: .72rem; letter-spacing: .16em;
+    text-transform: uppercase; color: var(--accent-ink); font-weight: 600;
+    display: inline-flex; align-items: center; gap: 8px; margin: 0 0 14px;
+  }
+  .eyebrow::before {
+    content: ""; width: 22px; height: 2px; background: var(--accent); border-radius: 2px;
+  }
+  h1 { font-size: clamp(2.6rem, 6vw, 4.2rem); line-height: .98; letter-spacing: -.03em;
+       margin: 0; font-weight: 800; text-wrap: balance; }
+  h2 { font-size: clamp(1.5rem, 3vw, 2rem); letter-spacing: -.02em; margin: 0 0 6px;
+       font-weight: 750; text-wrap: balance; }
+  h3 { font-size: 1.06rem; margin: 0 0 6px; font-weight: 700; letter-spacing: -.01em; }
+  p { margin: 0 0 14px; }
+  .lead { font-size: 1.2rem; color: var(--ink); max-width: 62ch; }
+  .muted { color: var(--muted); }
+  .sec-intro { color: var(--muted); max-width: 64ch; margin-bottom: 26px; }
+  .kicker { font-family: var(--mono); font-size: .7rem; letter-spacing: .14em;
+            text-transform: uppercase; color: var(--faint); }
+
+  /* Hero */
+  .hero { padding-top: 60px; }
+  .hero .lead { margin-top: 20px; }
+  .mark {
+    display: inline-flex; align-items: baseline; gap: 4px;
+  }
+  .mark small { font-size: 1rem; font-weight: 600; color: var(--accent);
+                font-family: var(--mono); letter-spacing: .1em; }
+  .plain {
+    margin-top: 18px; padding: 16px 18px; background: var(--accent-bg);
+    border-radius: 12px; color: var(--accent-ink); font-weight: 550;
+    max-width: 60ch; border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
+  }
+  .statusline {
+    display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px;
+  }
+  .chip {
+    font-family: var(--mono); font-size: .74rem; letter-spacing: .02em;
+    padding: 6px 11px; border-radius: 999px; border: 1px solid var(--border);
+    background: var(--surface); color: var(--muted); display: inline-flex; gap: 7px; align-items: center;
+  }
+  .chip.done { color: var(--good); background: var(--good-bg);
+               border-color: color-mix(in srgb, var(--good) 30%, transparent); }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+
+  /* Generic cards */
+  .grid { display: grid; gap: 16px; }
+  .cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 22px; box-shadow: var(--shadow);
+  }
+  .card .kicker { display: block; margin-bottom: 8px; }
+  .card p { margin: 0; color: var(--muted); font-size: .95rem; }
+
+  /* Problem / solution */
+  .ps { border-left: 3px solid var(--border); }
+  .ps.problem { border-left-color: var(--amber); }
+  .ps.solution { border-left-color: var(--accent); }
+
+  /* Flow diagram */
+  .flow { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: stretch; gap: 10px; }
+  .stage {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 20px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 8px;
+  }
+  .stage .num {
+    font-family: var(--mono); font-size: .72rem; letter-spacing: .1em; color: var(--accent-ink);
+    font-weight: 600;
+  }
+  .stage h3 { margin: 0; }
+  .stage .vis { font-weight: 600; font-size: .82rem; color: var(--muted); font-family: var(--mono);
+                margin-top: 2px; }
+  .stage p { margin: 4px 0 0; font-size: .9rem; color: var(--muted); }
+  .tag { align-self: flex-start; margin-top: 8px; font-family: var(--mono); font-size: .68rem;
+         letter-spacing: .06em; text-transform: uppercase; padding: 4px 9px; border-radius: 999px; }
+  .tag.public { background: var(--amber-bg); color: var(--amber); }
+  .tag.private { background: var(--accent-bg); color: var(--accent-ink); }
+  .arrow { display: flex; align-items: center; justify-content: center; color: var(--accent); }
+  .arrow svg { width: 30px; height: 30px; }
+  .callouts { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 18px; }
+  .callout { background: var(--surface-2); border: 1px dashed var(--border); border-radius: 12px; padding: 18px; }
+  .callout h3 { display: flex; align-items: center; gap: 9px; }
+  .badge { font-family: var(--mono); font-size: .64rem; letter-spacing: .08em; text-transform: uppercase;
+           padding: 3px 8px; border-radius: 6px; background: var(--accent); color: #fff; }
+  :root[data-theme="dark"] .badge, .badge { color: #06201E; }
+
+  /* Roadmap */
+  .road { display: flex; flex-direction: column; gap: 0; }
+  .phase {
+    display: grid; grid-template-columns: 120px 1fr; gap: 20px; padding: 18px 0;
+    border-top: 1px solid var(--border);
+  }
+  .phase:first-child { border-top: 0; }
+  .phase .when { font-family: var(--mono); font-size: .78rem; color: var(--faint); padding-top: 2px; }
+  .phase .body h3 { margin-bottom: 4px; }
+  .phase .body p { margin: 0; color: var(--muted); font-size: .93rem; }
+  .pill { font-family: var(--mono); font-size: .68rem; letter-spacing: .05em; text-transform: uppercase;
+          padding: 4px 9px; border-radius: 999px; display: inline-block; margin-bottom: 8px; font-weight: 600; }
+  .pill.done { background: var(--good-bg); color: var(--good); }
+  .pill.now { background: var(--accent-bg); color: var(--accent-ink); }
+  .pill.next { background: var(--surface-2); color: var(--faint); }
+
+  /* Money */
+  .money-flow { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 4px 0 26px;
+                font-family: var(--mono); font-size: .84rem; }
+  .money-flow .node { background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+                      padding: 10px 14px; box-shadow: var(--shadow); }
+  .money-flow .node.val { border-color: color-mix(in srgb, var(--gold) 40%, transparent); color: var(--gold);
+                          background: var(--gold-bg); }
+  .money-flow .op { color: var(--faint); font-weight: 700; }
+  table.model { width: 100%; border-collapse: collapse; margin: 8px 0 18px; font-size: .93rem; }
+  table.model th, table.model td { text-align: right; padding: 11px 14px; border-bottom: 1px solid var(--border); }
+  table.model th:first-child, table.model td:first-child { text-align: left; }
+  table.model thead th { font-family: var(--mono); font-size: .7rem; letter-spacing: .06em;
+                         text-transform: uppercase; color: var(--faint); font-weight: 600; }
+  table.model td.rev { font-weight: 700; color: var(--gold); }
+  table.model tr .scen { font-weight: 650; }
+  .tablewrap { overflow-x: auto; }
+  .verdict { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px; }
+  .verdict .card h3 { display: flex; align-items: center; gap: 8px; }
+  .yes { color: var(--good); } .risk { color: var(--amber); }
+  ul.tight { margin: 6px 0 0; padding-left: 18px; color: var(--muted); font-size: .93rem; }
+  ul.tight li { margin: 5px 0; }
+  .bignote { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+             padding: 22px; margin-top: 22px; }
+  .bignote strong { color: var(--ink); }
+
+  footer { padding: 34px 0 60px; color: var(--faint); font-size: .84rem; }
+  footer .wrap { border-top: 1px solid var(--border); padding-top: 22px; }
+
+  @media (max-width: 860px) {
+    .cols-2, .cols-3, .callouts, .verdict { grid-template-columns: 1fr; }
+    .flow { grid-template-columns: 1fr; }
+    .arrow svg { transform: rotate(90deg); }
+    .phase { grid-template-columns: 1fr; gap: 6px; }
+    .phase .when { padding-top: 0; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .stage, .card { transition: transform .18s ease, box-shadow .18s ease; }
+    .stage:hover, .card:hover { transform: translateY(-2px); }
+  }
+</style>
+
+<div class="wrap hero">
+  <section style="border:0;">
+    <div class="eyebrow">Confidential stablecoin payments</div>
+    <h1 class="mark">VEIL&nbsp;<small>/ vēl /</small></h1>
+    <p class="lead">A payment rail that lets businesses and people send digital dollars (USDC / USDT)
+      <strong>without publishing the amount to the whole world</strong> — while still proving the
+      money is clean and letting an auditor check the books.</p>
+    <div class="plain">In one line: <strong>a private mode for stablecoins — confidentiality, not anonymity.</strong></div>
+    <div class="statusline">
+      <span class="chip done"><span class="dot"></span>Prototype live</span>
+      <span class="chip done"><span class="dot"></span>Real ZK proof verified on-chain</span>
+      <span class="chip done"><span class="dot"></span>Phases 1–4 shipped · 26 / 26 tests passing</span>
+      <span class="chip"><span class="dot"></span>Not audited · research build</span>
+    </div>
+  </section>
+</div>
+
+<div class="wrap">
+  <section>
+    <div class="eyebrow">The idea</div>
+    <h2>What we're building, in plain terms</h2>
+    <p class="sec-intro">Stablecoins already move ~$28 trillion every quarter — but every transfer is
+      public. A company paying salaries or suppliers on-chain exposes its payroll, margins, and
+      counterparties to anyone with a block explorer. That single fact keeps the best payment rail
+      ever built out of normal business use. VEIL fixes exactly that — and only that.</p>
+    <div class="grid cols-2">
+      <div class="card ps problem">
+        <span class="kicker">The problem today</span>
+        <h3>Everything is visible</h3>
+        <p>Send 1,000 USDC and the amount, sender, and receiver are permanent public record.
+          No business can run finance in a glass box — so they don't use it.</p>
+      </div>
+      <div class="card ps solution">
+        <span class="kicker">What VEIL adds</span>
+        <h3>A confidential mode</h3>
+        <p>Amounts are hidden and the sender is unlinked from the receiver — yet a zero-knowledge
+          proof shows the funds trace to a screened source, and a view key lets your auditor decrypt
+          what they're allowed to see. Private to the public, open to whom you choose.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="eyebrow">How it works</div>
+    <h2>Three steps a normal person can follow</h2>
+    <p class="sec-intro">You put money in openly, it sits in a shared shielded pool where amounts are
+      encrypted, and you take it out privately by proving — without revealing which deposit is yours —
+      that you own clean funds.</p>
+
+    <div class="flow">
+      <div class="stage">
+        <span class="num">STEP 1</span>
+        <h3>Deposit</h3>
+        <div class="vis">amount is visible</div>
+        <p>You move stablecoins into the pool under a secret "note." This part is public and normal —
+          like loading a prepaid card.</p>
+        <span class="tag public">Public</span>
+      </div>
+      <div class="arrow" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+             stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+      </div>
+      <div class="stage">
+        <span class="num">STEP 2</span>
+        <h3>Shielded pool</h3>
+        <div class="vis">amounts encrypted</div>
+        <p>Your deposit joins everyone else's inside one pool. Balances are hidden and links between
+          deposits and withdrawals are broken.</p>
+        <span class="tag private">Hidden</span>
+      </div>
+      <div class="arrow" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+             stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+      </div>
+      <div class="stage">
+        <span class="num">STEP 3</span>
+        <h3>Private withdraw</h3>
+        <div class="vis">proven, not revealed</div>
+        <p>You withdraw to any address by submitting a proof that you own a clean note — showing
+          nothing about who or how much. A one-time tag stops double-spends.</p>
+        <span class="tag private">Private</span>
+      </div>
+    </div>
+
+    <div class="callouts">
+      <div class="callout">
+        <h3><span class="badge">Compliance</span> Proof of innocence</h3>
+        <p class="muted">Withdrawals prove the money comes from an approved, screened set of deposits —
+          so honest users show their funds aren't dirty <em>without</em> revealing which deposit is theirs.
+          This is the mechanism Vitalik Buterin publicly endorsed (Privacy Pools).</p>
+      </div>
+      <div class="callout">
+        <h3><span class="badge">Audit</span> View keys</h3>
+        <p class="muted">Each note is encrypted to a "view key." You — and anyone you hand it to, like
+          a tax authority or auditor — can decrypt the amount. Nobody else can, and the key can't move
+          funds. Selective disclosure you grant, not a backdoor we hold.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="eyebrow">The end product</div>
+    <h2>What you'll actually be able to use</h2>
+    <p class="sec-intro">VEIL isn't a coin to gamble on — it's infrastructure with three concrete faces.</p>
+    <div class="grid cols-3">
+      <div class="card">
+        <span class="kicker">For businesses</span>
+        <h3>Confidential payments app + SDK</h3>
+        <p>Pay salaries, suppliers, and contractors in stablecoins with amounts private by default.
+          A "Stripe for confidential stablecoin payments" that drops into existing tools.</p>
+      </div>
+      <div class="card">
+        <span class="kicker">For the ecosystem</span>
+        <h3>A neutral rail</h3>
+        <p>An open network no single company can switch off or censor, secured by staked operators —
+          so it can be trusted the way a public utility is.</p>
+      </div>
+      <div class="card">
+        <span class="kicker">Everywhere</span>
+        <h3>Multi-chain by design</h3>
+        <p>Native shielded pools on Ethereum/L2s and on Solana (Token-2022 confidential transfers),
+          bridged so a private payment can cross chains in one action.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="eyebrow">The plan</div>
+    <h2>The whole roadmap, start to finish</h2>
+    <p class="sec-intro">Where we are and what's left. The hard cryptographic core is already working —
+      the rest is services, reach, and hardening.</p>
+    <div class="road">
+      <div class="phase">
+        <div class="when">Phase 0</div>
+        <div class="body"><span class="pill done">Shipped</span>
+          <h3>Research &amp; idea selection</h3>
+          <p>Deep market study of Ethereum, Solana, stablecoins, privacy; three concepts audited; VEIL chosen.</p></div>
+      </div>
+      <div class="phase">
+        <div class="when">Phase 1</div>
+        <div class="body"><span class="pill done">Shipped</span>
+          <h3>Cryptographic core</h3>
+          <p>Shielded pool contracts, client SDK, and a real zero-knowledge circuit — a genuine proof
+            now verifies on-chain and settles a private withdrawal. 9/9 tests green.</p></div>
+      </div>
+      <div class="phase">
+        <div class="when">Phase 2</div>
+        <div class="body"><span class="pill done">Shipped</span>
+          <h3>Services that make it usable</h3>
+          <p>A relayer (gasless withdrawals, generates the proof for you) and an Association-Set Provider
+            (screens deposits, publishes the "clean set"), plus a business payments app (shield / pay /
+            audit) — all validated in one end-to-end test with a real proof.</p></div>
+      </div>
+      <div class="phase">
+        <div class="when">Phase 3</div>
+        <div class="body"><span class="pill done">Shipped</span>
+          <h3>Multi-chain &amp; cross-chain</h3>
+          <p>Cross-chain private payments via an ERC-7683-style open → fill → claim flow (a solver shields
+            the funds for the recipient on the far chain); Solana confidential-transfer prototype in place.</p></div>
+      </div>
+      <div class="phase">
+        <div class="when">Phase 4</div>
+        <div class="body"><span class="pill done">Shipped</span>
+          <h3>Token &amp; value capture</h3>
+          <p>Protocol fee → automatic buyback-and-burn (tested from a real pool fee); staking &amp; slashing
+            for the operators who keep the rail neutral, with the relayer set gated on active stake.</p></div>
+      </div>
+      <div class="phase">
+        <div class="when">Phase 5</div>
+        <div class="body"><span class="pill now">Before mainnet</span>
+          <h3>Audit, ceremony &amp; mainnet</h3>
+          <p>A public trusted-setup ceremony, a real cross-chain messaging oracle, hardened key storage,
+            an independent security audit, then production launch.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="eyebrow" style="color:var(--gold);">The honest question</div>
+    <h2>Will this make money?</h2>
+    <p class="sec-intro">Short answer: <strong>the way it earns is proven and the market is enormous —
+      but adoption is the bet, and most crypto projects don't win it.</strong> Here's the real math, not a pitch.</p>
+
+    <h3 style="margin-bottom:10px;">How it earns</h3>
+    <div class="money-flow">
+      <span class="node">Private transfer</span>
+      <span class="op">→</span>
+      <span class="node">small fee (≈0.10%)</span>
+      <span class="op">→</span>
+      <span class="node val">buy back &amp; burn VEIL</span>
+    </div>
+    <p class="muted" style="max-width:64ch;margin-top:-14px;">A tiny fee on each shielded transfer flows
+      to an automatic buyback-and-burn — the same revenue→burn model the market rewards today
+      (Hyperliquid crossed $1B in cumulative revenue doing this). No reliance on token printing.</p>
+
+    <h3 style="margin:22px 0 6px;">What the numbers could look like</h3>
+    <p class="muted" style="margin-bottom:6px;max-width:64ch;">Stablecoins do ~$112T of volume a year. VEIL
+      only needs a sliver of it to run private. At a 0.10% fee:</p>
+    <div class="tablewrap">
+      <table class="model">
+        <thead>
+          <tr><th>Scenario</th><th>Private volume / yr</th><th>Share of stablecoin volume</th><th>Protocol revenue / yr</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="scen">Conservative</td><td>$10 B</td><td>~0.01%</td><td class="rev">$10 M</td></tr>
+          <tr><td class="scen">Moderate</td><td>$100 B</td><td>~0.09%</td><td class="rev">$100 M</td></tr>
+          <tr><td class="scen">Bull</td><td>$1 T</td><td>~0.9%</td><td class="rev">$1 B</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="muted" style="margin-top:-6px;font-size:.86rem;">Illustrative, not a forecast — the point is
+      the model works even at a fraction of a percent of the market.</p>
+
+    <div class="verdict">
+      <div class="card" style="border-color:color-mix(in srgb, var(--good) 30%, transparent);">
+        <h3><span class="yes">✓</span> Why it can</h3>
+        <ul class="tight">
+          <li>Stablecoins are crypto's one proven, giant market.</li>
+          <li>Privacy is the best-performing narrative of the cycle.</li>
+          <li>The earn mechanism (fee → burn) already works elsewhere.</li>
+          <li>Compliance-native, so businesses — the payers — can actually use it.</li>
+        </ul>
+      </div>
+      <div class="card" style="border-color:color-mix(in srgb, var(--amber) 34%, transparent);">
+        <h3><span class="risk">!</span> Why it might not</h3>
+        <ul class="tight">
+          <li>Adoption may stay tiny; privacy demand is real but unproven at scale.</li>
+          <li>Regulatory risk around privacy tooling is unresolved.</li>
+          <li>Circle or a chain could ship native private stablecoins.</li>
+          <li>Most crypto projects, however good, still fail.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="bignote">
+      <strong>The verdict:</strong> This is a credible, revenue-generating business <em>if</em> it earns
+      real adoption — not a lottery ticket, but a bet with a clear path to real cash flow and a huge
+      ceiling. The technology risk is largely behind us (the hard part works); the remaining risk is
+      market and regulatory. That's the right kind of risk to be taking — execution and timing, not
+      "will the thing even function."
+    </div>
+  </section>
+</div>
+
+<footer>
+  <div class="wrap">
+    VEIL — research prototype. Not audited, not financial advice, not for production use. Figures are
+    illustrative and drawn from mid-2026 market research in the project repository.
+  </div>
+</footer>
