@@ -47,10 +47,23 @@ jobs:
             --depth "${{ github.event.inputs.depth || '5' }}"
         # The report is appended to the job summary automatically via GITHUB_STEP_SUMMARY.
 
+      - name: Paper-trading step (throwaway ledger, nothing committed)
+        env:
+          ARB_OUTPUT: ${{ github.workspace }}/arbitrage-paper.md
+        run: |
+          npm run scan --workspace @veil/arbitrage -- paper \
+            --state-dir "$RUNNER_TEMP/arb-paper" \
+            --notional "${{ github.event.inputs.notional || '1000' }}" \
+            --min-net-bps 1 --depth 10 --verify-after 5
+          cp "$RUNNER_TEMP/arb-paper/ledger.jsonl" arbitrage-paper-ledger.jsonl
+
       - name: Upload report
         uses: actions/upload-artifact@v4
         with:
           name: arbitrage-scan-${{ github.run_id }}
-          path: arbitrage-scan.md
+          path: |
+            arbitrage-scan.md
+            arbitrage-paper.md
+            arbitrage-paper-ledger.jsonl
           retention-days: 30
           if-no-files-found: error
