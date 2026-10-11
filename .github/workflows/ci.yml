@@ -36,6 +36,11 @@ jobs:
       - name: SDK tests
         run: npm run test:sdk
 
+      - name: Arbitrage scanner typecheck + tests
+        run: |
+          npm run typecheck:arb
+          npm run test:arb
+
       # The real-proof / e2e tests self-skip without the circuit artifacts
       # (build/*.wasm, *.zkey are gitignored); all other contract tests run.
       - name: Contract tests

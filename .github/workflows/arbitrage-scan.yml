@@ -1,0 +1,56 @@
+name: Arbitrage scan
+
+on:
+  workflow_dispatch:
+    inputs:
+      notional:
+        description: "Quote-currency size per leg"
+        default: "1000"
+      min_net_bps:
+        description: "Hide cross-exchange/triangular rows below this net edge (bps)"
+        default: "2"
+      depth:
+        description: "Re-price the top N cross-exchange rows with order books"
+        default: "5"
+  push:
+    # Live integration test: re-run the scan whenever the scanner itself changes.
+    paths:
+      - "packages/arbitrage/**"
+      - ".github/workflows/arbitrage-scan.yml"
+  # Uncomment for a periodic snapshot (public endpoints only, ~15 requests per run):
+  # schedule:
+  #   - cron: "15 */6 * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install workspace dependencies
+        run: npm install
+
+      - name: Run scanner
+        env:
+          ARB_OUTPUT: ${{ github.workspace }}/arbitrage-scan.md
+        run: |
+          npm run scan --workspace @veil/arbitrage -- \
+            --notional "${{ github.event.inputs.notional || '1000' }}" \
+            --min-net-bps "${{ github.event.inputs.min_net_bps || '2' }}" \
+            --depth "${{ github.event.inputs.depth || '5' }}"
+        # The report is appended to the job summary automatically via GITHUB_STEP_SUMMARY.
+
+      - name: Upload report
+        uses: actions/upload-artifact@v4
+        with:
+          name: arbitrage-scan-${{ github.run_id }}
+          path: arbitrage-scan.md
+          retention-days: 30
+          if-no-files-found: error
