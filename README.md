@@ -25,7 +25,7 @@ alternatives.
 | [`packages/web`](packages/web) | Local dashboard at `localhost:3000` that runs & visualizes a real confidential payment. |
 | [`packages/solana`](packages/solana) | Solana Token-2022 confidential-transfer prototype + CLI runbook. |
 | [`packages/bitget-briefing`](packages/bitget-briefing) | Bot that reads the Bitget announcement center and produces a critical daily briefing (scheduled via GitHub Actions). |
-| [`packages/arbitrage`](packages/arbitrage) | Fee-, depth- and funding-aware arbitrage scanner (cross-exchange, triangular, spot/perp carry) across Bitget, Binance, Bybit, OKX. Design notes in [`packages/arbitrage/docs/design.md`](packages/arbitrage/docs/design.md). |
+| [`packages/arbitrage`](packages/arbitrage) | Fee-, depth- and funding-aware arbitrage scanner (cross-exchange, triangular, spot/perp carry) across Bitget, Binance, Bybit, OKX, with a scheduled paper-trading ledger (`arbitrage/`) that gates a dry-run-by-default executor. Design notes in [`packages/arbitrage/docs/design.md`](packages/arbitrage/docs/design.md). |
 
 ## How it works (one paragraph)
 

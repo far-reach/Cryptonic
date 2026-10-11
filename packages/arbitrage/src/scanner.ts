@@ -22,6 +22,8 @@ export interface ScanOptions {
   fees?: FeeTable;
   withdrawals?: WithdrawalTable;
   fetchFn?: FetchLike;
+  /** Attach the normalised spot/perp quotes to the result (default false). */
+  includeRaw?: boolean;
   /** Pre-fetched data (demo / tests); when set, no network calls are made for those venues. */
   preloaded?: { spot?: Quote[]; perps?: PerpQuote[]; books?: OrderBook[] };
   now?: number;
@@ -122,5 +124,6 @@ export async function scan(opts: ScanOptions = {}): Promise<ScanResult> {
     suspicious: first.suspicious,
     errors,
     params: { notionalQuote, minNetBps, holdDays, quotes: [...quotes] },
+    raw: opts.includeRaw ? { spot: spotAll, perps } : undefined,
   };
 }

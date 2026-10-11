@@ -19,3 +19,5 @@ auditor-elgamal.json
 # local/ephemeral deployment outputs (testnet/mainnet deployments may be committed)
 deployments/localhost.json
 deployments/hardhat.json
+# local paper-trading state (the committed ledger lives under arbitrage/)
+arbitrage-paper/

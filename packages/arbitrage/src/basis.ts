@@ -16,6 +16,8 @@ export interface BasisOptions {
   fees?: FeeTable;
   /** Only USDT-margined perps vs spot quoted in these currencies (default USDT, USDC). */
   quotes?: readonly string[];
+  /** |basis| above this (default 300 bps) means a different asset or a broken market; the row is dropped. */
+  maxAbsBasisBps?: number;
 }
 
 const HOURS_PER_YEAR = 24 * 365;
@@ -53,11 +55,8 @@ export function findBasis(spot: readonly Quote[], perps: readonly PerpQuote[], o
     if (opts.dedupe !== false && candidates.length > 1) {
       const same = candidates.filter((s) => s.venue === p.venue);
       if (same.length) candidates = same;
-      else {
-        // best entry price for the direction: lowest ask when buying spot, highest bid when shorting it
-        const best = candidates.reduce((a, b) => (p.fundingRate >= 0 ? (b.ask < a.ask ? b : a) : b.bid > a.bid ? b : a));
-        candidates = [best];
-      }
+      // best entry price for the direction: lowest ask when buying spot, highest bid when shorting it
+      candidates = [candidates.reduce((a, b) => (p.fundingRate >= 0 ? (b.ask < a.ask ? b : a) : b.bid > a.bid ? b : a))];
     }
     for (const s of candidates) {
       const positive = p.fundingRate >= 0;
@@ -71,6 +70,8 @@ export function findBasis(spot: readonly Quote[], perps: readonly PerpQuote[], o
       const perIntervalBps = bps(Math.abs(p.fundingRate));
       const breakevenHours = perIntervalBps > 0 ? (roundTrip / perIntervalBps) * p.fundingIntervalHours : Infinity;
       if (netApr < minNet) continue;
+      const basisBps = bps((perpPrice - spotPrice) / spotPrice);
+      if (Math.abs(basisBps) > (opts.maxAbsBasisBps ?? 300)) continue;
       out.push({
         kind: "basis",
         base: p.base,
@@ -79,7 +80,7 @@ export function findBasis(spot: readonly Quote[], perps: readonly PerpQuote[], o
         direction,
         spotPrice,
         perpPrice,
-        basisBps: round2(bps((perpPrice - spotPrice) / spotPrice)),
+        basisBps: round2(basisBps),
         fundingRate: p.fundingRate,
         fundingIntervalHours: p.fundingIntervalHours,
         fundingAprPct: round2(grossApr),
@@ -106,7 +107,8 @@ export function findFundingSpreads(perps: readonly PerpQuote[], opts: BasisOptio
   const fees = opts.fees ?? DEFAULT_FEES;
   const byBase = new Map<string, PerpQuote[]>();
   for (const p of perps) {
-    if (!Number.isFinite(p.fundingRate)) continue;
+    // An exact 0 is a placeholder on new listings / unfunded contracts, not a rate.
+    if (!Number.isFinite(p.fundingRate) || p.fundingRate === 0) continue;
     const arr = byBase.get(`${p.base}/${p.quote}`);
     if (arr) arr.push(p);
     else byBase.set(`${p.base}/${p.quote}`, [p]);

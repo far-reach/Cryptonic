@@ -10,6 +10,10 @@ export interface TriangularOptions {
   fees?: FeeTable;
   /** Cap on cycles returned per venue (default 20). */
   limit?: number;
+  /** Cycles with gross above this (default 300 bps) are test tokens / halted markets, not edge; dropped. */
+  suspiciousGrossBps?: number;
+  /** Drop cycles whose top-of-book capacity in the start currency is below this (default 1). */
+  minStartNotional?: number;
 }
 
 /**
@@ -101,7 +105,10 @@ export function findTriangles(quotes: readonly Quote[], venue: Venue, opts: Tria
           if (e3.to !== start) continue;
           if (e1.rate * e2.rate * e3.rate <= 1) continue;
           const opp = cycleToOpportunity(venue, [e1, e2, e3], fees);
-          if (opp.netBps >= minNet) found.push(opp);
+          if (opp.netBps < minNet) continue;
+          if (opp.grossBps >= (opts.suspiciousGrossBps ?? 300)) continue; // XTESTA-style junk markets
+          if (opp.maxNotionalStart < (opts.minStartNotional ?? 1)) continue; // nothing resting on a leg
+          found.push(opp);
         }
       }
     }

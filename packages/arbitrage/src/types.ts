@@ -183,6 +183,8 @@ export interface ScanResult {
     holdDays: number;
     quotes: string[];
   };
+  /** Normalised inputs, present when scan() was called with includeRaw (paper trading reuses them). */
+  raw?: { spot: Quote[]; perps: PerpQuote[] };
 }
 
 /** Minimal fetch signature so tests and callers can inject a mock. */

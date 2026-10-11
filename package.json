@@ -29,6 +29,8 @@
     "typecheck:briefing": "npm run typecheck --workspace @veil/bitget-briefing",
     "arb": "npm run scan --workspace @veil/arbitrage --",
     "test:arb": "npm run test --workspace @veil/arbitrage",
-    "typecheck:arb": "npm run typecheck --workspace @veil/arbitrage"
+    "typecheck:arb": "npm run typecheck --workspace @veil/arbitrage",
+    "arb:paper": "npm run scan --workspace @veil/arbitrage -- paper",
+    "arb:trade": "npm run scan --workspace @veil/arbitrage -- trade"
   }
 }

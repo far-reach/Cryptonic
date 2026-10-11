@@ -159,3 +159,92 @@ the fixture test for that parser is the place to update.
   if that is longer than you expect funding to stay elevated, skip it.
 * **Suspicious table:** do not trade these. They are the most common way a naive scanner
   loses money.
+
+## 7. Proof before money: the paper-trading protocol
+
+Detection output is a hypothesis. The `paper` command turns it into evidence, and the
+`trade` command refuses to send a real order until that evidence clears a gate.
+
+### What one paper run does
+
+1. **Scan** with order-book re-pricing for the top candidates (`--depth`).
+2. **Wait** `--verify-after` seconds (default 5): a stand-in for the latency of a real
+   round trip from "seen" to "both orders acknowledged".
+3. **Re-price** every detected cross-exchange and triangular row at fresh quotes and
+   books. The realised number is what a full-size taker fill would have made *then*, net
+   of fees. A market that vanished counts as a loss of the fees it would have paid.
+4. **Advance carry positions**: open paper long-spot/short-perp positions above
+   `--carry-min-apr`, accrue funding pro rata to elapsed time, mark both legs, close at
+   the hold horizon, after three consecutive adverse funding marks, or when the market
+   disappears.
+5. **Append** everything to `ledger.jsonl` (append-only JSON lines), persist open positions
+   in `state.json`, and rewrite `summary.md` / `summary.json`.
+
+`.github/workflows/arbitrage-paper.yml` runs this every 30 minutes and commits the
+`arbitrage/` directory, so the ledger accumulates in git with no server to maintain.
+
+### The go-live gate (`src/paper/gate.ts`)
+
+Per strategy, all of:
+
+| Criterion | Default |
+|---|---|
+| Verified samples | ≥ 30 (carry: ≥ 10 closed positions) |
+| Ledger span | ≥ 7 days |
+| Cumulative paper P&L | > 0 |
+| Win rate (realised edge > 0) | ≥ 55 % |
+| 95 % CI lower bound of mean realised bps | > 0 |
+
+The CI bound is the important one. A positive cumulative P&L made of a few big wins and
+many small losses is luck until the interval excludes zero. These are necessary
+conditions, not sufficient: paper fills assume no queue, no partial fills, no venue
+latency beyond the verification delay, and base-tier fees.
+
+### What the first live run showed (2026-10-11, GitHub-hosted runner)
+
+* Bitget (3 380 spot / 820 perp markets) and OKX (1 150 / 500) parse correctly.
+* **Binance returns HTTP 451 and Bybit HTTP 403 from GitHub's US runners.** Both venues
+  geo-block. The scanner degrades to the reachable venues and logs the errors; to include
+  them, run the paper job from a self-hosted runner or a machine in a permitted region.
+* Zero cross-exchange rows cleared 2 bps between Bitget and OKX at that instant, which
+  matches the literature.
+* Three false positives, now fixed: a $0-size test token "triangle" (`XTESTA`), duplicate
+  carry rows where a venue lists both USDT and USDC spot pairs, and funding spreads built
+  on a 0.0000 % placeholder rate.
+
+## 8. Execution (`src/execution/`)
+
+Built so that the first real order is as boring as possible:
+
+* **Paired IOC limit orders only.** Buy at ask × (1 + tolerance), sell at bid × (1 −
+  tolerance), same base size on both legs rounded to the coarser lot step. Never a market
+  order, never a withdrawal, never a retry of a single leg.
+* **Pre-flight refuses** anything suspicious, not depth-checked, older than 10 s, below the
+  minimum edge, below a venue's minimum notional, or after the daily loss limit.
+* **Balances are checked** on both venues before sending (pre-funded inventory is the
+  model; transfers are never in the hot path).
+* **Kill switch.** If the two fills differ by more than `maxUnhedgedFraction` of the
+  intended size, or an order errors, a `HALT` file is written and every later attempt is
+  refused until a human deletes it. The report shows the unhedged leftover so it can be
+  flattened by hand.
+* **Live needs three things at once:** `ARB_LIVE=I_ACCEPT_THE_RISK`, API keys for both
+  venues (`<VENUE>_API_KEY`, `_API_SECRET`, `_API_PASSPHRASE` for Bitget/OKX), and a passed
+  paper gate (`ARB_OVERRIDE_GATE=1` bypasses the gate and is recorded in the report).
+* **Dry-run is the default** and needs no keys: it prints the exact orders it would send.
+
+The signed-request builders are unit-tested against the documented signature recipes,
+and the response parsers against fixture payloads, but **no order has been sent to a real
+exchange from this code**. The first live trades must be tiny (`--max-notional 20`), on
+one venue pair, watched, and with API keys that cannot withdraw.
+
+### Go-live checklist
+
+1. Let the paper job run for at least a week; read `arbitrage/summary.md`.
+2. Only consider a strategy whose gate passed, and only the venue pairs with positive
+   realised edge in the "by venue pair" table.
+3. Create trade-only API keys (no withdrawal permission), IP-restricted; pre-fund both
+   venues with the quote currency on the buy side and the base asset on the sell side.
+4. `arb-scan trade --state-dir arbitrage --venues bitget,okx` (dry-run) until the plans
+   look right, then `--live --max-notional 20`.
+5. Watch `arbitrage/trades.jsonl`. Raise size only when realised P&L tracks the paper
+   numbers over dozens of fills; stop at the first `HALT`.

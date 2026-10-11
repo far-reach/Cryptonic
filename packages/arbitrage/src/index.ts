@@ -9,3 +9,5 @@ export * from "./scanner.js";
 export * from "./report.js";
 export * from "./venues/index.js";
 export { sampleQuotes } from "./sample-data.js";
+export * from "./paper/index.js";
+export * from "./execution/index.js";
