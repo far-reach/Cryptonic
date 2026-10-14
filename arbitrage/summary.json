@@ -1,0 +1,98 @@
+{
+  "summary": {
+    "generatedAt": 1791991804701,
+    "firstRunAt": 1791991799698,
+    "lastRunAt": 1791991799698,
+    "runs": 1,
+    "spanDays": 0,
+    "crossExchange": {
+      "n": 0,
+      "wins": 0,
+      "winRate": 0,
+      "meanExpectedBps": 0,
+      "meanRealisedBps": 0,
+      "ci95LowerBps": 0,
+      "totalPnlQuote": 0,
+      "unpriced": 0
+    },
+    "triangular": {
+      "n": 0,
+      "wins": 0,
+      "winRate": 0,
+      "meanExpectedBps": 0,
+      "meanRealisedBps": 0,
+      "ci95LowerBps": 0,
+      "totalPnlQuote": 0,
+      "unpriced": 0
+    },
+    "carry": {
+      "open": 1,
+      "closed": 0,
+      "wins": 0,
+      "winRate": 0,
+      "totalPnlQuote": 0,
+      "fundingQuote": 0,
+      "legPnlQuote": 0,
+      "feesQuote": 0,
+      "meanHeldHours": 0,
+      "openPnlQuote": -3
+    },
+    "byVenuePair": {},
+    "windows": {
+      "last24h": {
+        "n": 0,
+        "wins": 0,
+        "winRate": 0,
+        "meanExpectedBps": 0,
+        "meanRealisedBps": 0,
+        "ci95LowerBps": 0,
+        "totalPnlQuote": 0,
+        "unpriced": 0
+      },
+      "last7d": {
+        "n": 0,
+        "wins": 0,
+        "winRate": 0,
+        "meanExpectedBps": 0,
+        "meanRealisedBps": 0,
+        "ci95LowerBps": 0,
+        "totalPnlQuote": 0,
+        "unpriced": 0
+      }
+    }
+  },
+  "gates": [
+    {
+      "strategy": "cross-exchange",
+      "passed": false,
+      "reasons": [
+        "only 0 verified samples (need 30)",
+        "ledger spans 0 days (need 7)",
+        "cumulative paper P&L is 0 (need > 0)",
+        "win rate 0% (need 55%)",
+        "95% CI lower bound 0 bps (need > 0)"
+      ]
+    },
+    {
+      "strategy": "triangular",
+      "passed": false,
+      "reasons": [
+        "only 0 verified samples (need 30)",
+        "ledger spans 0 days (need 7)",
+        "cumulative paper P&L is 0 (need > 0)",
+        "win rate 0% (need 55%)",
+        "95% CI lower bound 0 bps (need > 0)"
+      ]
+    },
+    {
+      "strategy": "carry",
+      "passed": false,
+      "reasons": [
+        "only 0 closed paper positions (need 10)",
+        "ledger spans 0 days (need 7)",
+        "cumulative closed P&L is 0 (need > 0)",
+        "win rate 0% (need 55%)"
+      ]
+    }
+  ]
+}

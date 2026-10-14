@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "positions": [
+    {
+      "id": "aaeafb77cbb8",
+      "base": "SOON",
+      "spotVenue": "bitget",
+      "perpVenue": "okx",
+      "direction": "long-spot-short-perp",
+      "notionalQuote": 1000,
+      "openedAt": 1791991799698,
+      "entrySpot": 0.2977,
+      "entryPerp": 0.298,
+      "entryFundingRate": 0.0000862739509154,
+      "fundingIntervalHours": 4,
+      "roundTripFeesBps": 30,
+      "accruedFunding": 0,
+      "lastMarkAt": 1791991799698,
+      "lastFundingRate": 0.0000862739509154,
+      "adverseMarks": 0
+    }
+  ],
+  "runs": 1,
+  "firstRunAt": 1791991799698,
+  "lastRunAt": 1791991799698
+}
