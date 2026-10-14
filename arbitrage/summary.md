@@ -1,6 +1,6 @@
-# Paper-trading ledger — 2026-10-14 15:30 UTC
+# Paper-trading ledger — 2026-10-14 19:39 UTC
 
-1 runs over 0 days (since 2026-10-14). Every detected opportunity is re-priced a few seconds later at real quotes; "realised" is what a full-size taker fill would have made then, net of fees.
+2 runs over 0.17 days (since 2026-10-14). Every detected opportunity is re-priced a few seconds later at real quotes; "realised" is what a full-size taker fill would have made then, net of fees.
 
 ## Verified opportunities
 
@@ -15,12 +15,12 @@
 
 | Open | Closed | Wins | Funding | Leg P&L | Fees | Closed P&L | Open P&L | Mean hold |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | 0 | – | +$0.00 | +$0.00 | −$0.00 | **+$0.00** | −$3.00 | 0 h |
+| 7 | 0 | – | +$0.00 | +$0.00 | −$0.00 | **+$0.00** | −$21.96 | 0 h |
 
 ## Go-live gate
 
-- **cross-exchange**: ⛔ not yet — only 0 verified samples (need 30); ledger spans 0 days (need 7); cumulative paper P&L is 0 (need > 0); win rate 0% (need 55%); 95% CI lower bound 0 bps (need > 0)
-- **triangular**: ⛔ not yet — only 0 verified samples (need 30); ledger spans 0 days (need 7); cumulative paper P&L is 0 (need > 0); win rate 0% (need 55%); 95% CI lower bound 0 bps (need > 0)
-- **carry**: ⛔ not yet — only 0 closed paper positions (need 10); ledger spans 0 days (need 7); cumulative closed P&L is 0 (need > 0); win rate 0% (need 55%)
+- **cross-exchange**: ⛔ not yet — only 0 verified samples (need 30); ledger spans 0.17 days (need 7); cumulative paper P&L is 0 (need > 0); win rate 0% (need 55%); 95% CI lower bound 0 bps (need > 0)
+- **triangular**: ⛔ not yet — only 0 verified samples (need 30); ledger spans 0.17 days (need 7); cumulative paper P&L is 0 (need > 0); win rate 0% (need 55%); 95% CI lower bound 0 bps (need > 0)
+- **carry**: ⛔ not yet — only 0 closed paper positions (need 10); ledger spans 0.17 days (need 7); cumulative closed P&L is 0 (need > 0); win rate 0% (need 55%)
 
 > Paper fills assume taker orders at the re-priced book with no queue position and no exchange latency beyond the verification delay. Real fills are worse, never better. The gate is a necessary condition for live trading, not a sufficient one.
