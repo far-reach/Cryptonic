@@ -1,58 +1,47 @@
-# Bitget daily briefing — 2026-10-14
+# Bitget daily briefing — 2026-10-15
 
 _Last 24h of the [Bitget announcement center](https://www.bitget.com/asia/support/announcement-center)._
 
-**TL;DR:** 15 critical · 2 notable · 0 FYI
+**TL;DR:** 11 critical · 2 notable · 0 FYI
 
-🟡 **Environment:** _Normal — tradeable activity, nothing alarming_
+🔴 **Environment:** _Turbulent — high-impact events in play_
 
 ## 🔴 Critical — act or verify today
 
-- **[Bitget to adjust the leverage, positions, and maintenance margin rate for the RAREUSDT,LSKUSDT,CVCUSDT,BLURUSDT,ARKUSDT,VELODROMEUSDT perpetual futures pairs](https://www.bitget.com/en/support/articles/12560603897602)**
-  🟡 ★★★☆☆ _affects positions_ · 2026-10-14 09:45 UTC · _section: product updates, maintenance window, contract parameter change_
-  ℹ️ _Bitget is tightening this contract's risk limits — usually a response to volatility or thin liquidity._
-- **[Bitget announcement on resuming EGLD - Elrond eGold withdrawals](https://www.bitget.com/en/support/articles/12560603897594)**
-  ⚪ ★☆☆☆☆ _recovery_ · 2026-10-14 08:20 UTC · _section: maintenance system updates, maintenance window_
-  ℹ️ _“Bitget has now opened the withdrawal service on the EGLD - Elrond eGold network.”_
-- **[Bitget announcement on resuming USDC - Optimism withdrawals](https://www.bitget.com/en/support/articles/12560603897591)**
-  ⚪ ★☆☆☆☆ _recovery_ · 2026-10-14 07:48 UTC · _section: maintenance system updates, maintenance window_
-  ℹ️ _“Bitget has now opened the withdrawal service on the USDC - Optimism network.”_
-- **[Bitget announcement on suspending USDGO - Morph deposit service](https://www.bitget.com/en/support/articles/12560603897534)**
-  🟢 ★★☆☆☆ _routine maintenance_ · 2026-10-14 06:24 UTC · _section: maintenance system updates, suspension, maintenance window_
+- **[Bitget announcement on resuming VELO - Binance Smart Chain withdrawals](https://www.bitget.com/en/support/articles/12560603897734)**
+  ⚪ ★☆☆☆☆ _recovery_ · 2026-10-15 10:47 UTC · _section: maintenance system updates, maintenance window_
+  ℹ️ _“Bitget has now opened the withdrawal service on the VELO - Binance Smart Chain network.”_
+- **[Bitget announcement on resuming PUFFER - Ethereum withdrawals](https://www.bitget.com/en/support/articles/12560603897732)**
+  ⚪ ★☆☆☆☆ _recovery_ · 2026-10-15 10:45 UTC · _section: maintenance system updates, maintenance window_
+  ℹ️ _“Bitget has now opened the withdrawal service on the PUFFER - Ethereum network.”_
+- **[Bitget announcement on suspending RIVER - Binance Smart Chain network withdrawal service](https://www.bitget.com/en/support/articles/12560603897727)**
+  🟢 ★★☆☆☆ _routine maintenance_ · 2026-10-15 08:16 UTC · _section: maintenance system updates, suspension, maintenance window_
   ℹ️ _Routine scheduled wallet maintenance — nothing unusual._
-- **[Bitget to adjust the leverage, positions, and maintenance margin rate for the ORCAUSDT,VELVETUSDT,TUTUSDT,POWERUSDT,MOVRUSDT,ESPUSDT,EGLDUSDT,AXSUSDT,ARXUSDT perpetual futures pairs](https://www.bitget.com/en/support/articles/12560603897532)**
-  🟡 ★★★☆☆ _affects positions_ · 2026-10-14 05:45 UTC · _section: product updates, maintenance window, contract parameter change_
-  ℹ️ _Bitget is tightening this contract's risk limits — usually a response to volatility or thin liquidity._
-- **[Bitget to adjust funding rate interval for KAIAUSDT perpetual futures](https://www.bitget.com/en/support/articles/12560603897531)**
-  🟡 ★★★☆☆ _affects positions_ · 2026-10-14 05:14 UTC · _section: product updates, contract parameter change_
-  ℹ️ _Bitget is tightening this contract's risk limits — usually a response to volatility or thin liquidity._
-- **[Bitget announcement on resuming USDC - Polygon withdrawals](https://www.bitget.com/en/support/articles/12560603897528)**
-  ⚪ ★☆☆☆☆ _recovery_ · 2026-10-14 05:02 UTC · _section: maintenance system updates, maintenance window_
-  ℹ️ _“Bitget has now opened the withdrawal service on the USDC - Polygon network.”_
-- **[Bitget announcement on suspending RTX - Binance Smart Chain deposit service](https://www.bitget.com/en/support/articles/12560603897486)**
-  🟢 ★★☆☆☆ _routine maintenance_ · 2026-10-14 03:56 UTC · _section: maintenance system updates, suspension, maintenance window_
+- **[Bitget announcement on suspending FF - Ethereum network withdrawal service](https://www.bitget.com/en/support/articles/12560603897726)**
+  🟢 ★★☆☆☆ _routine maintenance_ · 2026-10-15 07:44 UTC · _section: maintenance system updates, suspension, maintenance window_
   ℹ️ _Routine scheduled wallet maintenance — nothing unusual._
-- **[Bitget announcement on suspending GAIB - Ethereum deposit service](https://www.bitget.com/en/support/articles/12560603897485)**
-  🟡 ★★★☆☆ _unexplained suspension_ · 2026-10-14 03:56 UTC · _section: maintenance system updates, suspension, maintenance window_
-- **[Bitget Spot Margin Announcement on Suspension of BTW/USDT Margin Trading Services](https://www.bitget.com/en/support/articles/12560603897460)**
-  🟡 ★★★☆☆ _needs review_ · 2026-10-14 03:26 UTC · _section: symbol delisting, delisting, suspension_
-- **[Bitget announcement on resuming HOLO - Solana withdrawals](https://www.bitget.com/en/support/articles/12560603897462)**
-  ⚪ ★☆☆☆☆ _recovery_ · 2026-10-14 03:25 UTC · _section: maintenance system updates, maintenance window_
-- **[Announcement on rToken System Upgrade and Maintenance](https://www.bitget.com/en/support/articles/12560603897457)**
-  🟡 ★★★☆☆ _needs review_ · 2026-10-14 03:04 UTC · _section: maintenance system updates, maintenance window_
-- **[Bitget announcement on resuming ARPA - Binance Smart Chain withdrawals](https://www.bitget.com/en/support/articles/12560603897459)**
-  ⚪ ★☆☆☆☆ _recovery_ · 2026-10-14 03:01 UTC · _section: maintenance system updates, maintenance window_
-- **[Bitget announcement on suspending ARPA - Binance Smart Chain network withdrawal service](https://www.bitget.com/en/support/articles/12560603897458)**
-  🟡 ★★★☆☆ _unexplained suspension_ · 2026-10-14 02:59 UTC · _section: maintenance system updates, suspension, maintenance window_
-- **[[Important] Bitget to disable margin and loan functions for BTW in unified trading account](https://www.bitget.com/en/support/articles/12560603897321)**
-  🟡 ★★★☆☆ _needs review_ · 2026-10-13 12:00 UTC · _section: symbol delisting, delisting_
+- **[[Important] Bitget to delist EPICUSDT futures and related services](https://www.bitget.com/en/support/articles/12560603897724)**
+  🔴 ★★★★★ _forced-seller event_ · 2026-10-15 07:30 UTC · _section: symbol delisting, delisting_
+- **[Bitget Announcement on Maintenance of WEETH/USDT Spot Trading Pair](https://www.bitget.com/en/support/articles/12560603897700)**
+  🟢 ★★☆☆☆ _scheduled maintenance_ · 2026-10-15 07:00 UTC · _section: maintenance system updates, maintenance window_
+- **[Bitget Announcement on Maintenance of USDS/USDT Spot Trading Pair](https://www.bitget.com/en/support/articles/12560603897701)**
+  🟢 ★★☆☆☆ _scheduled maintenance_ · 2026-10-15 07:00 UTC · _section: maintenance system updates, maintenance window_
+- **[Bitget announcement on resuming USDC - Binance Smart Chain withdrawals](https://www.bitget.com/en/support/articles/12560603897696)**
+  ⚪ ★☆☆☆☆ _recovery_ · 2026-10-15 06:21 UTC · _section: maintenance system updates, maintenance window_
+  ℹ️ _“Bitget has now opened the withdrawal service on the USDC - Binance Smart Chain network.”_
+- **[Bitget announcement on suspending PUFFER - Ethereum network withdrawal service](https://www.bitget.com/en/support/articles/12560603897695)**
+  🟡 ★★★☆☆ _unexplained suspension_ · 2026-10-15 04:52 UTC · _section: maintenance system updates, suspension, maintenance window_
+- **[Bitget announcement on suspending USDC - Binance Smart Chain network withdrawal service](https://www.bitget.com/en/support/articles/12560603897651)**
+  🟡 ★★★☆☆ _unexplained suspension_ · 2026-10-15 03:36 UTC · _section: maintenance system updates, suspension, maintenance window_
+- **[Bitget announcement on suspending HIVP - MAP Protocol network withdrawal service](https://www.bitget.com/en/support/articles/12560603897630)**
+  🟡 ★★★☆☆ _unexplained suspension_ · 2026-10-15 02:53 UTC · _section: maintenance system updates, suspension, maintenance window_
 
 ## 🟡 Notable — worth a look
 
-- **[Bitget lists JIO (Jio Platforms) Pre-IPO perpetual futures](https://www.bitget.com/en/support/articles/12560603897601)**
-  🟡 ★★★☆☆ _listing event_ · 2026-10-14 09:01 UTC · _section: coin listings, new listing, derivatives/margin update_
-- **[【Important】Bitget announcement on the temporary adjustment to the COPPERUSDT futures index](https://www.bitget.com/en/support/articles/12560603897463)**
-  🟢 ★★☆☆☆ _notable_ · 2026-10-14 03:27 UTC · _derivatives/margin update_
+- **[[Initial Listing] Bitget to list NeoSoul (DNA) in the AI zone](https://www.bitget.com/en/support/articles/12560603897627)**
+  🟡 ★★★☆☆ _listing event_ · 2026-10-15 04:00 UTC · _section: coin listings, new listing_
+- **[Bitget listed FASTRETAILINGUSDT hot stock perps](https://www.bitget.com/en/support/articles/12560603897654)**
+  🟡 ★★★☆☆ _listing event_ · 2026-10-15 03:56 UTC · _section: coin listings, new listing_
 
 ## 🟢 FYI — promos & misc
 
@@ -60,9 +49,11 @@ _Nothing else._
 
 ## 💡 Trade angles
 
-- 🔁 **EGLD (Elrond)** — Transfers just reopened: any price gap vs other exchanges usually closes fast, and holders who were stuck can now sell. Expect a brief selling wave.
-- 🔁 **USDC (Optimism)** — Transfers just reopened: any price gap vs other exchanges usually closes fast, and holders who were stuck can now sell. Expect a brief selling wave.
-- 🔁 **USDGO (Morph)** — While transfers are frozen, the Bitget price can drift away from other exchanges. That gap usually snaps back once transfers reopen — worth tracking.
-- 🔁 **USDC (Polygon)** — Transfers just reopened: any price gap vs other exchanges usually closes fast, and holders who were stuck can now sell. Expect a brief selling wave.
+- ⚠️ **EPICUSDT perp** — History: delisted coins keep falling (typically −20…−70%) until removal day as holders are forced out. If you hold it, exit early — the bounces are traps.
+- 🔁 **VELO (Binance)** — Transfers just reopened: any price gap vs other exchanges usually closes fast, and holders who were stuck can now sell. Expect a brief selling wave.
+  `Short @ 0.004267 · TP 0.004054 (−5%) · SL 0.004438 (+4%)`
+- 🔁 **PUFFER (Ethereum)** — Transfers just reopened: any price gap vs other exchanges usually closes fast, and holders who were stuck can now sell. Expect a brief selling wave.
+  `Short @ 0.0506 · TP 0.04807 (−5%) · SL 0.05262 (+4%)`
+- 🔁 **RIVER (Binance)** — While transfers are frozen, the Bitget price can drift away from other exchanges. That gap usually snaps back once transfers reopen — worth tracking.
 
 _Pattern heuristics from historical announcement studies — not financial advice._
