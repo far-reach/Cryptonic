@@ -109,3 +109,14 @@
 {"type":"carry-mark","t":1792142129018,"id":"7f129a6b7b80","fundingRate":0.00005,"accruedFunding":0.42,"legPnl":0.39}
 {"type":"carry-mark","t":1792142129018,"id":"abae800eb961","fundingRate":0.00005,"accruedFunding":0.42,"legPnl":-1.82}
 {"type":"carry-mark","t":1792142129018,"id":"9dd59640841d","fundingRate":0.00005,"accruedFunding":1.88,"legPnl":0}
+{"type":"run","t":1792159902694,"quoteCounts":{"bitget":3488,"binance":0,"bybit":0,"okx":1181},"errors":["binance spot: binance spot: HTTP 451 for https://api.binance.com/api/v3/ticker/bookTicker","bybit spot: bybit spot: HTTP 403 for https://api.bybit.com/v5/market/tickers?category=spot","bybit perps: bybit perp: HTTP 403 for https://api.bybit.com/v5/market/tickers?category=linear","binance perps: binance premiumIndex: HTTP 451 for https://fapi.binance.com/fapi/v1/premiumIndex"]}
+{"type":"carry-mark","t":1792159902694,"id":"aaeafb77cbb8","fundingRate":0.00005,"accruedFunding":0.97,"legPnl":-1.32}
+{"type":"carry-mark","t":1792159902694,"id":"68aaa0994bc5","fundingRate":0.000305,"accruedFunding":2.1,"legPnl":-9.11}
+{"type":"carry-mark","t":1792159902694,"id":"714580b27cb5","fundingRate":0.00005,"accruedFunding":0.54,"legPnl":-2.54}
+{"type":"carry-mark","t":1792159902694,"id":"fe2ee8b903c0","fundingRate":0.00005,"accruedFunding":1.72,"legPnl":-2.87}
+{"type":"carry-mark","t":1792159902694,"id":"493cc436ec32","fundingRate":-0.0002131130099876,"accruedFunding":0.99,"legPnl":0.25}
+{"type":"carry-mark","t":1792159902694,"id":"d97a6341d697","fundingRate":0.00005,"accruedFunding":0.77,"legPnl":-3.62}
+{"type":"carry-mark","t":1792159902694,"id":"695c0e9ad831","fundingRate":0.00005,"accruedFunding":1.81,"legPnl":0.58}
+{"type":"carry-mark","t":1792159902694,"id":"7f129a6b7b80","fundingRate":0.00005,"accruedFunding":0.48,"legPnl":-2.68}
+{"type":"carry-mark","t":1792159902694,"id":"abae800eb961","fundingRate":0.00005,"accruedFunding":0.48,"legPnl":-2.16}
+{"type":"carry-mark","t":1792159902694,"id":"9dd59640841d","fundingRate":0.00005,"accruedFunding":1.94,"legPnl":-1.91}
