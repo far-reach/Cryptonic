@@ -1,6 +1,6 @@
-# Paper-trading ledger — 2026-10-17 16:38 UTC
+# Paper-trading ledger — 2026-10-17 19:16 UTC
 
-19 runs over 3.05 days (since 2026-10-14). Every detected opportunity is re-priced a few seconds later at real quotes; "realised" is what a full-size taker fill would have made then, net of fees.
+20 runs over 3.16 days (since 2026-10-14). Every detected opportunity is re-priced a few seconds later at real quotes; "realised" is what a full-size taker fill would have made then, net of fees.
 
 ## Verified opportunities
 
@@ -22,12 +22,12 @@
 
 | Open | Closed | Wins | Funding | Leg P&L | Fees | Closed P&L | Open P&L | Mean hold |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 10 | 0 | – | +$0.00 | +$0.00 | −$0.00 | **+$0.00** | −$44.65 | 0 h |
+| 10 | 0 | – | +$0.00 | +$0.00 | −$0.00 | **+$0.00** | −$41.54 | 0 h |
 
 ## Go-live gate
 
-- **cross-exchange**: ⛔ not yet — only 5 verified samples (need 30); ledger spans 3.05 days (need 7)
-- **triangular**: ⛔ not yet — only 0 verified samples (need 30); ledger spans 3.05 days (need 7); cumulative paper P&L is 0 (need > 0); win rate 0% (need 55%); 95% CI lower bound 0 bps (need > 0)
-- **carry**: ⛔ not yet — only 0 closed paper positions (need 10); ledger spans 3.05 days (need 7); cumulative closed P&L is 0 (need > 0); win rate 0% (need 55%)
+- **cross-exchange**: ⛔ not yet — only 5 verified samples (need 30); ledger spans 3.16 days (need 7)
+- **triangular**: ⛔ not yet — only 0 verified samples (need 30); ledger spans 3.16 days (need 7); cumulative paper P&L is 0 (need > 0); win rate 0% (need 55%); 95% CI lower bound 0 bps (need > 0)
+- **carry**: ⛔ not yet — only 0 closed paper positions (need 10); ledger spans 3.16 days (need 7); cumulative closed P&L is 0 (need > 0); win rate 0% (need 55%)
 
 > Paper fills assume taker orders at the re-priced book with no queue position and no exchange latency beyond the verification delay. Real fills are worse, never better. The gate is a necessary condition for live trading, not a sufficient one.
