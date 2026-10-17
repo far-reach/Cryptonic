@@ -1,44 +1,37 @@
-# Bitget daily briefing — 2026-10-16
+# Bitget daily briefing — 2026-10-17
 
 _Last 24h of the [Bitget announcement center](https://www.bitget.com/asia/support/announcement-center)._
 
-**TL;DR:** 13 critical · 0 notable · 1 FYI
+**TL;DR:** 8 critical · 0 notable · 1 FYI
 
-🔴 **Environment:** _Turbulent — high-impact events in play_
+🟢 **Environment:** _Calm — routine operations only_
 
 ## 🔴 Critical — act or verify today
 
-- **[Notice of Delisting 8 Spot Trading Pairs on October 23, 2026](https://www.bitget.com/en/support/articles/12560603897809)**
-  🔴 ★★★★★ _forced-seller event_ · 2026-10-16 10:00 UTC · _section: symbol delisting, delisting_
-- **[Bitget announcement on resuming MGO - Mango deposits and withdrawals](https://www.bitget.com/en/support/articles/12560603897824)**
-  ⚪ ★☆☆☆☆ _recovery_ · 2026-10-16 09:54 UTC · _section: maintenance system updates, maintenance window, deposit/withdrawal change_
-  ℹ️ _“Bitget has now opened the MGO - Mango deposit and withdrawal services.”_
-- **[Bitget announcement on suspending HYPER - Binance Smart Chain network withdrawal service](https://www.bitget.com/en/support/articles/12560603897821)**
-  🟢 ★★☆☆☆ _routine maintenance_ · 2026-10-16 09:23 UTC · _section: maintenance system updates, suspension, maintenance window_
+- **[Bitget announcement on suspending ILY - BASE deposit and withdrawal services](https://www.bitget.com/en/support/articles/12560603897839)**
+  🟢 ★★☆☆☆ _routine maintenance_ · 2026-10-17 08:55 UTC · _section: maintenance system updates, suspension, maintenance window, deposit/withdrawal change_
   ℹ️ _Routine scheduled wallet maintenance — nothing unusual._
-- **[Bitget to Adjust CFD Leverage During Special Trading Periods in the Third Week of October 2026](https://www.bitget.com/en/support/articles/12560603897812)**
-  🟡 ★★★☆☆ _affects positions_ · 2026-10-16 08:00 UTC · _section: maintenance system updates, maintenance window, contract parameter change_
-  ℹ️ _Bitget is tightening this contract's risk limits — usually a response to volatility or thin liquidity._
-- **[Bitget Announcement on Maintenance of CUDIS/USDT Spot Trading Pair](https://www.bitget.com/en/support/articles/12560603897817)**
-  🟢 ★★☆☆☆ _scheduled maintenance_ · 2026-10-16 07:20 UTC · _section: maintenance system updates, maintenance window_
-- **[Notice on Bitget CFD system maintenance](https://www.bitget.com/en/support/articles/12560603897811)**
-  🟡 ★★★☆☆ _needs review_ · 2026-10-16 07:00 UTC · _section: maintenance system updates, maintenance window_
-- **[Bitget announcement on resuming RLC - Ethereum withdrawals](https://www.bitget.com/en/support/articles/12560603897810)**
-  ⚪ ★☆☆☆☆ _recovery_ · 2026-10-16 05:44 UTC · _section: maintenance system updates, maintenance window_
-  ℹ️ _“Bitget has now opened the withdrawal service on the RLC - Ethereum network.”_
-- **[Bitget announcement on resuming USDT - Tron withdrawals](https://www.bitget.com/en/support/articles/12560603897808)**
-  ⚪ ★☆☆☆☆ _recovery_ · 2026-10-16 05:26 UTC · _section: maintenance system updates, maintenance window_
-  ℹ️ _“Bitget has now opened the withdrawal service on the USDT - Tron network.”_
-- **[Bitget announcement on suspending USDT - Tron network withdrawal service](https://www.bitget.com/en/support/articles/12560603897807)**
-  🟡 ★★★☆☆ _unexplained suspension_ · 2026-10-16 05:07 UTC · _section: maintenance system updates, suspension, maintenance window_
-- **[Bitget Spot Margin Announcement on Suspension of WIN/USDT, PUMPBTC/USDT Margin Trading Services](https://www.bitget.com/en/support/articles/12560603897785)**
-  🟡 ★★★☆☆ _needs review_ · 2026-10-16 03:10 UTC · _section: symbol delisting, delisting, suspension_
-- **[[Important] Bitget to disable margin and loan functions for PUMPBTC in unified trading account](https://www.bitget.com/en/support/articles/12560603897783)**
-  🟡 ★★★☆☆ _needs review_ · 2026-10-16 03:10 UTC · _section: symbol delisting, delisting_
-- **[Bitget announcement on resuming PLUME - Plume deposits and withdrawals](https://www.bitget.com/en/support/articles/12560603897781)**
-  ⚪ ★☆☆☆☆ _recovery_ · 2026-10-16 02:16 UTC · _section: maintenance system updates, maintenance window, deposit/withdrawal change_
-- **[Bitget announcement on suspending RLC - Ethereum network withdrawal service](https://www.bitget.com/en/support/articles/12560603897777)**
-  🟡 ★★★☆☆ _unexplained suspension_ · 2026-10-15 19:53 UTC · _section: maintenance system updates, suspension, maintenance window_
+- **[Bitget announcement on resuming DOG - BTCRUNES withdrawals](https://www.bitget.com/en/support/articles/12560603897838)**
+  ⚪ ★☆☆☆☆ _recovery_ · 2026-10-17 04:22 UTC · _section: maintenance system updates, maintenance window_
+  ℹ️ _“Bitget has now opened the withdrawal service on the DOG - BTCRUNES network.”_
+- **[Bitget announcement on resuming POLYX - Polymesh withdrawals](https://www.bitget.com/en/support/articles/12560603897836)**
+  ⚪ ★☆☆☆☆ _recovery_ · 2026-10-17 02:43 UTC · _section: maintenance system updates, maintenance window_
+  ℹ️ _“Bitget has now opened the withdrawal service on the POLYX - Polymesh network.”_
+- **[Bitget announcement on resuming DOT - Polkadot Asset Hub withdrawals](https://www.bitget.com/en/support/articles/12560603897835)**
+  ⚪ ★☆☆☆☆ _recovery_ · 2026-10-17 02:25 UTC · _section: maintenance system updates, maintenance window_
+  ℹ️ _“Bitget has now opened the withdrawal service on the DOT - Polkadot Asset Hub network.”_
+- **[Bitget announcement on resuming PI - Pi Network deposits and withdrawals](https://www.bitget.com/en/support/articles/12560603897832)**
+  ⚪ ★☆☆☆☆ _recovery_ · 2026-10-16 17:13 UTC · _section: maintenance system updates, maintenance window, deposit/withdrawal change_
+  ℹ️ _“Bitget has now opened the PI - Pi Network deposit and withdrawal services.”_
+- **[Bitget announcement on suspending PI - Pi Network deposit and withdrawal services](https://www.bitget.com/en/support/articles/12560603897831)**
+  🟢 ★★☆☆☆ _routine maintenance_ · 2026-10-16 15:58 UTC · _section: maintenance system updates, suspension, maintenance window, deposit/withdrawal change_
+  ℹ️ _Routine scheduled wallet maintenance — nothing unusual._
+- **[Bitget announcement on resuming CELO - CELO withdrawals](https://www.bitget.com/en/support/articles/12560603897828)**
+  ⚪ ★☆☆☆☆ _recovery_ · 2026-10-16 11:30 UTC · _section: maintenance system updates, maintenance window_
+  ℹ️ _“Bitget has now opened the withdrawal service on the CELO - CELO network.”_
+- **[Bitget announcement on resuming PEAQ - PeaqEvm withdrawals](https://www.bitget.com/en/support/articles/12560603897827)**
+  ⚪ ★☆☆☆☆ _recovery_ · 2026-10-16 11:29 UTC · _section: maintenance system updates, maintenance window_
+  ℹ️ _“Bitget has now opened the withdrawal service on the PEAQ - PeaqEvm network.”_
 
 ## 🟡 Notable — worth a look
 
@@ -46,16 +39,17 @@ _Nothing notable._
 
 ## 🟢 FYI — promos & misc
 
-- **[Announcement on the Strict Prohibition of Misusing the Copy Trading Mechanism for Rule Violations](https://www.bitget.com/en/support/articles/12560603897814)**
-  ⚪ ★☆☆☆☆ _minor_ · 2026-10-16 08:54 UTC
+- **[[Important] Bitget Announcement on Cash Dividend Settlement for DELLUSDT Stock Perps](https://www.bitget.com/en/support/articles/12560603897834)**
+  ⚪ ★☆☆☆☆ _minor_ · 2026-10-17 00:00 UTC
 
 ## 💡 Trade angles
 
-- ⚠️ History: delisted coins keep falling (typically −20…−70%) until removal day as holders are forced out. If you hold it, exit early — the bounces are traps.
-- 🔁 **MGO (Mango)** — Transfers just reopened: any price gap vs other exchanges usually closes fast, and holders who were stuck can now sell. Expect a brief selling wave.
-  `Short @ 0.005691 · TP 0.005406 (−5%) · SL 0.005919 (+4%)`
-- 🔁 **HYPER (Binance)** — While transfers are frozen, the Bitget price can drift away from other exchanges. That gap usually snaps back once transfers reopen — worth tracking.
-- 🔁 **RLC (Ethereum)** — Transfers just reopened: any price gap vs other exchanges usually closes fast, and holders who were stuck can now sell. Expect a brief selling wave.
-  `Short @ 0.8651 · TP 0.8218 (−5%) · SL 0.8997 (+4%)`
+- 🔁 **ILY (BASE)** — While transfers are frozen, the Bitget price can drift away from other exchanges. That gap usually snaps back once transfers reopen — worth tracking.
+- 🔁 **DOG (BTCRUNES)** — Transfers just reopened: any price gap vs other exchanges usually closes fast, and holders who were stuck can now sell. Expect a brief selling wave.
+  `Short @ 0.0009099 · TP 0.0008644 (−5%) · SL 0.0009463 (+4%)`
+- 🔁 **POLYX (Polymesh)** — Transfers just reopened: any price gap vs other exchanges usually closes fast, and holders who were stuck can now sell. Expect a brief selling wave.
+  `Short @ 0.03612 · TP 0.03431 (−5%) · SL 0.03756 (+4%)`
+- 🔁 **DOT (Polkadot)** — Transfers just reopened: any price gap vs other exchanges usually closes fast, and holders who were stuck can now sell. Expect a brief selling wave.
+  `Short @ 1.148 · TP 1.09 (−5%) · SL 1.194 (+4%)`
 
 _Pattern heuristics from historical announcement studies — not financial advice._
