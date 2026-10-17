@@ -1,0 +1,24 @@
+{
+  "name": "@veil/sdk",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "VEIL client SDK: notes, Merkle proofs, association sets, view-key encryption",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@noble/ciphers": "^1.2.1",
+    "@noble/curves": "^1.8.1",
+    "@noble/hashes": "^1.7.1",
+    "circomlibjs": "^0.1.7"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.8"
+  }
+}
