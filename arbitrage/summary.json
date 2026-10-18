@@ -1,10 +1,10 @@
 {
   "summary": {
-    "generatedAt": 1792314144368,
+    "generatedAt": 1792329119163,
     "firstRunAt": 1791991799698,
-    "lastRunAt": 1792314139001,
-    "runs": 24,
-    "spanDays": 3.73,
+    "lastRunAt": 1792329114158,
+    "runs": 25,
+    "spanDays": 3.9,
     "crossExchange": {
       "n": 7,
       "wins": 7,
@@ -35,7 +35,7 @@
       "legPnlQuote": 0,
       "feesQuote": 0,
       "meanHeldHours": 0,
-      "openPnlQuote": -38.85
+      "openPnlQuote": -36.83
     },
     "byVenuePair": {
       "bitget→okx": {
@@ -61,13 +61,13 @@
     },
     "windows": {
       "last24h": {
-        "n": 4,
-        "wins": 4,
+        "n": 2,
+        "wins": 2,
         "winRate": 1,
-        "meanExpectedBps": 5.96,
-        "meanRealisedBps": 6.11,
-        "ci95LowerBps": 1.6,
-        "totalPnlQuote": 2.44,
+        "meanExpectedBps": 3.66,
+        "meanRealisedBps": 3.61,
+        "ci95LowerBps": 3.58,
+        "totalPnlQuote": 0.72,
         "unpriced": 0
       },
       "last7d": {
@@ -88,7 +88,7 @@
       "passed": false,
       "reasons": [
         "only 7 verified samples (need 30)",
-        "ledger spans 3.73 days (need 7)"
+        "ledger spans 3.9 days (need 7)"
       ]
     },
     {
@@ -96,7 +96,7 @@
       "passed": false,
       "reasons": [
         "only 4 verified samples (need 30)",
-        "ledger spans 3.73 days (need 7)"
+        "ledger spans 3.9 days (need 7)"
       ]
     },
     {
@@ -104,7 +104,7 @@
       "passed": false,
       "reasons": [
         "only 0 closed paper positions (need 10)",
-        "ledger spans 3.73 days (need 7)",
+        "ledger spans 3.9 days (need 7)",
         "cumulative closed P&L is 0 (need > 0)",
         "win rate 0% (need 55%)"
       ]
