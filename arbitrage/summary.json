@@ -1,18 +1,18 @@
 {
   "summary": {
-    "generatedAt": 1792538506864,
+    "generatedAt": 1792547883581,
     "firstRunAt": 1791991799698,
-    "lastRunAt": 1792538501443,
-    "runs": 39,
-    "spanDays": 6.33,
+    "lastRunAt": 1792547878110,
+    "runs": 40,
+    "spanDays": 6.44,
     "crossExchange": {
-      "n": 24,
-      "wins": 24,
+      "n": 25,
+      "wins": 25,
       "winRate": 1,
-      "meanExpectedBps": 49.18,
-      "meanRealisedBps": 48.84,
-      "ci95LowerBps": 30.8,
-      "totalPnlQuote": 117.22,
+      "meanExpectedBps": 52.62,
+      "meanRealisedBps": 52.29,
+      "ci95LowerBps": 33.71,
+      "totalPnlQuote": 130.73,
       "unpriced": 0
     },
     "triangular": {
@@ -35,17 +35,17 @@
       "legPnlQuote": -49.46,
       "feesQuote": 3.2,
       "meanHeldHours": 98.14,
-      "openPnlQuote": -17.29
+      "openPnlQuote": -15.51
     },
     "byVenuePair": {
       "bitget→okx": {
-        "n": 23,
-        "wins": 23,
+        "n": 24,
+        "wins": 24,
         "winRate": 1,
-        "meanExpectedBps": 48.7,
-        "meanRealisedBps": 49.13,
-        "ci95LowerBps": 30.28,
-        "totalPnlQuote": 112.98,
+        "meanExpectedBps": 52.31,
+        "meanRealisedBps": 52.71,
+        "ci95LowerBps": 33.35,
+        "totalPnlQuote": 126.49,
         "unpriced": 0
       },
       "okx→bitget": {
@@ -64,20 +64,20 @@
         "n": 8,
         "wins": 8,
         "winRate": 1,
-        "meanExpectedBps": 80.33,
-        "meanRealisedBps": 82.49,
-        "ci95LowerBps": 44.5,
-        "totalPnlQuote": 65.98,
+        "meanExpectedBps": 88.06,
+        "meanRealisedBps": 90.19,
+        "ci95LowerBps": 50.26,
+        "totalPnlQuote": 72.15,
         "unpriced": 0
       },
       "last7d": {
-        "n": 24,
-        "wins": 24,
+        "n": 25,
+        "wins": 25,
         "winRate": 1,
-        "meanExpectedBps": 49.18,
-        "meanRealisedBps": 48.84,
-        "ci95LowerBps": 30.8,
-        "totalPnlQuote": 117.22,
+        "meanExpectedBps": 52.62,
+        "meanRealisedBps": 52.29,
+        "ci95LowerBps": 33.71,
+        "totalPnlQuote": 130.73,
         "unpriced": 0
       }
     }
@@ -87,8 +87,8 @@
       "strategy": "cross-exchange",
       "passed": false,
       "reasons": [
-        "only 24 verified samples (need 30)",
-        "ledger spans 6.33 days (need 7)"
+        "only 25 verified samples (need 30)",
+        "ledger spans 6.44 days (need 7)"
       ]
     },
     {
@@ -96,7 +96,7 @@
       "passed": false,
       "reasons": [
         "only 4 verified samples (need 30)",
-        "ledger spans 6.33 days (need 7)"
+        "ledger spans 6.44 days (need 7)"
       ]
     },
     {
@@ -104,7 +104,7 @@
       "passed": false,
       "reasons": [
         "only 1 closed paper positions (need 10)",
-        "ledger spans 6.33 days (need 7)",
+        "ledger spans 6.44 days (need 7)",
         "cumulative closed P&L is -59.7 (need > 0)",
         "win rate 0% (need 55%)"
       ]
