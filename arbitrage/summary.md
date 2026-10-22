@@ -1,28 +1,35 @@
-# Paper-trading ledger — 2026-10-22 00:37 UTC
+# Paper-trading ledger — 2026-10-22 06:02 UTC
 
-45 runs over 7.38 days (since 2026-10-14). Every detected opportunity is re-priced a few seconds later at real quotes; "realised" is what a full-size taker fill would have made then, net of fees.
+46 runs over 7.61 days (since 2026-10-14). Every detected opportunity is re-priced a few seconds later at real quotes; "realised" is what a full-size taker fill would have made then, net of fees.
 
 ## Verified opportunities
 
 | Strategy | Samples | Survived | Expected bps | Realised bps | 95% CI low | Paper P&L |
 | --- | --- | --- | --- | --- | --- | --- |
-| Cross-exchange (all) | 31 | 100% | +68.2 | +68.0 | +47.5 | +$210.78 |
-| Cross-exchange (24 h) | 7 | 100% | +133.4 | +133.7 | +95.4 | +$93.56 |
-| Cross-exchange (7 d) | 31 | 100% | +68.2 | +68.0 | +47.5 | +$210.78 |
+| Cross-exchange (all) | 41 | 88% | +65.2 | +50.6 | +26.1 | +$207.46 |
+| Cross-exchange (24 h) | 16 | 69% | +84.8 | +48.0 | -8.8 | +$76.73 |
+| Cross-exchange (7 d) | 41 | 88% | +65.2 | +50.6 | +26.1 | +$207.46 |
 | Triangular (all) | 16 | 100% | +34.0 | +34.1 | +22.4 | +$5.59 |
 
 ### By venue pair
 
 | Pair | Samples | Survived | Expected bps | Realised bps | 95% CI low | Paper P&L |
 | --- | --- | --- | --- | --- | --- | --- |
-| bitget→okx | 30 | 100% | +68.5 | +68.8 | +47.7 | +$206.54 |
-| okx→bitget | 1 | 100% | +60.1 | +42.4 | n/a | +$4.24 |
+| bitget→okx | 32 | 97% | +69.4 | +66.3 | +42.9 | +$212.14 |
+| okx→bitget | 2 | 50% | +48.7 | -9.9 | -112.5 | −$1.99 |
+| binance→okx | 1 | 100% | +165.6 | +168.9 | n/a | +$16.89 |
+| binance→bybit | 1 | 100% | +39.0 | +35.8 | n/a | +$3.58 |
+| bitget→bybit | 1 | 100% | +35.5 | +35.8 | n/a | +$3.58 |
+| okx→bybit | 1 | 0% | +32.8 | -184.7 | n/a | −$18.46 |
+| bybit→bitget | 1 | 0% | +32.3 | -62.9 | n/a | −$6.29 |
+| okx→binance | 1 | 100% | +27.2 | +27.7 | n/a | +$2.77 |
+| binance→bitget | 1 | 0% | +21.8 | -47.6 | n/a | −$4.76 |
 
 ## Carry positions (long spot / short perp, paper)
 
 | Open | Closed | Wins | Funding | Leg P&L | Fees | Closed P&L | Open P&L | Mean hold |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 10 | 1 | 0% | −$7.04 | −$49.46 | −$3.20 | **−$59.70** | −$12.07 | 98 h |
+| 10 | 1 | 0% | −$7.04 | −$49.46 | −$3.20 | **−$59.70** | −$11.49 | 98 h |
 
 ## Go-live gate
 
