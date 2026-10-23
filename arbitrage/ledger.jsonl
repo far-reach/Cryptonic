@@ -678,3 +678,14 @@
 {"type":"carry-mark","t":1792740183001,"id":"abae800eb961","fundingRate":0.00005,"accruedFunding":2.96,"legPnl":-1.26}
 {"type":"carry-mark","t":1792740183001,"id":"9dd59640841d","fundingRate":0.00005,"accruedFunding":5.55,"legPnl":1.39}
 {"type":"carry-mark","t":1792740183001,"id":"63d3d0ded6eb","fundingRate":0.00005,"accruedFunding":0.03,"legPnl":-2.45}
+{"type":"run","t":1792759841177,"quoteCounts":{"bitget":3587,"binance":0,"bybit":0,"okx":1191},"errors":["binance spot: binance spot: HTTP 451 for https://api.binance.com/api/v3/ticker/bookTicker","bybit spot: bybit spot: HTTP 403 for https://api.bybit.com/v5/market/tickers?category=spot","bybit perps: bybit perp: HTTP 403 for https://api.bybit.com/v5/market/tickers?category=linear","binance perps: binance premiumIndex: HTTP 451 for https://fapi.binance.com/fapi/v1/premiumIndex"]}
+{"type":"carry-mark","t":1792759841177,"id":"aaeafb77cbb8","fundingRate":0.00005,"accruedFunding":3.6,"legPnl":-0.98}
+{"type":"carry-mark","t":1792759841177,"id":"714580b27cb5","fundingRate":0.00005,"accruedFunding":4.82,"legPnl":-2.88}
+{"type":"carry-mark","t":1792759841177,"id":"fe2ee8b903c0","fundingRate":0.00005,"accruedFunding":3.92,"legPnl":-0.13}
+{"type":"carry-mark","t":1792759841177,"id":"493cc436ec32","fundingRate":0.0000688034267775,"accruedFunding":5.36,"legPnl":0.16}
+{"type":"carry-mark","t":1792759841177,"id":"d97a6341d697","fundingRate":0.0000592902393921,"accruedFunding":2.98,"legPnl":-4.35}
+{"type":"carry-mark","t":1792759841177,"id":"695c0e9ad831","fundingRate":0.00005,"accruedFunding":4.25,"legPnl":0.95}
+{"type":"carry-mark","t":1792759841177,"id":"7f129a6b7b80","fundingRate":0.0001712122751167,"accruedFunding":4.82,"legPnl":-0.95}
+{"type":"carry-mark","t":1792759841177,"id":"abae800eb961","fundingRate":0.00005,"accruedFunding":3.03,"legPnl":-0.29}
+{"type":"carry-mark","t":1792759841177,"id":"9dd59640841d","fundingRate":-0.0000420974383925,"accruedFunding":5.49,"legPnl":3.77}
+{"type":"carry-mark","t":1792759841177,"id":"63d3d0ded6eb","fundingRate":0.00005,"accruedFunding":0.1,"legPnl":-1.62}
