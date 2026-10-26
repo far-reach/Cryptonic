@@ -1,46 +1,40 @@
-# Bitget daily briefing — 2026-10-25
+# Bitget daily briefing — 2026-10-26
 
 _Last 24h of the [Bitget announcement center](https://www.bitget.com/asia/support/announcement-center)._
 
-**TL;DR:** 12 critical · 0 notable · 0 FYI
+**TL;DR:** 10 critical · 0 notable · 0 FYI
 
-🟡 **Environment:** _Normal — tradeable activity, nothing alarming_
+🔴 **Environment:** _Turbulent — high-impact events in play_
 
 ## 🔴 Critical — act or verify today
 
-- **[Bitget to adjust funding rate interval for TUSDT perpetual futures](https://www.bitget.com/en/support/articles/12560603898730)**
-  🟡 ★★★☆☆ _affects positions_ · 2026-10-25 08:13 UTC · _section: product updates, contract parameter change_
-  ℹ️ _Bitget is tightening this contract's risk limits — usually a response to volatility or thin liquidity._
-- **[Bitget announcement on resuming ETH - Arbitrum One withdrawals](https://www.bitget.com/en/support/articles/12560603898729)**
-  ⚪ ★☆☆☆☆ _recovery_ · 2026-10-25 04:33 UTC · _section: maintenance system updates, maintenance window_
-  ℹ️ _“Bitget has now opened the withdrawal service on the ETH - Arbitrum One network.”_
-- **[Bitget announcement on resuming USDC - APTOS withdrawals](https://www.bitget.com/en/support/articles/12560603898728)**
-  ⚪ ★☆☆☆☆ _recovery_ · 2026-10-25 04:20 UTC · _section: maintenance system updates, maintenance window_
-  ℹ️ _“Bitget has now opened the withdrawal service on the USDC - APTOS network.”_
-- **[Bitget announcement on resuming USDC - Solana withdrawals](https://www.bitget.com/en/support/articles/12560603898727)**
-  ⚪ ★☆☆☆☆ _recovery_ · 2026-10-25 03:04 UTC · _section: maintenance system updates, maintenance window_
-  ℹ️ _“Bitget has now opened the withdrawal service on the USDC - Solana network.”_
-- **[Bitget announcement on resuming HYPER - Binance Smart Chain withdrawals](https://www.bitget.com/en/support/articles/12560603898726)**
-  ⚪ ★☆☆☆☆ _recovery_ · 2026-10-25 02:40 UTC · _section: maintenance system updates, maintenance window_
-  ℹ️ _“Bitget has now opened the withdrawal service on the HYPER - Binance Smart Chain network.”_
-- **[Bitget announcement on suspending HYPER - Binance Smart Chain network withdrawal service](https://www.bitget.com/en/support/articles/12560603898725)**
-  🟢 ★★☆☆☆ _routine maintenance_ · 2026-10-25 01:53 UTC · _section: maintenance system updates, suspension, maintenance window_
+- **[Bitget announcement on suspending CUDIS - Binance Smart Chain deposit service](https://www.bitget.com/en/support/articles/12560603898834)**
+  🟢 ★★☆☆☆ _routine maintenance_ · 2026-10-26 11:27 UTC · _section: maintenance system updates, suspension, maintenance window_
   ℹ️ _Routine scheduled wallet maintenance — nothing unusual._
-- **[Bitget announcement on suspending ETH - Arbitrum One network withdrawal service](https://www.bitget.com/en/support/articles/12560603898724)**
-  🟢 ★★☆☆☆ _routine maintenance_ · 2026-10-25 01:21 UTC · _section: maintenance system updates, suspension, maintenance window_
+- **[Bitget announcement on resuming BABY - Babylon withdrawals](https://www.bitget.com/en/support/articles/12560603898739)**
+  ⚪ ★☆☆☆☆ _recovery_ · 2026-10-26 03:08 UTC · _section: maintenance system updates, maintenance window_
+  ℹ️ _“Bitget has now opened the withdrawal service on the BABY - Babylon network.”_
+- **[Bitget announcement on resuming NEWT - Binance Smart Chain withdrawals](https://www.bitget.com/en/support/articles/12560603898738)**
+  ⚪ ★☆☆☆☆ _recovery_ · 2026-10-26 03:05 UTC · _section: maintenance system updates, maintenance window_
+  ℹ️ _“Bitget has now opened the withdrawal service on the NEWT - Binance Smart Chain network.”_
+- **[Bitget announcement on resuming USDC - Binance Smart Chain withdrawals](https://www.bitget.com/en/support/articles/12560603898737)**
+  ⚪ ★☆☆☆☆ _recovery_ · 2026-10-26 03:04 UTC · _section: maintenance system updates, maintenance window_
+  ℹ️ _“Bitget has now opened the withdrawal service on the USDC - Binance Smart Chain network.”_
+- **[Bitget announcement on resuming HOLO - Binance Smart Chain withdrawals](https://www.bitget.com/en/support/articles/12560603898736)**
+  ⚪ ★☆☆☆☆ _recovery_ · 2026-10-26 03:03 UTC · _section: maintenance system updates, maintenance window_
+  ℹ️ _“Bitget has now opened the withdrawal service on the HOLO - Binance Smart Chain network.”_
+- **[[Important] Bitget to delist VELODROMEUSDT futures and related services](https://www.bitget.com/en/support/articles/12560603898735)**
+  🔴 ★★★★★ _forced-seller event_ · 2026-10-26 02:17 UTC · _section: product updates, delisting_
+- **[Bitget announcement on suspending HOLO - Binance Smart Chain network withdrawal service](https://www.bitget.com/en/support/articles/12560603898734)**
+  🟢 ★★☆☆☆ _routine maintenance_ · 2026-10-26 01:08 UTC · _section: maintenance system updates, suspension, maintenance window_
   ℹ️ _Routine scheduled wallet maintenance — nothing unusual._
-- **[Bitget announcement on suspending USDC - APTOS network withdrawal service](https://www.bitget.com/en/support/articles/12560603898723)**
-  🟢 ★★☆☆☆ _routine maintenance_ · 2026-10-25 00:30 UTC · _section: maintenance system updates, suspension, maintenance window_
+- **[Bitget announcement on suspending NEWT - Binance Smart Chain network withdrawal service](https://www.bitget.com/en/support/articles/12560603898733)**
+  🟢 ★★☆☆☆ _routine maintenance_ · 2026-10-26 01:02 UTC · _section: maintenance system updates, suspension, maintenance window_
   ℹ️ _Routine scheduled wallet maintenance — nothing unusual._
-- **[Bitget announcement on suspending KAT - Katana network withdrawal service](https://www.bitget.com/en/support/articles/12560603898722)**
-  🟡 ★★★☆☆ _unexplained suspension_ · 2026-10-24 22:58 UTC · _section: maintenance system updates, suspension, maintenance window_
-- **[Bitget announcement on resuming KAT - Katana withdrawals](https://www.bitget.com/en/support/articles/12560603898721)**
-  ⚪ ★☆☆☆☆ _recovery_ · 2026-10-24 22:41 UTC · _section: maintenance system updates, maintenance window_
-- **[Bitget announcement on suspending KAT - Katana network withdrawal service](https://www.bitget.com/en/support/articles/12560603898720)**
-  🟡 ★★★☆☆ _unexplained suspension_ · 2026-10-24 22:36 UTC · _section: maintenance system updates, suspension, maintenance window_
-- **[Bitget to adjust funding rate interval for ORDERUSDT perpetual futures](https://www.bitget.com/en/support/articles/12560603898719)**
-  🟡 ★★★☆☆ _affects positions_ · 2026-10-24 16:11 UTC · _section: product updates, contract parameter change_
-  ℹ️ _Bitget is tightening this contract's risk limits — usually a response to volatility or thin liquidity._
+- **[Bitget announcement on suspending USDC - Binance Smart Chain network withdrawal service](https://www.bitget.com/en/support/articles/12560603898732)**
+  🟡 ★★★☆☆ _unexplained suspension_ · 2026-10-26 00:56 UTC · _section: maintenance system updates, suspension, maintenance window_
+- **[Bitget announcement on suspending BABY - Babylon network withdrawal service](https://www.bitget.com/en/support/articles/12560603898731)**
+  🟡 ★★★☆☆ _unexplained suspension_ · 2026-10-25 15:34 UTC · _section: maintenance system updates, suspension, maintenance window_
 
 ## 🟡 Notable — worth a look
 
@@ -52,11 +46,11 @@ _Nothing else._
 
 ## 💡 Trade angles
 
-- 🔁 **ETH (Arbitrum)** — Transfers just reopened: any price gap vs other exchanges usually closes fast, and holders who were stuck can now sell. Expect a brief selling wave.
-  `Short @ 2328 · TP 2211 (−5%) · SL 2421 (+4%)`
-- 🔁 **USDC (APTOS)** — Transfers just reopened: any price gap vs other exchanges usually closes fast, and holders who were stuck can now sell. Expect a brief selling wave.
-- 🔁 **USDC (Solana)** — Transfers just reopened: any price gap vs other exchanges usually closes fast, and holders who were stuck can now sell. Expect a brief selling wave.
-- 🔁 **HYPER (Binance)** — Transfers just reopened: any price gap vs other exchanges usually closes fast, and holders who were stuck can now sell. Expect a brief selling wave.
-  `Short @ 0.06221 · TP 0.0591 (−5%) · SL 0.0647 (+4%)`
+- ⚠️ **VELODROMEUSDT perp** — History: delisted coins keep falling (typically −20…−70%) until removal day as holders are forced out. If you hold it, exit early — the bounces are traps.
+- 🔁 **CUDIS (Binance)** — While transfers are frozen, the Bitget price can drift away from other exchanges. That gap usually snaps back once transfers reopen — worth tracking.
+- 🔁 **BABY (Babylon)** — Transfers just reopened: any price gap vs other exchanges usually closes fast, and holders who were stuck can now sell. Expect a brief selling wave.
+  `Short @ 0.01416 · TP 0.01345 (−5%) · SL 0.01472 (+4%)`
+- 🔁 **NEWT (Binance)** — Transfers just reopened: any price gap vs other exchanges usually closes fast, and holders who were stuck can now sell. Expect a brief selling wave.
+  `Short @ 0.04306 · TP 0.04091 (−5%) · SL 0.04478 (+4%)`
 
 _Pattern heuristics from historical announcement studies — not financial advice._
