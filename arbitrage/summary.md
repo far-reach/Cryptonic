@@ -1,22 +1,22 @@
-# Paper-trading ledger — 2026-10-30 01:53 UTC
+# Paper-trading ledger — 2026-10-30 08:31 UTC
 
-88 runs over 15.43 days (since 2026-10-14). Every detected opportunity is re-priced a few seconds later at real quotes; "realised" is what a full-size taker fill would have made then, net of fees.
+89 runs over 15.71 days (since 2026-10-14). Every detected opportunity is re-priced a few seconds later at real quotes; "realised" is what a full-size taker fill would have made then, net of fees.
 
 ## Verified opportunities
 
 | Strategy | Samples | Survived | Expected bps | Realised bps | 95% CI low | Paper P&L |
 | --- | --- | --- | --- | --- | --- | --- |
-| Cross-exchange (all) | 69 | 87% | +64.3 | +51.8 | +32.6 | +$357.70 |
-| Cross-exchange (24 h) | 5 | 80% | +53.0 | +44.2 | -0.5 | +$22.10 |
-| Cross-exchange (7 d) | 25 | 84% | +51.5 | +38.9 | +10.2 | +$97.35 |
+| Cross-exchange (all) | 71 | 87% | +65.1 | +53.1 | +34.2 | +$377.19 |
+| Cross-exchange (24 h) | 7 | 86% | +64.1 | +59.4 | +16.6 | +$41.59 |
+| Cross-exchange (7 d) | 27 | 85% | +54.5 | +43.3 | +15.5 | +$116.84 |
 | Triangular (all) | 20 | 100% | +39.7 | +39.8 | +24.0 | +$5.69 |
 
 ### By venue pair
 
 | Pair | Samples | Survived | Expected bps | Realised bps | 95% CI low | Paper P&L |
 | --- | --- | --- | --- | --- | --- | --- |
-| bitget→okx | 52 | 96% | +71.3 | +69.8 | +51.0 | +$363.15 |
-| okx→bitget | 6 | 50% | +53.2 | +1.1 | -85.3 | +$0.65 |
+| bitget→okx | 53 | 96% | +72.6 | +71.4 | +52.6 | +$378.19 |
+| okx→bitget | 7 | 57% | +52.1 | +7.3 | -66.7 | +$5.10 |
 | binance→okx | 2 | 50% | +84.5 | +40.5 | -211.3 | +$8.09 |
 | binance→bybit | 2 | 100% | +32.1 | +30.5 | +20.2 | +$6.10 |
 | bitget→bybit | 2 | 100% | +29.1 | +29.3 | +16.7 | +$5.87 |
@@ -30,7 +30,7 @@
 
 | Open | Closed | Wins | Funding | Leg P&L | Fees | Closed P&L | Open P&L | Mean hold |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 10 | 3 | 33% | −$1.15 | −$54.47 | −$9.40 | **−$65.02** | +$18.04 | 222 h |
+| 10 | 3 | 33% | −$1.15 | −$54.47 | −$9.40 | **−$65.02** | +$15.84 | 222 h |
 
 ## Go-live gate
 
