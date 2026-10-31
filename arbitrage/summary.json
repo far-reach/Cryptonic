@@ -1,0 +1,188 @@
+{
+  "summary": {
+    "generatedAt": 1793463491919,
+    "firstRunAt": 1791991799698,
+    "lastRunAt": 1793463486495,
+    "runs": 95,
+    "spanDays": 17.03,
+    "crossExchange": {
+      "n": 83,
+      "wins": 73,
+      "winRate": 0.88,
+      "meanExpectedBps": 70.4,
+      "meanRealisedBps": 60.69,
+      "ci95LowerBps": 43.09,
+      "totalPnlQuote": 503.73,
+      "unpriced": 0
+    },
+    "triangular": {
+      "n": 22,
+      "wins": 22,
+      "winRate": 1,
+      "meanExpectedBps": 38.93,
+      "meanRealisedBps": 39.64,
+      "ci95LowerBps": 25.27,
+      "totalPnlQuote": 5.71,
+      "unpriced": 0
+    },
+    "carry": {
+      "open": 10,
+      "closed": 3,
+      "wins": 1,
+      "winRate": 0.33,
+      "totalPnlQuote": -65.02,
+      "fundingQuote": -1.15,
+      "legPnlQuote": -54.47,
+      "feesQuote": 9.4,
+      "meanHeldHours": 222.31,
+      "openPnlQuote": 24.9
+    },
+    "byVenuePair": {
+      "bitget→okx": {
+        "n": 63,
+        "wins": 61,
+        "winRate": 0.97,
+        "meanExpectedBps": 80.36,
+        "meanRealisedBps": 80.15,
+        "ci95LowerBps": 62.74,
+        "totalPnlQuote": 504.97,
+        "unpriced": 0
+      },
+      "okx→bitget": {
+        "n": 9,
+        "wins": 5,
+        "winRate": 0.56,
+        "meanExpectedBps": 40.99,
+        "meanRealisedBps": 5.39,
+        "ci95LowerBps": -51.18,
+        "totalPnlQuote": 4.86,
+        "unpriced": 0
+      },
+      "binance→okx": {
+        "n": 2,
+        "wins": 1,
+        "winRate": 0.5,
+        "meanExpectedBps": 84.51,
+        "meanRealisedBps": 40.47,
+        "ci95LowerBps": -211.34,
+        "totalPnlQuote": 8.09,
+        "unpriced": 0
+      },
+      "binance→bybit": {
+        "n": 2,
+        "wins": 2,
+        "winRate": 1,
+        "meanExpectedBps": 32.1,
+        "meanRealisedBps": 30.51,
+        "ci95LowerBps": 20.17,
+        "totalPnlQuote": 6.1,
+        "unpriced": 0
+      },
+      "bitget→bybit": {
+        "n": 2,
+        "wins": 2,
+        "winRate": 1,
+        "meanExpectedBps": 29.11,
+        "meanRealisedBps": 29.33,
+        "ci95LowerBps": 16.67,
+        "totalPnlQuote": 5.87,
+        "unpriced": 0
+      },
+      "okx→bybit": {
+        "n": 1,
+        "wins": 0,
+        "winRate": 0,
+        "meanExpectedBps": 32.79,
+        "meanRealisedBps": -184.65,
+        "ci95LowerBps": null,
+        "totalPnlQuote": -18.46,
+        "unpriced": 0
+      },
+      "bybit→bitget": {
+        "n": 1,
+        "wins": 0,
+        "winRate": 0,
+        "meanExpectedBps": 32.32,
+        "meanRealisedBps": -62.87,
+        "ci95LowerBps": null,
+        "totalPnlQuote": -6.29,
+        "unpriced": 0
+      },
+      "okx→binance": {
+        "n": 1,
+        "wins": 1,
+        "winRate": 1,
+        "meanExpectedBps": 27.17,
+        "meanRealisedBps": 27.74,
+        "ci95LowerBps": null,
+        "totalPnlQuote": 2.77,
+        "unpriced": 0
+      },
+      "binance→bitget": {
+        "n": 1,
+        "wins": 0,
+        "winRate": 0,
+        "meanExpectedBps": 21.81,
+        "meanRealisedBps": -47.64,
+        "ci95LowerBps": null,
+        "totalPnlQuote": -4.76,
+        "unpriced": 0
+      },
+      "bybit→okx": {
+        "n": 1,
+        "wins": 1,
+        "winRate": 1,
+        "meanExpectedBps": 6.23,
+        "meanRealisedBps": 5.81,
+        "ci95LowerBps": null,
+        "totalPnlQuote": 0.58,
+        "unpriced": 0
+      }
+    },
+    "windows": {
+      "last24h": {
+        "n": 10,
+        "wins": 9,
+        "winRate": 0.9,
+        "meanExpectedBps": 99.19,
+        "meanRealisedBps": 102.41,
+        "ci95LowerBps": 55.45,
+        "totalPnlQuote": 102.42,
+        "unpriced": 0
+      },
+      "last7d": {
+        "n": 31,
+        "wins": 29,
+        "winRate": 0.94,
+        "meanExpectedBps": 77.49,
+        "meanRealisedBps": 77.82,
+        "ci95LowerBps": 55.15,
+        "totalPnlQuote": 241.26,
+        "unpriced": 0
+      }
+    }
+  },
+  "gates": [
+    {
+      "strategy": "cross-exchange",
+      "passed": true,
+      "reasons": []
+    },
+    {
+      "strategy": "triangular",
+      "passed": false,
+      "reasons": [
+        "only 22 verified samples (need 30)"
+      ]
+    },
+    {
+      "strategy": "carry",
+      "passed": false,
+      "reasons": [
+        "only 3 closed paper positions (need 10)",
+        "cumulative closed P&L is -65.02 (need > 0)",
+        "win rate 33% (need 55%)"
+      ]
+    }
+  ]
+}
