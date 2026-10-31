@@ -1,49 +1,53 @@
-# Bitget daily briefing — 2026-10-30
+# Bitget daily briefing — 2026-10-31
 
 _Last 24h of the [Bitget announcement center](https://www.bitget.com/asia/support/announcement-center)._
 
-**TL;DR:** 11 critical · 3 notable · 0 FYI
+**TL;DR:** 13 critical · 1 notable · 0 FYI
 
-🔴 **Environment:** _Turbulent — high-impact events in play_
+🟡 **Environment:** _Normal — tradeable activity, nothing alarming_
 
 ## 🔴 Critical — act or verify today
 
-- **[Notice of Delisting 6 Spot Trading Pairs on November 6, 2026](https://www.bitget.com/en/support/articles/12560603899149)**
-  🔴 ★★★★★ _forced-seller event_ · 2026-10-30 10:00 UTC · _section: symbol delisting, delisting_
-- **[Bitget announcement on suspending ALPINE - Binance Smart Chain network withdrawal service](https://www.bitget.com/en/support/articles/12560603899223)**
-  🟢 ★★☆☆☆ _routine maintenance_ · 2026-10-30 09:21 UTC · _section: maintenance system updates, suspension, maintenance window_
+- **[Bitget announcement on suspending USDC - Solana network withdrawal service](https://www.bitget.com/en/support/articles/12560603899266)**
+  🟢 ★★☆☆☆ _routine maintenance_ · 2026-10-31 11:16 UTC · _section: maintenance system updates, suspension, maintenance window_
   ℹ️ _Routine scheduled wallet maintenance — nothing unusual._
-- **[Announcement on rToken and Bitget Stock+ Trading Hours Transitioning to US Standard Time](https://www.bitget.com/en/support/articles/12560603899222)**
-  🟠 ★★★★☆ _token migration_ · 2026-10-30 09:11 UTC · _section: maintenance system updates, maintenance window_
-  ℹ️ _Token contract migration — old tokens are being exchanged for new ones._
-- **[Bitget announcement on resuming PCI - Pay Coin deposits and withdrawals](https://www.bitget.com/en/support/articles/12560603899221)**
-  ⚪ ★☆☆☆☆ _recovery_ · 2026-10-30 08:46 UTC · _section: maintenance system updates, maintenance window, deposit/withdrawal change_
-  ℹ️ _“Bitget has now opened the PCI - Pay Coin deposit and withdrawal services.”_
-- **[Bitget announcement on suspending BMT - Solana network withdrawal service](https://www.bitget.com/en/support/articles/12560603899218)**
-  🟢 ★★☆☆☆ _routine maintenance_ · 2026-10-30 07:25 UTC · _section: maintenance system updates, suspension, maintenance window_
+- **[Bitget to adjust the leverage, positions, and maintenance margin rate for the XAUUSDT,XAGUSDT perpetual futures pairs](https://www.bitget.com/en/support/articles/12560603899265)**
+  🟡 ★★★☆☆ _affects positions_ · 2026-10-31 10:49 UTC · _section: product updates, maintenance window, contract parameter change_
+  ℹ️ _Bitget is tightening this contract's risk limits — usually a response to volatility or thin liquidity._
+- **[Bitget announcement on suspending USDC - Binance Smart Chain network withdrawal service](https://www.bitget.com/en/support/articles/12560603899264)**
+  🟢 ★★☆☆☆ _routine maintenance_ · 2026-10-31 05:37 UTC · _section: maintenance system updates, suspension, maintenance window_
   ℹ️ _Routine scheduled wallet maintenance — nothing unusual._
-- **[Bitget announcement on suspending PCI - Pay Coin deposit and withdrawal services](https://www.bitget.com/en/support/articles/12560603899217)**
-  🟢 ★★☆☆☆ _routine maintenance_ · 2026-10-30 07:21 UTC · _section: maintenance system updates, suspension, maintenance window, deposit/withdrawal change_
+- **[Bitget to adjust funding rate interval and maximum/minimum limits for QUSDT perpetual futures](https://www.bitget.com/en/support/articles/12560603899263)**
+  🟡 ★★★☆☆ _affects positions_ · 2026-10-31 04:22 UTC · _section: product updates, contract parameter change_
+  ℹ️ _Bitget is tightening this contract's risk limits — usually a response to volatility or thin liquidity._
+- **[Bitget announcement on suspending RUNE - THORChain network withdrawal service](https://www.bitget.com/en/support/articles/12560603899262)**
+  🟢 ★★☆☆☆ _routine maintenance_ · 2026-10-31 04:09 UTC · _section: maintenance system updates, suspension, maintenance window_
   ℹ️ _Routine scheduled wallet maintenance — nothing unusual._
-- **[Bitget Has Completed the Warden Protocol (WARD) Contract Swap](https://www.bitget.com/en/support/articles/12560603899215)**
-  🟡 ★★★☆☆ _needs review_ · 2026-10-30 07:00 UTC · _section: maintenance system updates, maintenance window, token swap/migration_
-- **[Notice on Bitget CFD system maintenance](https://www.bitget.com/en/support/articles/12560603899150)**
-  🟡 ★★★☆☆ _needs review_ · 2026-10-30 06:00 UTC · _section: maintenance system updates, maintenance window_
-- **[Bitget announcement on suspending ZIL - ZILEVM deposit and withdrawal services](https://www.bitget.com/en/support/articles/12560603899212)**
-  🟡 ★★★☆☆ _unexplained suspension_ · 2026-10-30 05:59 UTC · _section: maintenance system updates, suspension, maintenance window, deposit/withdrawal change_
-- **[Bitget announcement on suspending TRX - Tron network withdrawal service](https://www.bitget.com/en/support/articles/12560603899147)**
-  🟡 ★★★☆☆ _unexplained suspension_ · 2026-10-29 22:47 UTC · _section: maintenance system updates, suspension, maintenance window_
-- **[Bitget announcement on suspending BLASTUP - Blast network withdrawal service](https://www.bitget.com/en/support/articles/12560603899145)**
-  🟡 ★★★☆☆ _unexplained suspension_ · 2026-10-29 17:13 UTC · _section: maintenance system updates, suspension, maintenance window_
+- **[Bitget announcement on resuming USDT - Solana withdrawals](https://www.bitget.com/en/support/articles/12560603899261)**
+  ⚪ ★☆☆☆☆ _recovery_ · 2026-10-31 02:09 UTC · _section: maintenance system updates, maintenance window_
+  ℹ️ _“Bitget has now opened the withdrawal service on the USDT - Solana network.”_
+- **[Bitget announcement on resuming USDT - Tron withdrawals](https://www.bitget.com/en/support/articles/12560603899260)**
+  ⚪ ★☆☆☆☆ _recovery_ · 2026-10-31 02:07 UTC · _section: maintenance system updates, maintenance window_
+  ℹ️ _“Bitget has now opened the withdrawal service on the USDT - Tron network.”_
+- **[Bitget announcement on resuming USDT - AVAX C-Chain withdrawals](https://www.bitget.com/en/support/articles/12560603899259)**
+  ⚪ ★☆☆☆☆ _recovery_ · 2026-10-31 02:05 UTC · _section: maintenance system updates, maintenance window_
+  ℹ️ _“Bitget has now opened the withdrawal service on the USDT - AVAX C-Chain network.”_
+- **[Bitget announcement on resuming USDT - Plasma withdrawals](https://www.bitget.com/en/support/articles/12560603899258)**
+  ⚪ ★☆☆☆☆ _recovery_ · 2026-10-31 02:05 UTC · _section: maintenance system updates, maintenance window_
+- **[Bitget announcement on suspending USDT - Tron network withdrawal service](https://www.bitget.com/en/support/articles/12560603899257)**
+  🟡 ★★★☆☆ _unexplained suspension_ · 2026-10-31 01:34 UTC · _section: maintenance system updates, suspension, maintenance window_
+- **[Bitget announcement on suspending USDT - AVAX C-Chain network withdrawal service](https://www.bitget.com/en/support/articles/12560603899256)**
+  🟡 ★★★☆☆ _unexplained suspension_ · 2026-10-31 00:03 UTC · _section: maintenance system updates, suspension, maintenance window_
+- **[Bitget announcement on suspending USDT - Plasma network withdrawal service](https://www.bitget.com/en/support/articles/12560603899255)**
+  🟡 ★★★☆☆ _unexplained suspension_ · 2026-10-30 23:22 UTC · _section: maintenance system updates, suspension, maintenance window_
+- **[Bitget to adjust funding rate interval for ERAUSDT perpetual futures](https://www.bitget.com/en/support/articles/12560603899251)**
+  🟡 ★★★☆☆ _affects positions_ · 2026-10-30 18:11 UTC · _section: product updates, contract parameter change_
+  ℹ️ _Bitget is tightening this contract's risk limits — usually a response to volatility or thin liquidity._
 
 ## 🟡 Notable — worth a look
 
-- **[Self-Service Management for OAuth Broker Fast API Configuration](https://www.bitget.com/en/support/articles/12560603899224)**
-  🟢 ★★☆☆☆ _integration change_ · 2026-10-30 09:55 UTC · _section: api trading, API change_
-- **[Bitget FastAPI Signature Algorithm Upgrade (MD5withRSA → SHA256withRSA)](https://www.bitget.com/en/support/articles/12560603899220)**
-  🟢 ★★☆☆☆ _notable_ · 2026-10-30 08:40 UTC · _section: api trading_
-- **[Bitget Lists FTNTUSDT, EWZSUSDT, PFEUSDT Popular Stock Perpetual Futures](https://www.bitget.com/en/support/articles/12560603899143)**
-  🟡 ★★★☆☆ _listing event_ · 2026-10-29 14:26 UTC · _section: coin listings, new listing, derivatives/margin update_
+- **[【Important】Bitget announcement on the SNDK futures stock split](https://www.bitget.com/en/support/articles/12560603899242)**
+  🟢 ★★☆☆☆ _notable_ · 2026-10-31 08:50 UTC · _derivatives/margin update_
 
 ## 🟢 FYI — promos & misc
 
@@ -51,10 +55,9 @@ _Nothing else._
 
 ## 💡 Trade angles
 
-- ⚠️ History: delisted coins keep falling (typically −20…−70%) until removal day as holders are forced out. If you hold it, exit early — the bounces are traps.
-- 🔁 **ALPINE (Binance)** — While transfers are frozen, the Bitget price can drift away from other exchanges. That gap usually snaps back once transfers reopen — worth tracking.
-- 🔁 **PCI (Pay)** — Transfers just reopened: any price gap vs other exchanges usually closes fast, and holders who were stuck can now sell. Expect a brief selling wave.
-  `Short @ 0.0362 · TP 0.03439 (−5%) · SL 0.03765 (+4%)`
-- 🔁 **BMT (Solana)** — While transfers are frozen, the Bitget price can drift away from other exchanges. That gap usually snaps back once transfers reopen — worth tracking.
+- 🔁 **USDC (Solana)** — While transfers are frozen, the Bitget price can drift away from other exchanges. That gap usually snaps back once transfers reopen — worth tracking.
+- 🔁 **USDC (Binance)** — While transfers are frozen, the Bitget price can drift away from other exchanges. That gap usually snaps back once transfers reopen — worth tracking.
+- 🔁 **RUNE (THORChain)** — While transfers are frozen, the Bitget price can drift away from other exchanges. That gap usually snaps back once transfers reopen — worth tracking.
+- 🔁 **USDT (Solana)** — Transfers just reopened: any price gap vs other exchanges usually closes fast, and holders who were stuck can now sell. Expect a brief selling wave.
 
 _Pattern heuristics from historical announcement studies — not financial advice._
