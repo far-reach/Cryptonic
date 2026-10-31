@@ -1,10 +1,10 @@
 {
   "summary": {
-    "generatedAt": 1793477750516,
+    "generatedAt": 1793490000707,
     "firstRunAt": 1791991799698,
-    "lastRunAt": 1793477745129,
-    "runs": 96,
-    "spanDays": 17.2,
+    "lastRunAt": 1793489995700,
+    "runs": 97,
+    "spanDays": 17.34,
     "crossExchange": {
       "n": 84,
       "wins": 74,
@@ -27,15 +27,15 @@
     },
     "carry": {
       "open": 10,
-      "closed": 3,
-      "wins": 1,
-      "winRate": 0.33,
-      "totalPnlQuote": -65.02,
-      "fundingQuote": -1.15,
-      "legPnlQuote": -54.47,
-      "feesQuote": 9.4,
-      "meanHeldHours": 222.31,
-      "openPnlQuote": 27.35
+      "closed": 4,
+      "wins": 2,
+      "winRate": 0.5,
+      "totalPnlQuote": -57.9,
+      "fundingQuote": 6.28,
+      "legPnlQuote": -51.78,
+      "feesQuote": 12.4,
+      "meanHeldHours": 268.86,
+      "openPnlQuote": 14.89
     },
     "byVenuePair": {
       "bitget→okx": {
@@ -151,13 +151,13 @@
         "unpriced": 0
       },
       "last7d": {
-        "n": 28,
-        "wins": 26,
+        "n": 27,
+        "wins": 25,
         "winRate": 0.93,
-        "meanExpectedBps": 70.22,
-        "meanRealisedBps": 71.16,
-        "ci95LowerBps": 47.09,
-        "totalPnlQuote": 199.25,
+        "meanExpectedBps": 72.77,
+        "meanRealisedBps": 73.74,
+        "ci95LowerBps": 49.32,
+        "totalPnlQuote": 199.1,
         "unpriced": 0
       }
     }
@@ -179,9 +179,9 @@
       "strategy": "carry",
       "passed": false,
       "reasons": [
-        "only 3 closed paper positions (need 10)",
-        "cumulative closed P&L is -65.02 (need > 0)",
-        "win rate 33% (need 55%)"
+        "only 4 closed paper positions (need 10)",
+        "cumulative closed P&L is -57.9 (need > 0)",
+        "win rate 50% (need 55%)"
       ]
     }
   ]

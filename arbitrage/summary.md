@@ -1,6 +1,6 @@
-# Paper-trading ledger — 2026-10-31 20:15 UTC
+# Paper-trading ledger — 2026-10-31 23:40 UTC
 
-96 runs over 17.2 days (since 2026-10-14). Every detected opportunity is re-priced a few seconds later at real quotes; "realised" is what a full-size taker fill would have made then, net of fees.
+97 runs over 17.34 days (since 2026-10-14). Every detected opportunity is re-priced a few seconds later at real quotes; "realised" is what a full-size taker fill would have made then, net of fees.
 
 ## Verified opportunities
 
@@ -8,7 +8,7 @@
 | --- | --- | --- | --- | --- | --- | --- |
 | Cross-exchange (all) | 84 | 88% | +69.6 | +60.0 | +42.5 | +$503.94 |
 | Cross-exchange (24 h) | 9 | 89% | +84.1 | +87.8 | +33.3 | +$78.98 |
-| Cross-exchange (7 d) | 28 | 93% | +70.2 | +71.2 | +47.1 | +$199.25 |
+| Cross-exchange (7 d) | 27 | 93% | +72.8 | +73.7 | +49.3 | +$199.10 |
 | Triangular (all) | 22 | 100% | +38.9 | +39.6 | +25.3 | +$5.71 |
 
 ### By venue pair
@@ -30,12 +30,12 @@
 
 | Open | Closed | Wins | Funding | Leg P&L | Fees | Closed P&L | Open P&L | Mean hold |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 10 | 3 | 33% | −$1.15 | −$54.47 | −$9.40 | **−$65.02** | +$27.35 | 222 h |
+| 10 | 4 | 50% | +$6.28 | −$51.78 | −$12.40 | **−$57.90** | +$14.89 | 269 h |
 
 ## Go-live gate
 
 - **cross-exchange**: ✅ passed
 - **triangular**: ⛔ not yet — only 22 verified samples (need 30)
-- **carry**: ⛔ not yet — only 3 closed paper positions (need 10); cumulative closed P&L is -65.02 (need > 0); win rate 33% (need 55%)
+- **carry**: ⛔ not yet — only 4 closed paper positions (need 10); cumulative closed P&L is -57.9 (need > 0); win rate 50% (need 55%)
 
 > Paper fills assume taker orders at the re-priced book with no queue position and no exchange latency beyond the verification delay. Real fills are worse, never better. The gate is a necessary condition for live trading, not a sufficient one.
