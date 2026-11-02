@@ -1,4 +1,4 @@
-# Bitget daily briefing — 2026-11-01
+# Bitget daily briefing — 2026-11-02
 
 _Last 24h of the [Bitget announcement center](https://www.bitget.com/asia/support/announcement-center)._
 
@@ -8,34 +8,34 @@ _Last 24h of the [Bitget announcement center](https://www.bitget.com/asia/suppor
 
 ## 🔴 Critical — act or verify today
 
-- **[Bitget announcement on suspending USDC - Optimism network withdrawal service](https://www.bitget.com/en/support/articles/12560603899283)**
-  🟢 ★★☆☆☆ _routine maintenance_ · 2026-11-01 12:35 UTC · _section: maintenance system updates, suspension, maintenance window_
+- **[Bitget announcement on suspending USDC - Binance Smart Chain network withdrawal service](https://www.bitget.com/en/support/articles/12560603899406)**
+  🟢 ★★☆☆☆ _routine maintenance_ · 2026-11-02 12:20 UTC · _section: maintenance system updates, suspension, maintenance window_
   ℹ️ _Routine scheduled wallet maintenance — nothing unusual._
-- **[Bitget announcement on resuming USDC - Binance Smart Chain withdrawals](https://www.bitget.com/en/support/articles/12560603899281)**
-  ⚪ ★☆☆☆☆ _recovery_ · 2026-11-01 11:38 UTC · _section: maintenance system updates, maintenance window_
-  ℹ️ _“Bitget has now opened the withdrawal service on the USDC - Binance Smart Chain network.”_
-- **[Bitget announcement on resuming USDT - Polygon withdrawals](https://www.bitget.com/en/support/articles/12560603899280)**
-  ⚪ ★☆☆☆☆ _recovery_ · 2026-11-01 11:22 UTC · _section: maintenance system updates, maintenance window_
-  ℹ️ _“Bitget has now opened the withdrawal service on the USDT - Polygon network.”_
-- **[Bitget announcement on suspending POLYX - Polymesh network withdrawal service](https://www.bitget.com/en/support/articles/12560603899279)**
-  🟢 ★★☆☆☆ _routine maintenance_ · 2026-11-01 10:20 UTC · _section: maintenance system updates, suspension, maintenance window_
+- **[Bitget announcement on resuming ERA - Ethereum withdrawals](https://www.bitget.com/en/support/articles/12560603899405)**
+  ⚪ ★☆☆☆☆ _recovery_ · 2026-11-02 11:16 UTC · _section: maintenance system updates, maintenance window_
+  ℹ️ _“Bitget has now opened the withdrawal service on the ERA - Ethereum network.”_
+- **[Bitget announcement on suspending ERA - Ethereum network withdrawal service](https://www.bitget.com/en/support/articles/12560603899404)**
+  🟢 ★★☆☆☆ _routine maintenance_ · 2026-11-02 10:52 UTC · _section: maintenance system updates, suspension, maintenance window_
   ℹ️ _Routine scheduled wallet maintenance — nothing unusual._
-- **[Bitget announcement on suspending XDC - XinFin Network XDC network withdrawal service](https://www.bitget.com/en/support/articles/12560603899278)**
-  🟢 ★★☆☆☆ _routine maintenance_ · 2026-11-01 07:10 UTC · _section: maintenance system updates, suspension, maintenance window_
+- **[Bitget announcement on resuming CC - CANTON Network withdrawals](https://www.bitget.com/en/support/articles/12560603899379)**
+  ⚪ ★☆☆☆☆ _recovery_ · 2026-11-02 06:09 UTC · _section: maintenance system updates, maintenance window_
+  ℹ️ _“Bitget has now opened the withdrawal service on the CC - CANTON Network network.”_
+- **[Bitget announcement on suspending HAEDAL - SUI network withdrawal service](https://www.bitget.com/en/support/articles/12560603899378)**
+  🟢 ★★☆☆☆ _routine maintenance_ · 2026-11-02 05:46 UTC · _section: maintenance system updates, suspension, maintenance window_
   ℹ️ _Routine scheduled wallet maintenance — nothing unusual._
-- **[Bitget announcement on suspending WBTC - Ethereum deposit and withdrawal services](https://www.bitget.com/en/support/articles/12560603899275)**
-  🟢 ★★☆☆☆ _routine maintenance_ · 2026-11-01 01:08 UTC · _section: maintenance system updates, suspension, maintenance window, deposit/withdrawal change_
-  ℹ️ _Routine scheduled wallet maintenance — nothing unusual._
-- **[Bitget announcement on suspending SOON - Solana network withdrawal service](https://www.bitget.com/en/support/articles/12560603899273)**
-  🟢 ★★☆☆☆ _routine maintenance_ · 2026-11-01 00:31 UTC · _section: maintenance system updates, suspension, maintenance window_
-  ℹ️ _Routine scheduled wallet maintenance — nothing unusual._
-- **[Bitget announcement on suspending SOON - Binance Smart Chain deposit and withdrawal services](https://www.bitget.com/en/support/articles/12560603899272)**
-  🟢 ★★☆☆☆ _routine maintenance_ · 2026-11-01 00:31 UTC · _section: maintenance system updates, suspension, maintenance window, deposit/withdrawal change_
-  ℹ️ _Routine scheduled wallet maintenance — nothing unusual._
-- **[Bitget announcement on suspending CORE - Core DAO deposit and withdrawal services](https://www.bitget.com/en/support/articles/12560603899271)**
-  🟡 ★★★☆☆ _unexplained suspension_ · 2026-10-31 16:53 UTC · _section: maintenance system updates, suspension, maintenance window, deposit/withdrawal change_
-- **[Bitget announcement on suspending USDT - Polygon network withdrawal service](https://www.bitget.com/en/support/articles/12560603899270)**
-  🟡 ★★★☆☆ _unexplained suspension_ · 2026-10-31 15:01 UTC · _section: maintenance system updates, suspension, maintenance window_
+- **[Bitget announcement on resuming ZIL - ZILEVM deposits and withdrawals](https://www.bitget.com/en/support/articles/12560603899332)**
+  ⚪ ★☆☆☆☆ _recovery_ · 2026-11-02 02:48 UTC · _section: maintenance system updates, maintenance window, deposit/withdrawal change_
+  ℹ️ _“Bitget has now opened the ZIL - ZILEVM deposit and withdrawal services.”_
+- **[Bitget announcement on resuming VERONA - VERONA Chain deposits and withdrawals](https://www.bitget.com/en/support/articles/12560603899312)**
+  ⚪ ★☆☆☆☆ _recovery_ · 2026-11-02 02:25 UTC · _section: maintenance system updates, maintenance window, deposit/withdrawal change_
+  ℹ️ _“Bitget has now opened the VERONA - VERONA Chain deposit and withdrawal services.”_
+- **[Bitget announcement on resuming WBTC - Ethereum deposits and withdrawals](https://www.bitget.com/en/support/articles/12560603899310)**
+  ⚪ ★☆☆☆☆ _recovery_ · 2026-11-02 02:10 UTC · _section: maintenance system updates, maintenance window, deposit/withdrawal change_
+  ℹ️ _“Bitget has now opened the WBTC - Ethereum deposit and withdrawal services.”_
+- **[Bitget announcement on suspending G - Ethereum network withdrawal service](https://www.bitget.com/en/support/articles/12560603899287)**
+  🟡 ★★★☆☆ _unexplained suspension_ · 2026-11-01 23:48 UTC · _section: maintenance system updates, suspension, maintenance window_
+- **[Bitget announcement on suspending IOST - IOST network withdrawal service](https://www.bitget.com/en/support/articles/12560603899286)**
+  🟡 ★★★☆☆ _unexplained suspension_ · 2026-11-01 23:33 UTC · _section: maintenance system updates, suspension, maintenance window_
 
 ## 🟡 Notable — worth a look
 
@@ -43,14 +43,16 @@ _Nothing notable._
 
 ## 🟢 FYI — promos & misc
 
-- **[[Important] Bitget Announcement on Cash Dividend Settlement for EQTUSDT Stock Perps](https://www.bitget.com/en/support/articles/12560603899274)**
-  ⚪ ★☆☆☆☆ _minor_ · 2026-11-01 01:00 UTC
+- **[[Important] Bitget Announcement on Cash Dividend Settlement for SIMOUSDT Stock Perps](https://www.bitget.com/en/support/articles/12560603899288)**
+  ⚪ ★☆☆☆☆ _minor_ · 2026-11-02 01:00 UTC
 
 ## 💡 Trade angles
 
-- 🔁 **USDC (Optimism)** — While transfers are frozen, the Bitget price can drift away from other exchanges. That gap usually snaps back once transfers reopen — worth tracking.
-- 🔁 **USDC (Binance)** — Transfers just reopened: any price gap vs other exchanges usually closes fast, and holders who were stuck can now sell. Expect a brief selling wave.
-- 🔁 **USDT (Polygon)** — Transfers just reopened: any price gap vs other exchanges usually closes fast, and holders who were stuck can now sell. Expect a brief selling wave.
-- 🔁 **POLYX (Polymesh)** — While transfers are frozen, the Bitget price can drift away from other exchanges. That gap usually snaps back once transfers reopen — worth tracking.
+- 🔁 **USDC (Binance)** — While transfers are frozen, the Bitget price can drift away from other exchanges. That gap usually snaps back once transfers reopen — worth tracking.
+- 🔁 **ERA (Ethereum)** — Transfers just reopened: any price gap vs other exchanges usually closes fast, and holders who were stuck can now sell. Expect a brief selling wave.
+  `Short @ 0.06479 · TP 0.06155 (−5%) · SL 0.06738 (+4%)`
+- 🔁 **CC (CANTON)** — Transfers just reopened: any price gap vs other exchanges usually closes fast, and holders who were stuck can now sell. Expect a brief selling wave.
+  `Short @ 0.09455 · TP 0.08982 (−5%) · SL 0.09833 (+4%)`
+- 🔁 **HAEDAL (SUI)** — While transfers are frozen, the Bitget price can drift away from other exchanges. That gap usually snaps back once transfers reopen — worth tracking.
 
 _Pattern heuristics from historical announcement studies — not financial advice._
