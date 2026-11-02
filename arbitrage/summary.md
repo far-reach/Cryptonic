@@ -1,14 +1,14 @@
-# Paper-trading ledger — 2026-11-01 22:20 UTC
+# Paper-trading ledger — 2026-11-02 01:47 UTC
 
-101 runs over 18.28 days (since 2026-10-14). Every detected opportunity is re-priced a few seconds later at real quotes; "realised" is what a full-size taker fill would have made then, net of fees.
+102 runs over 18.43 days (since 2026-10-14). Every detected opportunity is re-priced a few seconds later at real quotes; "realised" is what a full-size taker fill would have made then, net of fees.
 
 ## Verified opportunities
 
 | Strategy | Samples | Survived | Expected bps | Realised bps | 95% CI low | Paper P&L |
 | --- | --- | --- | --- | --- | --- | --- |
-| Cross-exchange (all) | 86 | 88% | +68.7 | +59.3 | +42.2 | +$509.67 |
-| Cross-exchange (24 h) | 2 | 100% | +28.6 | +28.6 | -13.8 | +$5.73 |
-| Cross-exchange (7 d) | 25 | 92% | +71.4 | +72.3 | +45.7 | +$180.86 |
+| Cross-exchange (all) | 87 | 89% | +68.6 | +59.3 | +42.4 | +$515.97 |
+| Cross-exchange (24 h) | 3 | 100% | +41.1 | +40.1 | +6.8 | +$12.03 |
+| Cross-exchange (7 d) | 25 | 92% | +73.7 | +74.6 | +48.5 | +$186.61 |
 | Triangular (all) | 24 | 100% | +36.6 | +37.2 | +23.7 | +$5.71 |
 
 ### By venue pair
@@ -16,7 +16,7 @@
 | Pair | Samples | Survived | Expected bps | Realised bps | 95% CI low | Paper P&L |
 | --- | --- | --- | --- | --- | --- | --- |
 | bitget→okx | 64 | 97% | +79.2 | +79.0 | +61.7 | +$505.67 |
-| okx→bitget | 11 | 64% | +38.4 | +9.2 | -37.3 | +$10.10 |
+| okx→bitget | 12 | 67% | +40.7 | +13.7 | -29.7 | +$16.40 |
 | binance→okx | 2 | 50% | +84.5 | +40.5 | -211.3 | +$8.09 |
 | binance→bybit | 2 | 100% | +32.1 | +30.5 | +20.2 | +$6.10 |
 | bitget→bybit | 2 | 100% | +29.1 | +29.3 | +16.7 | +$5.87 |
@@ -30,7 +30,7 @@
 
 | Open | Closed | Wins | Funding | Leg P&L | Fees | Closed P&L | Open P&L | Mean hold |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 10 | 5 | 40% | +$4.57 | −$49.62 | −$15.40 | **−$60.45** | +$24.44 | 302 h |
+| 10 | 5 | 40% | +$4.57 | −$49.62 | −$15.40 | **−$60.45** | +$19.74 | 302 h |
 
 ## Go-live gate
 
