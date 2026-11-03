@@ -1,6 +1,6 @@
-# Paper-trading ledger — 2026-11-03 09:58 UTC
+# Paper-trading ledger — 2026-11-03 17:45 UTC
 
-106 runs over 19.77 days (since 2026-10-14). Every detected opportunity is re-priced a few seconds later at real quotes; "realised" is what a full-size taker fill would have made then, net of fees.
+107 runs over 20.09 days (since 2026-10-14). Every detected opportunity is re-priced a few seconds later at real quotes; "realised" is what a full-size taker fill would have made then, net of fees.
 
 ## Verified opportunities
 
@@ -30,7 +30,7 @@
 
 | Open | Closed | Wins | Funding | Leg P&L | Fees | Closed P&L | Open P&L | Mean hold |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 10 | 5 | 40% | +$4.57 | −$49.62 | −$15.40 | **−$60.45** | +$14.67 | 302 h |
+| 10 | 5 | 40% | +$4.57 | −$49.62 | −$15.40 | **−$60.45** | +$15.20 | 302 h |
 
 ## Go-live gate
 
