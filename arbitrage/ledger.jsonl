@@ -1419,3 +1419,16 @@
 {"type":"carry-mark","t":1793761865548,"id":"92294f6fb8c9","fundingRate":0.00005,"accruedFunding":7.48,"legPnl":0.65}
 {"type":"carry-mark","t":1793761865548,"id":"8d1cbb727e7d","fundingRate":0.0000884636551847,"accruedFunding":1.3,"legPnl":-1}
 {"type":"carry-mark","t":1793761865548,"id":"2fa6ce2e4bb4","fundingRate":-0.003325,"accruedFunding":-10.24,"legPnl":-6.45}
+{"type":"run","t":1793791810889,"quoteCounts":{"bitget":3640,"binance":0,"bybit":0,"okx":1210},"errors":["binance spot: binance spot: HTTP 451 for https://api.binance.com/api/v3/ticker/bookTicker","bybit spot: bybit spot: HTTP 403 for https://api.bybit.com/v5/market/tickers?category=spot","bybit perps: bybit perp: HTTP 403 for https://api.bybit.com/v5/market/tickers?category=linear","binance perps: binance premiumIndex: HTTP 451 for https://fapi.binance.com/fapi/v1/premiumIndex"]}
+{"type":"detect","t":1793791810889,"id":"984b189ab46c","opportunity":{"kind":"cross-exchange","base":"IRYS","quote":"USDT","buyVenue":"bitget","sellVenue":"okx","buyPrice":0.02061606210777325,"sellPrice":0.020708595605556965,"notionalQuote":1000,"maxNotionalQuote":6952.31,"grossBps":44.88,"feesBps":20,"netBps":24.88,"suspicious":false,"depthChecked":true,"quoteAgeMs":618}}
+{"type":"verify","t":1793791816267,"id":"984b189ab46c","kind":"cross-exchange","label":"IRYS/USDT bitget→okx","venues":["bitget","okx"],"delayMs":5378,"notionalQuote":1000,"expectedNetBps":24.88,"realisedNetBps":26.16,"pnlQuote":2.62,"survived":true}
+{"type":"carry-mark","t":1793791810889,"id":"aaeafb77cbb8","fundingRate":0.00005,"accruedFunding":12.66,"legPnl":-1.78}
+{"type":"carry-mark","t":1793791810889,"id":"714580b27cb5","fundingRate":0.00005,"accruedFunding":11.06,"legPnl":-2.67}
+{"type":"carry-mark","t":1793791810889,"id":"fe2ee8b903c0","fundingRate":0.00005,"accruedFunding":7.73,"legPnl":-1.43}
+{"type":"carry-mark","t":1793791810889,"id":"d97a6341d697","fundingRate":0.0001908022361647,"accruedFunding":10.15,"legPnl":-5.34}
+{"type":"carry-mark","t":1793791810889,"id":"abae800eb961","fundingRate":0.00005,"accruedFunding":6.6,"legPnl":-1.4}
+{"type":"carry-mark","t":1793791810889,"id":"9dd59640841d","fundingRate":0.00005,"accruedFunding":8.55,"legPnl":-5.21}
+{"type":"carry-mark","t":1793791810889,"id":"98d9fdca1e2e","fundingRate":0.00005,"accruedFunding":11.15,"legPnl":-2.33}
+{"type":"carry-mark","t":1793791810889,"id":"92294f6fb8c9","fundingRate":0.0003708360233214,"accruedFunding":8.25,"legPnl":-0.53}
+{"type":"carry-mark","t":1793791810889,"id":"8d1cbb727e7d","fundingRate":0.0001011773655088,"accruedFunding":1.51,"legPnl":-1.55}
+{"type":"carry-mark","t":1793791810889,"id":"2fa6ce2e4bb4","fundingRate":0.00036,"accruedFunding":-9.49,"legPnl":-1.86}
