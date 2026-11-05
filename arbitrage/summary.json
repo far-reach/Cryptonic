@@ -1,18 +1,18 @@
 {
   "summary": {
-    "generatedAt": 1793863158160,
+    "generatedAt": 1793893564346,
     "firstRunAt": 1791991799698,
-    "lastRunAt": 1793863153153,
-    "runs": 113,
-    "spanDays": 21.66,
+    "lastRunAt": 1793893558731,
+    "runs": 114,
+    "spanDays": 22.01,
     "crossExchange": {
-      "n": 90,
-      "wins": 80,
+      "n": 91,
+      "wins": 81,
       "winRate": 0.89,
-      "meanExpectedBps": 71.78,
-      "meanRealisedBps": 62.88,
-      "ci95LowerBps": 45.66,
-      "totalPnlQuote": 565.96,
+      "meanExpectedBps": 71.12,
+      "meanRealisedBps": 62.52,
+      "ci95LowerBps": 45.47,
+      "totalPnlQuote": 568.91,
       "unpriced": 0
     },
     "triangular": {
@@ -35,17 +35,17 @@
       "legPnlQuote": -49.62,
       "feesQuote": 15.4,
       "meanHeldHours": 302.02,
-      "openPnlQuote": 16.74
+      "openPnlQuote": 20.35
     },
     "byVenuePair": {
       "bitget→okx": {
-        "n": 65,
-        "wins": 63,
+        "n": 66,
+        "wins": 64,
         "winRate": 0.97,
-        "meanExpectedBps": 78.37,
-        "meanRealisedBps": 78.2,
-        "ci95LowerBps": 61.1,
-        "totalPnlQuote": 508.29,
+        "meanExpectedBps": 77.36,
+        "meanRealisedBps": 77.46,
+        "ci95LowerBps": 60.56,
+        "totalPnlQuote": 511.24,
         "unpriced": 0
       },
       "okx→bitget": {
@@ -144,10 +144,10 @@
         "n": 1,
         "wins": 1,
         "winRate": 1,
-        "meanExpectedBps": 24.88,
-        "meanRealisedBps": 26.16,
+        "meanExpectedBps": 11.43,
+        "meanRealisedBps": 29.48,
         "ci95LowerBps": null,
-        "totalPnlQuote": 2.62,
+        "totalPnlQuote": 2.95,
         "unpriced": 0
       },
       "last7d": {
@@ -155,9 +155,9 @@
         "wins": 24,
         "winRate": 0.92,
         "meanExpectedBps": 87.9,
-        "meanRealisedBps": 88.6,
-        "ci95LowerBps": 58.73,
-        "totalPnlQuote": 230.36,
+        "meanRealisedBps": 89.29,
+        "ci95LowerBps": 59.66,
+        "totalPnlQuote": 232.16,
         "unpriced": 0
       }
     }
