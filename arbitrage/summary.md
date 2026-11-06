@@ -1,14 +1,14 @@
-# Paper-trading ledger — 2026-11-06 09:47 UTC
+# Paper-trading ledger — 2026-11-06 17:25 UTC
 
-117 runs over 22.76 days (since 2026-10-14). Every detected opportunity is re-priced a few seconds later at real quotes; "realised" is what a full-size taker fill would have made then, net of fees.
+118 runs over 23.08 days (since 2026-10-14). Every detected opportunity is re-priced a few seconds later at real quotes; "realised" is what a full-size taker fill would have made then, net of fees.
 
 ## Verified opportunities
 
 | Strategy | Samples | Survived | Expected bps | Realised bps | 95% CI low | Paper P&L |
 | --- | --- | --- | --- | --- | --- | --- |
 | Cross-exchange (all) | 96 | 90% | +70.0 | +61.8 | +45.1 | +$593.13 |
-| Cross-exchange (24 h) | 6 | 100% | +42.6 | +45.3 | -25.1 | +$27.17 |
-| Cross-exchange (7 d) | 25 | 96% | +83.7 | +86.4 | +52.9 | +$215.94 |
+| Cross-exchange (24 h) | 5 | 100% | +48.9 | +48.4 | -37.5 | +$24.22 |
+| Cross-exchange (7 d) | 23 | 96% | +81.1 | +83.4 | +47.8 | +$191.82 |
 | Triangular (all) | 24 | 100% | +36.6 | +37.2 | +23.7 | +$5.71 |
 
 ### By venue pair
@@ -30,7 +30,7 @@
 
 | Open | Closed | Wins | Funding | Leg P&L | Fees | Closed P&L | Open P&L | Mean hold |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 10 | 6 | 33% | −$14.63 | −$53.58 | −$18.60 | **−$86.81** | +$16.45 | 268 h |
+| 10 | 6 | 33% | −$14.63 | −$53.58 | −$18.60 | **−$86.81** | +$30.55 | 268 h |
 
 ## Go-live gate
 
