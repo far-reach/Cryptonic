@@ -1648,3 +1648,18 @@
 {"type":"carry-mark","t":1794143665381,"id":"92294f6fb8c9","fundingRate":0.00005,"accruedFunding":15.05,"legPnl":0.77}
 {"type":"carry-mark","t":1794143665381,"id":"8d1cbb727e7d","fundingRate":0.0005432924152666,"accruedFunding":8.8,"legPnl":-1.74}
 {"type":"carry-mark","t":1794143665381,"id":"089cc35604d1","fundingRate":0.000186,"accruedFunding":2.49,"legPnl":-10.11}
+{"type":"run","t":1794162519616,"quoteCounts":{"bitget":653,"binance":0,"bybit":0,"okx":1209},"errors":["bybit spot: bybit spot: HTTP 403 for https://api.bybit.com/v5/market/tickers?category=spot","binance spot: binance spot: HTTP 451 for https://api.binance.com/api/v3/ticker/bookTicker","bybit perps: bybit perp: HTTP 403 for https://api.bybit.com/v5/market/tickers?category=linear","binance perps: binance premiumIndex: HTTP 451 for https://fapi.binance.com/fapi/v1/premiumIndex"]}
+{"type":"detect","t":1794162519616,"id":"ffe9c469695b","opportunity":{"kind":"cross-exchange","base":"CORE","quote":"USDT","buyVenue":"okx","sellVenue":"bitget","buyPrice":0.012079707197561297,"sellPrice":0.012316231441378845,"notionalQuote":1000,"maxNotionalQuote":7838.1,"grossBps":195.8,"feesBps":20,"netBps":175.8,"suspicious":false,"depthChecked":true,"quoteAgeMs":598}}
+{"type":"detect","t":1794162519616,"id":"79581095329f","opportunity":{"kind":"cross-exchange","base":"METIS","quote":"USDT","buyVenue":"bitget","sellVenue":"okx","buyPrice":2.567431085648921,"sellPrice":2.5768111366362634,"notionalQuote":1000,"maxNotionalQuote":6644.09,"grossBps":36.53,"feesBps":20,"netBps":16.53,"netAfterTransferBps":16.38,"transferMinutes":15,"suspicious":false,"depthChecked":true,"quoteAgeMs":304}}
+{"type":"verify","t":1794162525133,"id":"ffe9c469695b","kind":"cross-exchange","label":"CORE/USDT okx→bitget","venues":["okx","bitget"],"delayMs":5517,"notionalQuote":1000,"expectedNetBps":175.8,"realisedNetBps":175.61,"pnlQuote":17.56,"survived":true}
+{"type":"verify","t":1794162525133,"id":"79581095329f","kind":"cross-exchange","label":"METIS/USDT bitget→okx","venues":["bitget","okx"],"delayMs":5517,"notionalQuote":1000,"expectedNetBps":16.53,"realisedNetBps":16.26,"pnlQuote":1.63,"survived":true}
+{"type":"carry-mark","t":1794162519616,"id":"aaeafb77cbb8","fundingRate":0.00005,"accruedFunding":17.13,"legPnl":0.13}
+{"type":"carry-mark","t":1794162519616,"id":"714580b27cb5","fundingRate":0.00005,"accruedFunding":12.76,"legPnl":-2.02}
+{"type":"carry-mark","t":1794162519616,"id":"fe2ee8b903c0","fundingRate":0.00005,"accruedFunding":9.51,"legPnl":-1.47}
+{"type":"carry-mark","t":1794162519616,"id":"d97a6341d697","fundingRate":0.0001960702826622,"accruedFunding":12.33,"legPnl":-8.04}
+{"type":"carry-mark","t":1794162519616,"id":"abae800eb961","fundingRate":0.00005,"accruedFunding":7.89,"legPnl":-1.63}
+{"type":"carry-mark","t":1794162519616,"id":"9dd59640841d","fundingRate":0.00005,"accruedFunding":14.37,"legPnl":-1.47}
+{"type":"carry-mark","t":1794162519616,"id":"98d9fdca1e2e","fundingRate":0.000727,"accruedFunding":19.56,"legPnl":-4.3}
+{"type":"carry-mark","t":1794162519616,"id":"92294f6fb8c9","fundingRate":0.00005,"accruedFunding":15.12,"legPnl":-0.47}
+{"type":"carry-mark","t":1794162519616,"id":"8d1cbb727e7d","fundingRate":0.0003146690634662,"accruedFunding":9.21,"legPnl":-1.55}
+{"type":"carry-mark","t":1794162519616,"id":"089cc35604d1","fundingRate":0.000176,"accruedFunding":2.72,"legPnl":-10.1}
