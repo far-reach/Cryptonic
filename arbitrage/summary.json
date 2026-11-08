@@ -1,18 +1,18 @@
 {
   "summary": {
-    "generatedAt": 1794162525139,
+    "generatedAt": 1794176766518,
     "firstRunAt": 1791991799698,
-    "lastRunAt": 1794162519616,
-    "runs": 127,
-    "spanDays": 25.12,
+    "lastRunAt": 1794176761063,
+    "runs": 128,
+    "spanDays": 25.29,
     "crossExchange": {
-      "n": 111,
-      "wins": 101,
-      "winRate": 0.91,
-      "meanExpectedBps": 70.89,
-      "meanRealisedBps": 63.8,
-      "ci95LowerBps": 48.58,
-      "totalPnlQuote": 708.21,
+      "n": 115,
+      "wins": 104,
+      "winRate": 0.9,
+      "meanExpectedBps": 70.39,
+      "meanRealisedBps": 63.45,
+      "ci95LowerBps": 48.51,
+      "totalPnlQuote": 729.7,
       "unpriced": 0
     },
     "triangular": {
@@ -35,27 +35,27 @@
       "legPnlQuote": -53.58,
       "feesQuote": 18.6,
       "meanHeldHours": 268.35,
-      "openPnlQuote": 59.08
+      "openPnlQuote": 55.57
     },
     "byVenuePair": {
       "bitget→okx": {
-        "n": 77,
-        "wins": 75,
+        "n": 79,
+        "wins": 77,
         "winRate": 0.97,
-        "meanExpectedBps": 67.16,
-        "meanRealisedBps": 67.21,
-        "ci95LowerBps": 51.68,
-        "totalPnlQuote": 517.53,
+        "meanExpectedBps": 65.89,
+        "meanRealisedBps": 65.94,
+        "ci95LowerBps": 50.7,
+        "totalPnlQuote": 520.93,
         "unpriced": 0
       },
       "okx→bitget": {
-        "n": 23,
-        "wins": 19,
-        "winRate": 0.83,
-        "meanExpectedBps": 99.39,
-        "meanRealisedBps": 85.55,
-        "ci95LowerBps": 44.36,
-        "totalPnlQuote": 196.78,
+        "n": 25,
+        "wins": 20,
+        "winRate": 0.8,
+        "meanExpectedBps": 99.14,
+        "meanRealisedBps": 85.94,
+        "ci95LowerBps": 46.51,
+        "totalPnlQuote": 214.87,
         "unpriced": 0
       },
       "binance→okx": {
@@ -141,23 +141,23 @@
     },
     "windows": {
       "last24h": {
-        "n": 9,
-        "wins": 9,
-        "winRate": 1,
-        "meanExpectedBps": 91.14,
-        "meanRealisedBps": 90.99,
-        "ci95LowerBps": 38.32,
-        "totalPnlQuote": 81.89,
+        "n": 11,
+        "wins": 10,
+        "winRate": 0.91,
+        "meanExpectedBps": 81.99,
+        "meanRealisedBps": 80.87,
+        "ci95LowerBps": 31.12,
+        "totalPnlQuote": 88.97,
         "unpriced": 0
       },
       "last7d": {
-        "n": 26,
-        "wins": 26,
-        "winRate": 1,
-        "meanExpectedBps": 77.54,
-        "meanRealisedBps": 78.3,
-        "ci95LowerBps": 46.2,
-        "totalPnlQuote": 203.57,
+        "n": 29,
+        "wins": 28,
+        "winRate": 0.97,
+        "meanExpectedBps": 75.58,
+        "meanRealisedBps": 75.87,
+        "ci95LowerBps": 45.07,
+        "totalPnlQuote": 220.03,
         "unpriced": 0
       }
     }
