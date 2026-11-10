@@ -1,10 +1,10 @@
 {
   "summary": {
-    "generatedAt": 1794281248443,
+    "generatedAt": 1794310906062,
     "firstRunAt": 1791991799698,
-    "lastRunAt": 1794281243436,
-    "runs": 132,
-    "spanDays": 26.5,
+    "lastRunAt": 1794310901057,
+    "runs": 133,
+    "spanDays": 26.84,
     "crossExchange": {
       "n": 118,
       "wins": 107,
@@ -35,7 +35,7 @@
       "legPnlQuote": -53.58,
       "feesQuote": 18.6,
       "meanHeldHours": 268.35,
-      "openPnlQuote": 70.43
+      "openPnlQuote": 62.27
     },
     "byVenuePair": {
       "bitget→okx": {
@@ -141,13 +141,13 @@
     },
     "windows": {
       "last24h": {
-        "n": 2,
-        "wins": 2,
+        "n": 1,
+        "wins": 1,
         "winRate": 1,
-        "meanExpectedBps": 177.92,
-        "meanRealisedBps": 177.32,
-        "ci95LowerBps": 176.91,
-        "totalPnlQuote": 35.46,
+        "meanExpectedBps": 177.72,
+        "meanRealisedBps": 177.53,
+        "ci95LowerBps": null,
+        "totalPnlQuote": 17.75,
         "unpriced": 0
       },
       "last7d": {
