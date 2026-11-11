@@ -1,10 +1,10 @@
 {
   "summary": {
-    "generatedAt": 1794357348166,
+    "generatedAt": 1794380668094,
     "firstRunAt": 1791991799698,
-    "lastRunAt": 1794357343159,
-    "runs": 135,
-    "spanDays": 27.38,
+    "lastRunAt": 1794380663088,
+    "runs": 136,
+    "spanDays": 27.65,
     "crossExchange": {
       "n": 119,
       "wins": 108,
@@ -35,7 +35,7 @@
       "legPnlQuote": -53.58,
       "feesQuote": 18.6,
       "meanHeldHours": 268.35,
-      "openPnlQuote": 85.16
+      "openPnlQuote": 76.15
     },
     "byVenuePair": {
       "bitget→okx": {
