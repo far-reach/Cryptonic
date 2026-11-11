@@ -14,8 +14,8 @@
       "entryFundingRate": 0.0000862739509154,
       "fundingIntervalHours": 4,
       "roundTripFeesBps": 30,
-      "accruedFunding": 18.11,
-      "lastMarkAt": 1794409572738,
+      "accruedFunding": 18.19,
+      "lastMarkAt": 1794434025851,
       "lastFundingRate": 0.00005,
       "adverseMarks": 0
     },
@@ -32,8 +32,8 @@
       "entryFundingRate": 0.0004660300677761,
       "fundingIntervalHours": 4,
       "roundTripFeesBps": 30,
-      "accruedFunding": 18.08,
-      "lastMarkAt": 1794409572738,
+      "accruedFunding": 18.16,
+      "lastMarkAt": 1794434025851,
       "lastFundingRate": 0.00005,
       "adverseMarks": 0
     },
@@ -50,8 +50,8 @@
       "entryFundingRate": 0.0002901349336916,
       "fundingIntervalHours": 4,
       "roundTripFeesBps": 30,
-      "accruedFunding": 10.36,
-      "lastMarkAt": 1794409572738,
+      "accruedFunding": 10.44,
+      "lastMarkAt": 1794434025851,
       "lastFundingRate": 0.00005,
       "adverseMarks": 0
     },
@@ -68,9 +68,9 @@
       "entryFundingRate": 0.000108918840227,
       "fundingIntervalHours": 4,
       "roundTripFeesBps": 30,
-      "accruedFunding": 16.99,
-      "lastMarkAt": 1794409572738,
-      "lastFundingRate": 0.0004598048539555,
+      "accruedFunding": 17.37,
+      "lastMarkAt": 1794434025851,
+      "lastFundingRate": 0.0002236357213985,
       "adverseMarks": 0
     },
     {
@@ -86,8 +86,8 @@
       "entryFundingRate": 0.000124,
       "fundingIntervalHours": 4,
       "roundTripFeesBps": 32,
-      "accruedFunding": 8.74,
-      "lastMarkAt": 1794409572738,
+      "accruedFunding": 8.82,
+      "lastMarkAt": 1794434025851,
       "lastFundingRate": 0.00005,
       "adverseMarks": 0
     },
@@ -104,8 +104,8 @@
       "entryFundingRate": 0.0005228775357786,
       "fundingIntervalHours": 4,
       "roundTripFeesBps": 30,
-      "accruedFunding": 16.68,
-      "lastMarkAt": 1794409572738,
+      "accruedFunding": 16.76,
+      "lastMarkAt": 1794434025851,
       "lastFundingRate": 0.00005,
       "adverseMarks": 0
     },
@@ -122,9 +122,9 @@
       "entryFundingRate": 0.00041,
       "fundingIntervalHours": 4,
       "roundTripFeesBps": 32,
-      "accruedFunding": 29.73,
-      "lastMarkAt": 1794409572738,
-      "lastFundingRate": 0.000509,
+      "accruedFunding": 30.59,
+      "lastMarkAt": 1794434025851,
+      "lastFundingRate": 0.000507,
       "adverseMarks": 0
     },
     {
@@ -140,9 +140,9 @@
       "entryFundingRate": 0.0005223060954427,
       "fundingIntervalHours": 4,
       "roundTripFeesBps": 30,
-      "accruedFunding": 16.41,
-      "lastMarkAt": 1794409572738,
-      "lastFundingRate": 0.0002704873693011,
+      "accruedFunding": 16.49,
+      "lastMarkAt": 1794434025851,
+      "lastFundingRate": 0.00005,
       "adverseMarks": 0
     },
     {
@@ -158,8 +158,8 @@
       "entryFundingRate": 0.0003829091546051,
       "fundingIntervalHours": 4,
       "roundTripFeesBps": 30,
-      "accruedFunding": 10.03,
-      "lastMarkAt": 1794409572738,
+      "accruedFunding": 10.11,
+      "lastMarkAt": 1794434025851,
       "lastFundingRate": 0.00005,
       "adverseMarks": 0
     },
@@ -176,13 +176,13 @@
       "entryFundingRate": 0.00043,
       "fundingIntervalHours": 4,
       "roundTripFeesBps": 32,
-      "accruedFunding": 3.83,
-      "lastMarkAt": 1794409572738,
+      "accruedFunding": 3.91,
+      "lastMarkAt": 1794434025851,
       "lastFundingRate": 0.00005,
       "adverseMarks": 0
     }
   ],
-  "runs": 137,
+  "runs": 138,
   "firstRunAt": 1791991799698,
-  "lastRunAt": 1794409572738
+  "lastRunAt": 1794434025851
 }
