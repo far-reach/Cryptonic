@@ -1,21 +1,21 @@
-# Paper-trading ledger — 2026-11-11 07:04 UTC
+# Paper-trading ledger — 2026-11-11 15:06 UTC
 
-136 runs over 27.65 days (since 2026-10-14). Every detected opportunity is re-priced a few seconds later at real quotes; "realised" is what a full-size taker fill would have made then, net of fees.
+137 runs over 27.98 days (since 2026-10-14). Every detected opportunity is re-priced a few seconds later at real quotes; "realised" is what a full-size taker fill would have made then, net of fees.
 
 ## Verified opportunities
 
 | Strategy | Samples | Survived | Expected bps | Realised bps | 95% CI low | Paper P&L |
 | --- | --- | --- | --- | --- | --- | --- |
-| Cross-exchange (all) | 119 | 91% | +72.7 | +66.0 | +51.1 | +$785.37 |
-| Cross-exchange (24 h) | 1 | 100% | +4.8 | +4.7 | n/a | +$0.47 |
-| Cross-exchange (7 d) | 30 | 97% | +73.9 | +74.0 | +45.1 | +$222.03 |
+| Cross-exchange (all) | 120 | 90% | +72.1 | +65.5 | +50.7 | +$785.35 |
+| Cross-exchange (24 h) | 2 | 50% | +4.2 | +2.3 | -2.6 | +$0.45 |
+| Cross-exchange (7 d) | 30 | 93% | +73.2 | +73.1 | +44.0 | +$219.39 |
 | Triangular (all) | 24 | 100% | +36.6 | +37.2 | +23.7 | +$5.71 |
 
 ### By venue pair
 
 | Pair | Samples | Survived | Expected bps | Realised bps | 95% CI low | Paper P&L |
 | --- | --- | --- | --- | --- | --- | --- |
-| bitget→okx | 80 | 98% | +65.1 | +65.2 | +50.0 | +$521.40 |
+| bitget→okx | 81 | 96% | +64.4 | +64.4 | +49.4 | +$521.38 |
 | okx→bitget | 28 | 82% | +108.3 | +96.5 | +59.5 | +$270.07 |
 | binance→okx | 2 | 50% | +84.5 | +40.5 | -211.3 | +$8.09 |
 | binance→bybit | 2 | 100% | +32.1 | +30.5 | +20.2 | +$6.10 |
@@ -30,7 +30,7 @@
 
 | Open | Closed | Wins | Funding | Leg P&L | Fees | Closed P&L | Open P&L | Mean hold |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 10 | 6 | 33% | −$14.63 | −$53.58 | −$18.60 | **−$86.81** | +$76.15 | 268 h |
+| 10 | 6 | 33% | −$14.63 | −$53.58 | −$18.60 | **−$86.81** | +$64.26 | 268 h |
 
 ## Go-live gate
 
