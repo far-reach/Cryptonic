@@ -1,10 +1,10 @@
 {
   "summary": {
-    "generatedAt": 1794606963912,
+    "generatedAt": 1794622607666,
     "firstRunAt": 1791991799698,
-    "lastRunAt": 1794606958536,
-    "runs": 145,
-    "spanDays": 30.27,
+    "lastRunAt": 1794622602661,
+    "runs": 146,
+    "spanDays": 30.45,
     "crossExchange": {
       "n": 126,
       "wins": 114,
@@ -27,15 +27,15 @@
     },
     "carry": {
       "open": 10,
-      "closed": 10,
-      "wins": 6,
-      "winRate": 0.6,
-      "totalPnlQuote": -38.41,
-      "fundingQuote": 56.74,
-      "legPnlQuote": -64.55,
-      "feesQuote": 30.6,
-      "meanHeldHours": 449.71,
-      "openPnlQuote": 37.52
+      "closed": 11,
+      "wins": 7,
+      "winRate": 0.64,
+      "totalPnlQuote": -34.44,
+      "fundingQuote": 66.22,
+      "legPnlQuote": -66.86,
+      "feesQuote": 33.8,
+      "meanHeldHours": 474.56,
+      "openPnlQuote": 20.1
     },
     "byVenuePair": {
       "bitget→okx": {
@@ -141,23 +141,23 @@
     },
     "windows": {
       "last24h": {
-        "n": 4,
-        "wins": 4,
+        "n": 3,
+        "wins": 3,
         "winRate": 1,
-        "meanExpectedBps": 6.26,
-        "meanRealisedBps": 4.99,
-        "ci95LowerBps": 1.84,
-        "totalPnlQuote": 1.99,
+        "meanExpectedBps": 4.68,
+        "meanRealisedBps": 3.54,
+        "ci95LowerBps": 1.63,
+        "totalPnlQuote": 1.06,
         "unpriced": 0
       },
       "last7d": {
-        "n": 30,
-        "wins": 28,
+        "n": 29,
+        "wins": 27,
         "winRate": 0.93,
-        "meanExpectedBps": 65.91,
-        "meanRealisedBps": 65.05,
-        "ci95LowerBps": 37.28,
-        "totalPnlQuote": 195.11,
+        "meanExpectedBps": 68.14,
+        "meanRealisedBps": 67.25,
+        "ci95LowerBps": 38.86,
+        "totalPnlQuote": 195.01,
         "unpriced": 0
       }
     }
@@ -179,7 +179,7 @@
       "strategy": "carry",
       "passed": false,
       "reasons": [
-        "cumulative closed P&L is -38.41 (need > 0)"
+        "cumulative closed P&L is -34.44 (need > 0)"
       ]
     }
   ]
