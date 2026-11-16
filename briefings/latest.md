@@ -1,80 +1,73 @@
-# Bitget daily briefing — 2026-11-15
+# Bitget daily briefing — 2026-11-16
 
 _Last 24h of the [Bitget announcement center](https://www.bitget.com/asia/support/announcement-center)._
 
-**TL;DR:** 11 critical · 10 notable · 1 FYI
+**TL;DR:** 9 critical · 10 notable · 1 FYI
 
-🟡 **Environment:** _Normal — tradeable activity, nothing alarming_
+🔴 **Environment:** _Turbulent — high-impact events in play_
 
 ## 🔴 Critical — act or verify today
 
-- **[Bitget to adjust funding rate interval for SOPHUSDT perpetual futures](https://www.bitget.com/en/support/articles/12560603900565)**
-  🟡 ★★★☆☆ _affects positions_ · 2026-11-15 12:16 UTC · _section: product updates, contract parameter change_
+- **[Bitget announcement on suspending LIT - Ethereum deposit service](https://www.bitget.com/en/support/articles/12560603900695)**
+  🟢 ★★☆☆☆ _routine maintenance_ · 2026-11-16 10:47 UTC · _section: maintenance system updates, suspension, maintenance window_
+  ℹ️ _Routine scheduled wallet maintenance — nothing unusual._
+- **[Bitget to adjust funding rate interval for HYPEUSDC perpetual futures](https://www.bitget.com/en/support/articles/12560603900693)**
+  🟡 ★★★☆☆ _affects positions_ · 2026-11-16 09:15 UTC · _section: product updates, contract parameter change_
   ℹ️ _Bitget is tightening this contract's risk limits — usually a response to volatility or thin liquidity._
-- **[Bitget announcement on suspending USDT - Morph network withdrawal service](https://www.bitget.com/en/support/articles/12560603900564)**
-  🟢 ★★☆☆☆ _routine maintenance_ · 2026-11-15 11:21 UTC · _section: maintenance system updates, suspension, maintenance window_
-  ℹ️ _Routine scheduled wallet maintenance — nothing unusual._
-- **[Bitget announcement on resuming BNB - Binance Smart Chain withdrawals](https://www.bitget.com/en/support/articles/12560603900555)**
-  ⚪ ★☆☆☆☆ _recovery_ · 2026-11-15 00:51 UTC · _section: maintenance system updates, maintenance window_
-  ℹ️ _“Bitget has now opened the withdrawal service on the BNB - Binance Smart Chain network.”_
-- **[Bitget announcement on suspending BNB - Binance Smart Chain network withdrawal service](https://www.bitget.com/en/support/articles/12560603900554)**
-  🟢 ★★☆☆☆ _routine maintenance_ · 2026-11-15 00:50 UTC · _section: maintenance system updates, suspension, maintenance window_
-  ℹ️ _Routine scheduled wallet maintenance — nothing unusual._
-- **[Bitget announcement on resuming SHIB - Ethereum withdrawals](https://www.bitget.com/en/support/articles/12560603900552)**
-  ⚪ ★☆☆☆☆ _recovery_ · 2026-11-15 00:31 UTC · _section: maintenance system updates, maintenance window_
-  ℹ️ _“Bitget has now opened the withdrawal service on the SHIB - Ethereum network.”_
-- **[Bitget announcement on resuming DOT - Polkadot Asset Hub withdrawals](https://www.bitget.com/en/support/articles/12560603900551)**
-  ⚪ ★☆☆☆☆ _recovery_ · 2026-11-15 00:30 UTC · _section: maintenance system updates, maintenance window_
-  ℹ️ _“Bitget has now opened the withdrawal service on the DOT - Polkadot Asset Hub network.”_
-- **[Bitget announcement on resuming AVAX - AVAX C-Chain withdrawals](https://www.bitget.com/en/support/articles/12560603900550)**
-  ⚪ ★☆☆☆☆ _recovery_ · 2026-11-15 00:29 UTC · _section: maintenance system updates, maintenance window_
-  ℹ️ _“Bitget has now opened the withdrawal service on the AVAX - AVAX C-Chain network.”_
-- **[Bitget announcement on resuming LINK - Ethereum withdrawals](https://www.bitget.com/en/support/articles/12560603900549)**
-  ⚪ ★☆☆☆☆ _recovery_ · 2026-11-15 00:12 UTC · _section: maintenance system updates, maintenance window_
-  ℹ️ _“Bitget has now opened the withdrawal service on the LINK - Ethereum network.”_
-- **[Bitget announcement on resuming BNB - Binance Smart Chain withdrawals](https://www.bitget.com/en/support/articles/12560603900548)**
-  ⚪ ★☆☆☆☆ _recovery_ · 2026-11-14 23:57 UTC · _section: maintenance system updates, maintenance window_
-- **[Bitget announcement on suspending BNB - Binance Smart Chain network withdrawal service](https://www.bitget.com/en/support/articles/12560603900547)**
-  🟡 ★★★☆☆ _unexplained suspension_ · 2026-11-14 23:37 UTC · _section: maintenance system updates, suspension, maintenance window_
-- **[Bitget announcement on suspending AVAX - AVAX C-Chain network withdrawal service](https://www.bitget.com/en/support/articles/12560603900543)**
-  🟡 ★★★☆☆ _unexplained suspension_ · 2026-11-14 21:24 UTC · _section: maintenance system updates, suspension, maintenance window_
+- **[Bitget announcement on resuming XDC - XinFin Network XDC deposits and withdrawals](https://www.bitget.com/en/support/articles/12560603900681)**
+  ⚪ ★☆☆☆☆ _recovery_ · 2026-11-16 08:01 UTC · _section: maintenance system updates, maintenance window, deposit/withdrawal change_
+  ℹ️ _“Bitget has now opened the XDC - XinFin Network XDC deposit and withdrawal services.”_
+- **[Notice of Delisting rROKU/USDT Spot Trading Pair](https://www.bitget.com/en/support/articles/12560603900675)**
+  🔴 ★★★★★ _forced-seller event_ · 2026-11-16 08:00 UTC · _section: maintenance system updates, delisting, maintenance window_
+- **[Bitget announcement on resuming HDRO - INJECTIVE withdrawals](https://www.bitget.com/en/support/articles/12560603900633)**
+  ⚪ ★☆☆☆☆ _recovery_ · 2026-11-16 07:01 UTC · _section: maintenance system updates, maintenance window_
+  ℹ️ _“Bitget has now opened the withdrawal service on the HDRO - INJECTIVE network.”_
+- **[Bitget announcement on resuming INJ - INJECTIVE deposits and withdrawals](https://www.bitget.com/en/support/articles/12560603900632)**
+  ⚪ ★☆☆☆☆ _recovery_ · 2026-11-16 07:00 UTC · _section: maintenance system updates, maintenance window, deposit/withdrawal change_
+  ℹ️ _“Bitget has now opened the INJ - INJECTIVE deposit and withdrawal services.”_
+- **[Bitget Will Support the Clearpool (CPOOL) Token Swap and Rebranding to Clearpool (CLEAR)](https://www.bitget.com/en/support/articles/12560603900583)**
+  🟠 ★★★★☆ _token migration_ · 2026-11-16 04:00 UTC · _section: maintenance system updates, maintenance window, token swap/migration, ticker/renaming change_
+  ℹ️ _Token contract migration — old tokens are being exchanged for new ones._
+- **[Bitget announcement on resuming USDT - Morph withdrawals](https://www.bitget.com/en/support/articles/12560603900581)**
+  ⚪ ★☆☆☆☆ _recovery_ · 2026-11-16 01:44 UTC · _section: maintenance system updates, maintenance window_
+  ℹ️ _“Bitget has now opened the withdrawal service on the USDT - Morph network.”_
+- **[Bitget announcement on suspending UNI - Ethereum network withdrawal service](https://www.bitget.com/en/support/articles/12560603900574)**
+  🟡 ★★★☆☆ _unexplained suspension_ · 2026-11-15 20:03 UTC · _section: maintenance system updates, suspension, maintenance window_
 
 ## 🟡 Notable — worth a look
 
-- **[Bitget spot copy trade now supports rABUS/USDT](https://www.bitget.com/en/support/articles/12560603900566)**
-  🟢 ★★☆☆☆ _notable_ · 2026-11-15 12:36 UTC · _section: coin listings, new listing_
-- **[Bitget spot copy trade now supports rSONO/USDT](https://www.bitget.com/en/support/articles/12560603900563)**
-  🟢 ★★☆☆☆ _notable_ · 2026-11-15 10:36 UTC · _section: coin listings, new listing_
-- **[Bitget spot copy trade now supports rTRIN/USDT](https://www.bitget.com/en/support/articles/12560603900561)**
-  🟢 ★★☆☆☆ _notable_ · 2026-11-15 08:41 UTC · _section: coin listings, new listing_
-- **[Bitget spot copy trade now supports rCATY/USDT](https://www.bitget.com/en/support/articles/12560603900560)**
-  🟢 ★★☆☆☆ _notable_ · 2026-11-15 06:41 UTC · _section: coin listings, new listing_
-- **[Bitget spot copy trade now supports rQURE/USDT](https://www.bitget.com/en/support/articles/12560603900559)**
-  🟢 ★★☆☆☆ _notable_ · 2026-11-15 04:36 UTC · _section: coin listings, new listing_
-- **[Bitget spot copy trade now supports rPPLI/USDT](https://www.bitget.com/en/support/articles/12560603900558)**
-  🟢 ★★☆☆☆ _notable_ · 2026-11-15 03:36 UTC · _section: coin listings, new listing_
-- **[Bitget spot copy trade now supports rVC/USDT](https://www.bitget.com/en/support/articles/12560603900557)**
-  🟢 ★★☆☆☆ _notable_ · 2026-11-15 01:36 UTC · _section: coin listings, new listing_
-- **[Bitget spot copy trading now supports 2 trading pairs](https://www.bitget.com/en/support/articles/12560603900553)**
-  🟢 ★★☆☆☆ _notable_ · 2026-11-15 00:41 UTC · _section: coin listings, new listing_
-- **[Bitget spot copy trade now supports rBOOT/USDT](https://www.bitget.com/en/support/articles/12560603900546)**
-  🟢 ★★☆☆☆ _notable_ · 2026-11-14 22:36 UTC · _section: coin listings, new listing_
-- **[Bitget spot copy trade now supports rLFTO/USDT](https://www.bitget.com/en/support/articles/12560603900544)**
-  🟢 ★★☆☆☆ _notable_ · 2026-11-14 21:41 UTC · _section: coin listings, new listing_
+- **[Bitget to list DXYUSDT (U.S. Dollar Index) TradFi perpetual futures](https://www.bitget.com/en/support/articles/12560603900699)**
+  🟢 ★★☆☆☆ _notable_ · 2026-11-16 13:58 UTC · _section: coin listings, new listing, derivatives/margin update_
+- **[Bitget 合约跟单已支持 DXYUSDT 永续合约](https://www.bitget.com/en/support/articles/12560603900698)**
+  🟢 ★★☆☆☆ _notable_ · 2026-11-16 13:26 UTC · _section: coin listings, new listing_
+- **[Bitget spot copy trade now supports rUAA/USDT](https://www.bitget.com/en/support/articles/12560603900697)**
+  🟢 ★★☆☆☆ _notable_ · 2026-11-16 12:36 UTC · _section: coin listings, new listing_
+- **[Bitget spot copy trading now supports 2 trading pairs](https://www.bitget.com/en/support/articles/12560603900686)**
+  🟢 ★★☆☆☆ _notable_ · 2026-11-16 08:36 UTC · _section: coin listings, new listing_
+- **[Bitget spot copy trade now supports rRPD/USDT](https://www.bitget.com/en/support/articles/12560603900679)**
+  🟢 ★★☆☆☆ _notable_ · 2026-11-16 07:41 UTC · _section: coin listings, new listing_
+- **[Bitget spot copy trade now supports rCHA/USDT](https://www.bitget.com/en/support/articles/12560603900605)**
+  🟢 ★★☆☆☆ _notable_ · 2026-11-16 03:36 UTC · _section: coin listings, new listing_
+- **[Bitget spot copy trading now supports 2 trading pairs](https://www.bitget.com/en/support/articles/12560603900580)**
+  🟢 ★★☆☆☆ _notable_ · 2026-11-16 01:36 UTC · _section: coin listings, new listing_
+- **[Bitget spot copy trade now supports rOSW/USDT](https://www.bitget.com/en/support/articles/12560603900578)**
+  🟢 ★★☆☆☆ _notable_ · 2026-11-16 00:41 UTC · _section: coin listings, new listing_
+- **[Bitget spot copy trade now supports rTDC/USDT](https://www.bitget.com/en/support/articles/12560603900577)**
+  🟢 ★★☆☆☆ _notable_ · 2026-11-15 22:36 UTC · _section: coin listings, new listing_
+- **[Bitget spot copy trading now supports 4 trading pairs](https://www.bitget.com/en/support/articles/12560603900576)**
+  🟢 ★★☆☆☆ _notable_ · 2026-11-15 21:46 UTC · _section: coin listings, new listing_
 
 ## 🟢 FYI — promos & misc
 
-- **[[Important] Bitget Announcement on Cash Dividend Settlement for CVXSTOCKUSDT Stock Perps](https://www.bitget.com/en/support/articles/12560603900556)**
-  ⚪ ★☆☆☆☆ _minor_ · 2026-11-15 01:00 UTC
+- **[[Important] Bitget Announcement on Cash Dividend Settlement for MSFTUSDT、MARUSDT、AMATUSDT、CGNXUSDT Stock Perps](https://www.bitget.com/en/support/articles/12560603900579)**
+  ⚪ ★☆☆☆☆ _minor_ · 2026-11-16 01:00 UTC
 
 ## 💡 Trade angles
 
-- 🔁 **USDT (Morph)** — While transfers are frozen, the Bitget price can drift away from other exchanges. That gap usually snaps back once transfers reopen — worth tracking.
-- 🔁 **BNB (Binance)** — Transfers just reopened: any price gap vs other exchanges usually closes fast, and holders who were stuck can now sell. Expect a brief selling wave.
-  `Short @ 597.8 · TP 567.9 (−5%) · SL 621.7 (+4%)`
-- 🔁 **SHIB (Ethereum)** — Transfers just reopened: any price gap vs other exchanges usually closes fast, and holders who were stuck can now sell. Expect a brief selling wave.
-  `Short @ 0.00000397 · TP 0.000003771 (−5%) · SL 0.000004129 (+4%)`
-- 🔁 **DOT (Polkadot)** — Transfers just reopened: any price gap vs other exchanges usually closes fast, and holders who were stuck can now sell. Expect a brief selling wave.
-  `Short @ 0.7398 · TP 0.7028 (−5%) · SL 0.7694 (+4%)`
+- ⚠️ History: delisted coins keep falling (typically −20…−70%) until removal day as holders are forced out. If you hold it, exit early — the bounces are traps.
+- 🔁 **LIT (Ethereum)** — While transfers are frozen, the Bitget price can drift away from other exchanges. That gap usually snaps back once transfers reopen — worth tracking.
+- 🔁 **XDC (XinFin)** — Transfers just reopened: any price gap vs other exchanges usually closes fast, and holders who were stuck can now sell. Expect a brief selling wave.
+  `Short @ 0.02964 · TP 0.02816 (−5%) · SL 0.03083 (+4%)`
+- 🔁 **HDRO (INJECTIVE)** — Transfers just reopened: any price gap vs other exchanges usually closes fast, and holders who were stuck can now sell. Expect a brief selling wave.
 
 _Pattern heuristics from historical announcement studies — not financial advice._
