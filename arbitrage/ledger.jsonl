@@ -2030,3 +2030,14 @@
 {"type":"carry-mark","t":1794849825967,"id":"518dcfba88b2","fundingRate":0.000152,"accruedFunding":1.05,"legPnl":-1.25}
 {"type":"carry-mark","t":1794849825967,"id":"b4f13c6eea0f","fundingRate":0.00005,"accruedFunding":0.96,"legPnl":-0.21}
 {"type":"carry-mark","t":1794849825967,"id":"900bfd89d2fd","fundingRate":0.00005,"accruedFunding":1.16,"legPnl":-2.45}
+{"type":"run","t":1794877334876,"quoteCounts":{"bitget":3583,"binance":0,"bybit":0,"okx":1229},"errors":["binance spot: binance spot: HTTP 451 for https://api.binance.com/api/v3/ticker/bookTicker","bybit spot: bybit spot: HTTP 403 for https://api.bybit.com/v5/market/tickers?category=spot","bybit perps: bybit perp: HTTP 403 for https://api.bybit.com/v5/market/tickers?category=linear","binance perps: binance premiumIndex: HTTP 451 for https://fapi.binance.com/fapi/v1/premiumIndex"]}
+{"type":"carry-mark","t":1794877334876,"id":"98d9fdca1e2e","fundingRate":0.00005,"accruedFunding":37.96,"legPnl":-7.69}
+{"type":"carry-mark","t":1794877334876,"id":"92294f6fb8c9","fundingRate":0.00005,"accruedFunding":20.93,"legPnl":-0.43}
+{"type":"carry-mark","t":1794877334876,"id":"8d1cbb727e7d","fundingRate":0.00005,"accruedFunding":10.92,"legPnl":-1.12}
+{"type":"carry-mark","t":1794877334876,"id":"089cc35604d1","fundingRate":0.00005,"accruedFunding":6.2,"legPnl":-8.02}
+{"type":"carry-mark","t":1794877334876,"id":"c545c719db15","fundingRate":0.00005,"accruedFunding":1.11,"legPnl":-7.21}
+{"type":"carry-mark","t":1794877334876,"id":"8dd43ba1758e","fundingRate":0.00012,"accruedFunding":3.14,"legPnl":-0.41}
+{"type":"carry-mark","t":1794877334876,"id":"84243a999e01","fundingRate":0.00005,"accruedFunding":2.56,"legPnl":-6.61}
+{"type":"carry-mark","t":1794877334876,"id":"518dcfba88b2","fundingRate":0.00008,"accruedFunding":1.2,"legPnl":-0.83}
+{"type":"carry-mark","t":1794877334876,"id":"b4f13c6eea0f","fundingRate":0.00005,"accruedFunding":1.06,"legPnl":0.19}
+{"type":"carry-mark","t":1794877334876,"id":"900bfd89d2fd","fundingRate":0.0001212207024948,"accruedFunding":1.39,"legPnl":-0.42}
