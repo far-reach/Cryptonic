@@ -1,14 +1,14 @@
-# Paper-trading ledger — 2026-11-18 09:03 UTC
+# Paper-trading ledger — 2026-11-18 17:58 UTC
 
-161 runs over 34.73 days (since 2026-10-14). Every detected opportunity is re-priced a few seconds later at real quotes; "realised" is what a full-size taker fill would have made then, net of fees.
+162 runs over 35.1 days (since 2026-10-14). Every detected opportunity is re-priced a few seconds later at real quotes; "realised" is what a full-size taker fill would have made then, net of fees.
 
 ## Verified opportunities
 
 | Strategy | Samples | Survived | Expected bps | Realised bps | 95% CI low | Paper P&L |
 | --- | --- | --- | --- | --- | --- | --- |
-| Cross-exchange (all) | 130 | 91% | +68.2 | +62.0 | +48.1 | +$806.12 |
-| Cross-exchange (24 h) | 2 | 100% | +10.7 | +11.5 | +5.3 | +$2.29 |
-| Cross-exchange (7 d) | 11 | 91% | +18.7 | +18.9 | -0.6 | +$20.75 |
+| Cross-exchange (all) | 131 | 91% | +67.7 | +61.6 | +47.8 | +$806.48 |
+| Cross-exchange (24 h) | 3 | 100% | +8.7 | +8.8 | +2.6 | +$2.65 |
+| Cross-exchange (7 d) | 11 | 100% | +18.8 | +19.2 | -0.1 | +$21.13 |
 | Triangular (all) | 24 | 100% | +36.6 | +37.2 | +23.7 | +$5.71 |
 
 ### By venue pair
@@ -16,7 +16,7 @@
 | Pair | Samples | Survived | Expected bps | Realised bps | 95% CI low | Paper P&L |
 | --- | --- | --- | --- | --- | --- | --- |
 | bitget→okx | 89 | 97% | +60.7 | +60.8 | +46.7 | +$540.94 |
-| okx→bitget | 30 | 83% | +101.4 | +90.4 | +55.0 | +$271.28 |
+| okx→bitget | 31 | 84% | +98.3 | +87.6 | +52.9 | +$271.64 |
 | binance→okx | 2 | 50% | +84.5 | +40.5 | -211.3 | +$8.09 |
 | binance→bybit | 2 | 100% | +32.1 | +30.5 | +20.2 | +$6.10 |
 | bitget→bybit | 2 | 100% | +29.1 | +29.3 | +16.7 | +$5.87 |
@@ -30,7 +30,7 @@
 
 | Open | Closed | Wins | Funding | Leg P&L | Fees | Closed P&L | Open P&L | Mean hold |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 10 | 13 | 62% | +$77.46 | −$70.11 | −$40.00 | **−$32.65** | +$30.64 | 459 h |
+| 10 | 13 | 62% | +$77.46 | −$70.11 | −$40.00 | **−$32.65** | +$38.32 | 459 h |
 
 ## Go-live gate
 
