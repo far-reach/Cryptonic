@@ -1,66 +1,78 @@
-# Bitget daily briefing — 2026-11-17
+# Bitget daily briefing — 2026-11-18
 
 _Last 24h of the [Bitget announcement center](https://www.bitget.com/asia/support/announcement-center)._
 
-**TL;DR:** 6 critical · 10 notable · 1 FYI
+**TL;DR:** 14 critical · 6 notable · 1 FYI
 
-🟢 **Environment:** _Calm — routine operations only_
+🟡 **Environment:** _Normal — tradeable activity, nothing alarming_
 
 ## 🔴 Critical — act or verify today
 
-- **[Bitget announcement on resuming USDC - AVAX C-Chain withdrawals](https://www.bitget.com/en/support/articles/12560603900818)**
-  ⚪ ★☆☆☆☆ _recovery_ · 2026-11-17 12:20 UTC · _section: maintenance system updates, maintenance window_
-  ℹ️ _“Bitget has now opened the withdrawal service on the USDC - AVAX C-Chain network.”_
-- **[Bitget announcement on suspending USDC - AVAX C-Chain network withdrawal service](https://www.bitget.com/en/support/articles/12560603900816)**
-  🟢 ★★☆☆☆ _routine maintenance_ · 2026-11-17 11:26 UTC · _section: maintenance system updates, suspension, maintenance window_
+- **[Bitget announcement on suspending USDC - Monad network withdrawal service](https://www.bitget.com/en/support/articles/12560603900924)**
+  🟢 ★★☆☆☆ _routine maintenance_ · 2026-11-18 14:51 UTC · _section: maintenance system updates, suspension, maintenance window_
   ℹ️ _Routine scheduled wallet maintenance — nothing unusual._
-- **[Bitget announcement on resuming USDC - Binance Smart Chain withdrawals](https://www.bitget.com/en/support/articles/12560603900815)**
-  ⚪ ★☆☆☆☆ _recovery_ · 2026-11-17 11:17 UTC · _section: maintenance system updates, maintenance window_
-  ℹ️ _“Bitget has now opened the withdrawal service on the USDC - Binance Smart Chain network.”_
-- **[Bitget announcement on suspending USDC - Binance Smart Chain network withdrawal service](https://www.bitget.com/en/support/articles/12560603900813)**
-  🟢 ★★☆☆☆ _routine maintenance_ · 2026-11-17 10:49 UTC · _section: maintenance system updates, suspension, maintenance window_
+- **[Bitget announcement on suspending USDC - SEIEVM network withdrawal service](https://www.bitget.com/en/support/articles/12560603900921)**
+  🟢 ★★☆☆☆ _routine maintenance_ · 2026-11-18 14:33 UTC · _section: maintenance system updates, suspension, maintenance window_
   ℹ️ _Routine scheduled wallet maintenance — nothing unusual._
-- **[Bitget announcement on suspending USDC - APTOS network withdrawal service](https://www.bitget.com/en/support/articles/12560603900795)**
-  🟢 ★★☆☆☆ _routine maintenance_ · 2026-11-17 08:03 UTC · _section: maintenance system updates, suspension, maintenance window_
+- **[Bitget announcement on resuming ATOM - COSMOS deposits and withdrawals](https://www.bitget.com/en/support/articles/12560603900920)**
+  ⚪ ★☆☆☆☆ _recovery_ · 2026-11-18 14:30 UTC · _section: maintenance system updates, maintenance window, deposit/withdrawal change_
+  ℹ️ _“Bitget has now opened the ATOM - COSMOS deposit and withdrawal services.”_
+- **[Bitget announcement on resuming USDC - Polygon withdrawals](https://www.bitget.com/en/support/articles/12560603900918)**
+  ⚪ ★☆☆☆☆ _recovery_ · 2026-11-18 14:10 UTC · _section: maintenance system updates, maintenance window_
+  ℹ️ _“Bitget has now opened the withdrawal service on the USDC - Polygon network.”_
+- **[Bitget announcement on resuming KAVA - KAVA deposits](https://www.bitget.com/en/support/articles/12560603900916)**
+  ⚪ ★☆☆☆☆ _recovery_ · 2026-11-18 13:43 UTC · _section: maintenance system updates, maintenance window_
+  ℹ️ _“Bitget has now opened the deposit service on the KAVA - KAVA network.”_
+- **[Bitget announcement on suspending USDC - Polygon network withdrawal service](https://www.bitget.com/en/support/articles/12560603900912)**
+  🟢 ★★☆☆☆ _routine maintenance_ · 2026-11-18 13:13 UTC · _section: maintenance system updates, suspension, maintenance window_
   ℹ️ _Routine scheduled wallet maintenance — nothing unusual._
-- **[Bitget announcement on resuming CORE - Core DAO deposits and withdrawals](https://www.bitget.com/en/support/articles/12560603900792)**
-  ⚪ ★☆☆☆☆ _recovery_ · 2026-11-17 07:10 UTC · _section: maintenance system updates, maintenance window, deposit/withdrawal change_
-  ℹ️ _“Bitget has now opened the CORE - Core DAO deposit and withdrawal services.”_
+- **[Bitget to adjust funding rate interval for ZKCUSDT perpetual futures](https://www.bitget.com/en/support/articles/12560603900908)**
+  🟡 ★★★☆☆ _affects positions_ · 2026-11-18 12:10 UTC · _section: product updates, contract parameter change_
+  ℹ️ _Bitget is tightening this contract's risk limits — usually a response to volatility or thin liquidity._
+- **[Bitget announcement on suspending ATOM - COSMOS deposit and withdrawal services](https://www.bitget.com/en/support/articles/12560603900906)**
+  🟢 ★★☆☆☆ _routine maintenance_ · 2026-11-18 11:34 UTC · _section: maintenance system updates, suspension, maintenance window, deposit/withdrawal change_
+  ℹ️ _Routine scheduled wallet maintenance — nothing unusual._
+- **[Bitget announcement on resuming USDC - BASE withdrawals](https://www.bitget.com/en/support/articles/12560603900903)**
+  ⚪ ★☆☆☆☆ _recovery_ · 2026-11-18 10:34 UTC · _section: maintenance system updates, maintenance window_
+- **[Bitget to adjust  USDGO  UTA leverage, limits, and maintenance margin rates](https://www.bitget.com/en/support/articles/12560603900900)**
+  🟡 ★★★☆☆ _affects positions_ · 2026-11-18 10:17 UTC · _section: product updates, maintenance window, contract parameter change_
+  ℹ️ _Bitget is tightening this contract's risk limits — usually a response to volatility or thin liquidity._
+- **[Bitget announcement on suspending USDC - BASE network withdrawal service](https://www.bitget.com/en/support/articles/12560603900899)**
+  🟡 ★★★☆☆ _unexplained suspension_ · 2026-11-18 10:15 UTC · _section: maintenance system updates, suspension, maintenance window_
+- **[Bitget announcement on the removal of 3 trading pairs under spot bot trading on November 18, 2026](https://www.bitget.com/en/support/articles/12560603900887)**
+  🟡 ★★★☆☆ _needs review_ · 2026-11-18 09:10 UTC · _section: symbol delisting, delisting_
+- **[Bitget announcement on resuming USDC - Binance Smart Chain withdrawals](https://www.bitget.com/en/support/articles/12560603900885)**
+  ⚪ ★☆☆☆☆ _recovery_ · 2026-11-18 08:33 UTC · _section: maintenance system updates, maintenance window_
+- **[Bitget to adjust funding rate interval for BREVUSDT perpetual futures](https://www.bitget.com/en/support/articles/12560603900835)**
+  🟡 ★★★☆☆ _affects positions_ · 2026-11-17 16:12 UTC · _section: product updates, contract parameter change_
+  ℹ️ _Bitget is tightening this contract's risk limits — usually a response to volatility or thin liquidity._
 
 ## 🟡 Notable — worth a look
 
-- **[Bitget spot copy trade now supports rCBRG/USDT](https://www.bitget.com/en/support/articles/12560603900825)**
-  🟢 ★★☆☆☆ _notable_ · 2026-11-17 14:36 UTC · _section: coin listings, new listing_
-- **[Bitget spot copy trade now supports rAGO/USDT](https://www.bitget.com/en/support/articles/12560603900794)**
-  🟢 ★★☆☆☆ _notable_ · 2026-11-17 07:41 UTC · _section: coin listings, new listing_
-- **[Bitget spot copy trade now supports rBXDC/USDT](https://www.bitget.com/en/support/articles/12560603900747)**
-  🟢 ★★☆☆☆ _notable_ · 2026-11-17 03:36 UTC · _section: coin listings, new listing_
-- **[HYPEUSDC now launched for futures trading and trading bots](https://www.bitget.com/en/support/articles/12560603900745)**
-  🟢 ★★☆☆☆ _notable_ · 2026-11-17 02:42 UTC · _section: coin listings, new listing, derivatives/margin update_
-- **[Bitget spot copy trading now supports 5 trading pairs](https://www.bitget.com/en/support/articles/12560603900743)**
-  🟢 ★★☆☆☆ _notable_ · 2026-11-17 02:36 UTC · _section: coin listings, new listing_
-- **[Bitget spot copy trade now supports rGDRX/USDT](https://www.bitget.com/en/support/articles/12560603900742)**
-  🟢 ★★☆☆☆ _notable_ · 2026-11-17 01:36 UTC · _section: coin listings, new listing_
-- **[Bitget spot copy trade now supports rMNSO/USDT](https://www.bitget.com/en/support/articles/12560603900738)**
-  🟢 ★★☆☆☆ _notable_ · 2026-11-16 23:36 UTC · _section: coin listings, new listing_
-- **[Bitget spot copy trade now supports rOMER/USDT](https://www.bitget.com/en/support/articles/12560603900734)**
-  🟢 ★★☆☆☆ _notable_ · 2026-11-16 22:36 UTC · _section: coin listings, new listing_
-- **[Bitget spot copy trading now supports 2 trading pairs](https://www.bitget.com/en/support/articles/12560603900733)**
-  🟢 ★★☆☆☆ _notable_ · 2026-11-16 21:41 UTC · _section: coin listings, new listing_
-- **[Bitget spot copy trade now supports rGTM/USDT](https://www.bitget.com/en/support/articles/12560603900731)**
-  🟢 ★★☆☆☆ _notable_ · 2026-11-16 20:41 UTC · _section: coin listings, new listing_
+- **[Bitget Announces Listing of IGVUSDT, ARTYUSDT, CCJUSDT and NEMUSDT Stock Perps](https://www.bitget.com/en/support/articles/12560603900923)**
+  🟡 ★★★☆☆ _listing event_ · 2026-11-18 14:52 UTC · _section: coin listings, new listing_
+- **[Bitget spot copy trade now supports rNPO/USDT](https://www.bitget.com/en/support/articles/12560603900922)**
+  🟢 ★★☆☆☆ _notable_ · 2026-11-18 14:36 UTC · _section: coin listings, new listing_
+- **[Bitget spot copy trade now supports rNWPX/USDT](https://www.bitget.com/en/support/articles/12560603900875)**
+  🟢 ★★☆☆☆ _notable_ · 2026-11-18 06:36 UTC · _section: coin listings, new listing_
+- **[Bitget spot copy trading now supports 2 trading pairs](https://www.bitget.com/en/support/articles/12560603900854)**
+  🟢 ★★☆☆☆ _notable_ · 2026-11-18 03:36 UTC · _section: coin listings, new listing_
+- **[Bitget spot copy trade now supports rGFF/USDT](https://www.bitget.com/en/support/articles/12560603900849)**
+  🟢 ★★☆☆☆ _notable_ · 2026-11-18 02:36 UTC · _section: coin listings, new listing_
+- **[Bitget spot copy trade now supports rIOSP/USDT](https://www.bitget.com/en/support/articles/12560603900839)**
+  🟢 ★★☆☆☆ _notable_ · 2026-11-17 17:36 UTC · _section: coin listings, new listing_
 
 ## 🟢 FYI — promos & misc
 
-- **[[Important] Bitget Announcement on Cash Dividend Settlement for RTXSTOCKUSDT、BUDUSDT、AMGNUSDT Stock Perps](https://www.bitget.com/en/support/articles/12560603900741)**
-  ⚪ ★☆☆☆☆ _minor_ · 2026-11-17 01:00 UTC
+- **[[Important] Bitget Announcement on Cash Dividend Settlement for TERUSDT Stock Perps](https://www.bitget.com/en/support/articles/12560603900847)**
+  ⚪ ★☆☆☆☆ _minor_ · 2026-11-18 01:00 UTC
 
 ## 💡 Trade angles
 
-- 🔁 **USDC (AVAX)** — Transfers just reopened: any price gap vs other exchanges usually closes fast, and holders who were stuck can now sell. Expect a brief selling wave.
-- 🔁 **USDC (Binance)** — Transfers just reopened: any price gap vs other exchanges usually closes fast, and holders who were stuck can now sell. Expect a brief selling wave.
-- 🔁 **USDC (APTOS)** — While transfers are frozen, the Bitget price can drift away from other exchanges. That gap usually snaps back once transfers reopen — worth tracking.
-- 🔁 **CORE (Core)** — Transfers just reopened: any price gap vs other exchanges usually closes fast, and holders who were stuck can now sell. Expect a brief selling wave.
-  `Short @ 0.01009 · TP 0.009586 (−5%) · SL 0.01049 (+4%)`
+- 🔁 **USDC (Monad)** — While transfers are frozen, the Bitget price can drift away from other exchanges. That gap usually snaps back once transfers reopen — worth tracking.
+- 🔁 **USDC (SEIEVM)** — While transfers are frozen, the Bitget price can drift away from other exchanges. That gap usually snaps back once transfers reopen — worth tracking.
+- 🔁 **ATOM (COSMOS)** — Transfers just reopened: any price gap vs other exchanges usually closes fast, and holders who were stuck can now sell. Expect a brief selling wave.
+  `Short @ 1.286 · TP 1.222 (−5%) · SL 1.337 (+4%)`
+- 🔁 **USDC (Polygon)** — Transfers just reopened: any price gap vs other exchanges usually closes fast, and holders who were stuck can now sell. Expect a brief selling wave.
 
 _Pattern heuristics from historical announcement studies — not financial advice._
