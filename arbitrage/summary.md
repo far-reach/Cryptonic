@@ -1,14 +1,14 @@
-# Paper-trading ledger — 2026-11-19 00:15 UTC
+# Paper-trading ledger — 2026-11-19 07:51 UTC
 
-163 runs over 35.37 days (since 2026-10-14). Every detected opportunity is re-priced a few seconds later at real quotes; "realised" is what a full-size taker fill would have made then, net of fees.
+164 runs over 35.68 days (since 2026-10-14). Every detected opportunity is re-priced a few seconds later at real quotes; "realised" is what a full-size taker fill would have made then, net of fees.
 
 ## Verified opportunities
 
 | Strategy | Samples | Survived | Expected bps | Realised bps | 95% CI low | Paper P&L |
 | --- | --- | --- | --- | --- | --- | --- |
-| Cross-exchange (all) | 133 | 91% | +68.2 | +62.2 | +48.4 | +$826.74 |
-| Cross-exchange (24 h) | 5 | 100% | +45.1 | +45.8 | -22.0 | +$22.91 |
-| Cross-exchange (7 d) | 12 | 100% | +33.7 | +34.3 | +2.5 | +$41.20 |
+| Cross-exchange (all) | 134 | 91% | +67.8 | +61.8 | +48.1 | +$827.79 |
+| Cross-exchange (24 h) | 6 | 100% | +40.7 | +39.9 | -16.6 | +$23.96 |
+| Cross-exchange (7 d) | 13 | 100% | +32.5 | +32.5 | +3.0 | +$42.25 |
 | Triangular (all) | 24 | 100% | +36.6 | +37.2 | +23.7 | +$5.71 |
 
 ### By venue pair
@@ -16,7 +16,7 @@
 | Pair | Samples | Survived | Expected bps | Realised bps | 95% CI low | Paper P&L |
 | --- | --- | --- | --- | --- | --- | --- |
 | bitget→okx | 90 | 97% | +62.0 | +62.1 | +48.0 | +$559.33 |
-| okx→bitget | 32 | 84% | +95.9 | +85.5 | +51.6 | +$273.51 |
+| okx→bitget | 33 | 85% | +93.5 | +83.2 | +50.1 | +$274.56 |
 | binance→okx | 2 | 50% | +84.5 | +40.5 | -211.3 | +$8.09 |
 | binance→bybit | 2 | 100% | +32.1 | +30.5 | +20.2 | +$6.10 |
 | bitget→bybit | 2 | 100% | +29.1 | +29.3 | +16.7 | +$5.87 |
@@ -30,7 +30,7 @@
 
 | Open | Closed | Wins | Funding | Leg P&L | Fees | Closed P&L | Open P&L | Mean hold |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 10 | 13 | 62% | +$77.46 | −$70.11 | −$40.00 | **−$32.65** | +$44.17 | 459 h |
+| 10 | 13 | 62% | +$77.46 | −$70.11 | −$40.00 | **−$32.65** | +$34.76 | 459 h |
 
 ## Go-live gate
 
