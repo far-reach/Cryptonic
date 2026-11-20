@@ -1,22 +1,22 @@
-# Paper-trading ledger — 2026-11-20 07:00 UTC
+# Paper-trading ledger — 2026-11-20 16:03 UTC
 
-167 runs over 36.65 days (since 2026-10-14). Every detected opportunity is re-priced a few seconds later at real quotes; "realised" is what a full-size taker fill would have made then, net of fees.
+168 runs over 37.02 days (since 2026-10-14). Every detected opportunity is re-priced a few seconds later at real quotes; "realised" is what a full-size taker fill would have made then, net of fees.
 
 ## Verified opportunities
 
 | Strategy | Samples | Survived | Expected bps | Realised bps | 95% CI low | Paper P&L |
 | --- | --- | --- | --- | --- | --- | --- |
-| Cross-exchange (all) | 138 | 91% | +67.0 | +61.3 | +48.0 | +$845.32 |
-| Cross-exchange (24 h) | 5 | 100% | +37.5 | +37.1 | +22.2 | +$18.58 |
-| Cross-exchange (7 d) | 15 | 100% | +38.1 | +38.8 | +13.7 | +$58.14 |
-| Triangular (all) | 30 | 100% | +67.4 | +67.9 | +43.1 | +$6.61 |
+| Cross-exchange (all) | 139 | 91% | +66.9 | +61.1 | +47.9 | +$849.47 |
+| Cross-exchange (24 h) | 5 | 100% | +44.3 | +43.4 | +36.0 | +$21.68 |
+| Cross-exchange (7 d) | 14 | 100% | +43.8 | +43.9 | +18.0 | +$61.40 |
+| Triangular (all) | 32 | 100% | +75.2 | +75.7 | +50.1 | +$6.91 |
 
 ### By venue pair
 
 | Pair | Samples | Survived | Expected bps | Realised bps | 95% CI low | Paper P&L |
 | --- | --- | --- | --- | --- | --- | --- |
 | bitget→okx | 91 | 97% | +61.9 | +61.8 | +47.8 | +$562.50 |
-| okx→bitget | 36 | 86% | +89.2 | +80.3 | +49.8 | +$288.92 |
+| okx→bitget | 37 | 86% | +88.2 | +79.2 | +49.5 | +$293.07 |
 | binance→okx | 2 | 50% | +84.5 | +40.5 | -211.3 | +$8.09 |
 | binance→bybit | 2 | 100% | +32.1 | +30.5 | +20.2 | +$6.10 |
 | bitget→bybit | 2 | 100% | +29.1 | +29.3 | +16.7 | +$5.87 |
@@ -30,7 +30,7 @@
 
 | Open | Closed | Wins | Funding | Leg P&L | Fees | Closed P&L | Open P&L | Mean hold |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 10 | 13 | 62% | +$77.46 | −$70.11 | −$40.00 | **−$32.65** | +$42.23 | 459 h |
+| 10 | 13 | 62% | +$77.46 | −$70.11 | −$40.00 | **−$32.65** | +$46.50 | 459 h |
 
 ## Go-live gate
 
