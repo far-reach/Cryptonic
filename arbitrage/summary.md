@@ -1,22 +1,22 @@
-# Paper-trading ledger — 2026-11-19 23:46 UTC
+# Paper-trading ledger — 2026-11-20 07:00 UTC
 
-166 runs over 36.34 days (since 2026-10-14). Every detected opportunity is re-priced a few seconds later at real quotes; "realised" is what a full-size taker fill would have made then, net of fees.
+167 runs over 36.65 days (since 2026-10-14). Every detected opportunity is re-priced a few seconds later at real quotes; "realised" is what a full-size taker fill would have made then, net of fees.
 
 ## Verified opportunities
 
 | Strategy | Samples | Survived | Expected bps | Realised bps | 95% CI low | Paper P&L |
 | --- | --- | --- | --- | --- | --- | --- |
-| Cross-exchange (all) | 137 | 91% | +67.3 | +61.4 | +48.0 | +$841.04 |
-| Cross-exchange (24 h) | 6 | 100% | +58.2 | +57.6 | +6.3 | +$34.56 |
-| Cross-exchange (7 d) | 15 | 100% | +36.3 | +36.5 | +11.2 | +$54.79 |
-| Triangular (all) | 28 | 100% | +58.6 | +59.2 | +35.8 | +$6.31 |
+| Cross-exchange (all) | 138 | 91% | +67.0 | +61.3 | +48.0 | +$845.32 |
+| Cross-exchange (24 h) | 5 | 100% | +37.5 | +37.1 | +22.2 | +$18.58 |
+| Cross-exchange (7 d) | 15 | 100% | +38.1 | +38.8 | +13.7 | +$58.14 |
+| Triangular (all) | 30 | 100% | +67.4 | +67.9 | +43.1 | +$6.61 |
 
 ### By venue pair
 
 | Pair | Samples | Survived | Expected bps | Realised bps | 95% CI low | Paper P&L |
 | --- | --- | --- | --- | --- | --- | --- |
 | bitget→okx | 91 | 97% | +61.9 | +61.8 | +47.8 | +$562.50 |
-| okx→bitget | 35 | 86% | +90.6 | +81.3 | +50.0 | +$284.64 |
+| okx→bitget | 36 | 86% | +89.2 | +80.3 | +49.8 | +$288.92 |
 | binance→okx | 2 | 50% | +84.5 | +40.5 | -211.3 | +$8.09 |
 | binance→bybit | 2 | 100% | +32.1 | +30.5 | +20.2 | +$6.10 |
 | bitget→bybit | 2 | 100% | +29.1 | +29.3 | +16.7 | +$5.87 |
@@ -30,12 +30,12 @@
 
 | Open | Closed | Wins | Funding | Leg P&L | Fees | Closed P&L | Open P&L | Mean hold |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 10 | 13 | 62% | +$77.46 | −$70.11 | −$40.00 | **−$32.65** | +$40.44 | 459 h |
+| 10 | 13 | 62% | +$77.46 | −$70.11 | −$40.00 | **−$32.65** | +$42.23 | 459 h |
 
 ## Go-live gate
 
 - **cross-exchange**: ✅ passed
-- **triangular**: ⛔ not yet — only 28 verified samples (need 30)
+- **triangular**: ✅ passed
 - **carry**: ⛔ not yet — cumulative closed P&L is -32.65 (need > 0)
 
 > Paper fills assume taker orders at the re-priced book with no queue position and no exchange latency beyond the verification delay. Real fills are worse, never better. The gate is a necessary condition for live trading, not a sufficient one.

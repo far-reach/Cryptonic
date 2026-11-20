@@ -2166,3 +2166,20 @@
 {"type":"carry-mark","t":1795131981694,"id":"518dcfba88b2","fundingRate":0.00005,"accruedFunding":2.23,"legPnl":-0.92}
 {"type":"carry-mark","t":1795131981694,"id":"b4f13c6eea0f","fundingRate":0.00005,"accruedFunding":2.05,"legPnl":-0.35}
 {"type":"carry-mark","t":1795131981694,"id":"900bfd89d2fd","fundingRate":0.00005,"accruedFunding":6.81,"legPnl":-1.16}
+{"type":"run","t":1795158015764,"quoteCounts":{"bitget":3616,"binance":0,"bybit":0,"okx":1249},"errors":["binance spot: binance spot: HTTP 451 for https://api.binance.com/api/v3/ticker/bookTicker","bybit spot: bybit spot: HTTP 403 for https://api.bybit.com/v5/market/tickers?category=spot","bybit perps: bybit perp: HTTP 403 for https://api.bybit.com/v5/market/tickers?category=linear","binance perps: binance perp book: HTTP 451 for https://fapi.binance.com/fapi/v1/ticker/bookTicker"]}
+{"type":"detect","t":1795158015764,"id":"1bf81b46222d","opportunity":{"kind":"cross-exchange","base":"LIT","quote":"USDT","buyVenue":"okx","sellVenue":"bitget","buyPrice":2.641033251083911,"sellPrice":2.6564034732077824,"notionalQuote":1000,"maxNotionalQuote":34787.18,"grossBps":58.2,"feesBps":20,"netBps":38.2,"suspicious":false,"depthChecked":true,"quoteAgeMs":887}}
+{"type":"detect","t":1795158015764,"id":"90b4cd8ddaca","opportunity":{"kind":"triangular","venue":"okx","path":["USDT","XTESTA","USDC","USDT"],"legs":[{"pair":"XTESTA/USDT","side":"buy","price":83.134},{"pair":"XTESTA/USDC","side":"sell","price":84.9},{"pair":"USDC/USDT","side":"sell","price":1.00079}],"grossBps":220.5,"feesBps":30,"netBps":189.87,"maxNotionalStart":7.98}}
+{"type":"detect","t":1795158015764,"id":"b2b4afc4f059","opportunity":{"kind":"triangular","venue":"okx","path":["USDC","USDT","XTESTA","USDC"],"legs":[{"pair":"USDC/USDT","side":"sell","price":1.00079},{"pair":"XTESTA/USDT","side":"buy","price":83.134},{"pair":"XTESTA/USDC","side":"sell","price":84.9}],"grossBps":220.5,"feesBps":30,"netBps":189.87,"maxNotionalStart":7.97}}
+{"type":"verify","t":1795158021306,"id":"1bf81b46222d","kind":"cross-exchange","label":"LIT/USDT okx→bitget","venues":["okx","bitget"],"delayMs":5542,"notionalQuote":1000,"expectedNetBps":38.2,"realisedNetBps":42.8,"pnlQuote":4.28,"survived":true}
+{"type":"verify","t":1795158021306,"id":"90b4cd8ddaca","kind":"triangular","label":"okx USDT→XTESTA→USDC→USDT","venues":["okx"],"delayMs":5542,"notionalQuote":7.98,"expectedNetBps":189.87,"realisedNetBps":189.87,"pnlQuote":0.15,"survived":true}
+{"type":"verify","t":1795158021306,"id":"b2b4afc4f059","kind":"triangular","label":"okx USDC→USDT→XTESTA→USDC","venues":["okx"],"delayMs":5542,"notionalQuote":7.97,"expectedNetBps":189.87,"realisedNetBps":189.87,"pnlQuote":0.15,"survived":true}
+{"type":"carry-mark","t":1795158015764,"id":"98d9fdca1e2e","fundingRate":0.00005,"accruedFunding":38.89,"legPnl":-7.86}
+{"type":"carry-mark","t":1795158015764,"id":"92294f6fb8c9","fundingRate":0.0000075375661761,"accruedFunding":23.75,"legPnl":2.14}
+{"type":"carry-mark","t":1795158015764,"id":"8d1cbb727e7d","fundingRate":0.00005,"accruedFunding":11.92,"legPnl":-1.29}
+{"type":"carry-mark","t":1795158015764,"id":"089cc35604d1","fundingRate":0.000517,"accruedFunding":9.19,"legPnl":-8.38}
+{"type":"carry-mark","t":1795158015764,"id":"c545c719db15","fundingRate":0.00005,"accruedFunding":2.08,"legPnl":-6.82}
+{"type":"carry-mark","t":1795158015764,"id":"8dd43ba1758e","fundingRate":0.00005,"accruedFunding":5.04,"legPnl":-0.86}
+{"type":"carry-mark","t":1795158015764,"id":"84243a999e01","fundingRate":0.0001262190736132,"accruedFunding":4.47,"legPnl":-7.18}
+{"type":"carry-mark","t":1795158015764,"id":"518dcfba88b2","fundingRate":0.00005,"accruedFunding":2.32,"legPnl":-1.35}
+{"type":"carry-mark","t":1795158015764,"id":"b4f13c6eea0f","fundingRate":0.00005,"accruedFunding":2.14,"legPnl":-1.44}
+{"type":"carry-mark","t":1795158015764,"id":"900bfd89d2fd","fundingRate":0.0000746429404591,"accruedFunding":6.94,"legPnl":-0.47}
